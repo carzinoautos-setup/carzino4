@@ -212,7 +212,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 />
               ) : (
                 <img
-                  src="/icons/door-icon.svg"
+                  src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fa05174a249a043e3a6e3e280a57e2445"
                   alt="Door icon"
                   className="w-4 h-4"
                 />
