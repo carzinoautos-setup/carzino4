@@ -462,8 +462,9 @@ export class WooCommerceApiService {
   /**
    * Get filter options with real counts from WooCommerce product data
    * Uses same meta field extraction logic as transformWooCommerceProduct
+   * @param appliedFilters - Current filter selections to conditionally filter options
    */
-  async getFilterOptions() {
+  async getFilterOptions(appliedFilters: SimpleVehicleFilters = {}) {
     try {
       console.log("🔍 STARTING getFilterOptions - Fetching filter options from WooCommerce...");
       console.log("🔍 WooCommerce credentials check:", {
