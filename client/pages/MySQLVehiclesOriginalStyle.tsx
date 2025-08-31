@@ -2198,47 +2198,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Trim - REMOVED: Demo data with hardcoded trims and random counts */}
 
-            {/* Year Filter */}
-            <FilterSection
-              title="Year"
-              isCollapsed={collapsedFilters.year || false}
-              onToggle={() => toggleFilter("year")}
-            >
-              <div className="space-y-1">
-                {Array.from(
-                  { length: 10 },
-                  (_, i) => new Date().getFullYear() - i,
-                ).map((year) => (
-                  <label
-                    key={year}
-                    className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.year.includes(year.toString())}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        if (e.target.checked) {
-                          const newFilters = {
-                            ...appliedFilters,
-                            year: [...appliedFilters.year, year.toString()],
-                          };
-                          setAppliedFilters(newFilters);
-                          updateURLFromFilters(newFilters);
-                        } else {
-                          removeAppliedFilter("year", year.toString());
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{year}</span>
-                    <span className="carzino-filter-count ml-1">
-                      ({Math.floor(Math.random() * 500) + 50})
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </FilterSection>
+            {/* Year - REMOVED: Demo data with random counts only */}
 
             {/* Price Filter */}
             <FilterSection
