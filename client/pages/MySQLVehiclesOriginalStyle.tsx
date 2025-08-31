@@ -653,16 +653,24 @@ function MySQLVehiclesOriginalStyleInner() {
   // Load available dealers
   useEffect(() => {
     const fetchDealers = async () => {
+      const controller = new AbortController();
+
       try {
         const apiUrl = `${getApiBaseUrl()}/api/dealers`;
         console.log("🔍 Fetching dealers from:", apiUrl);
+
+        // Set timeout for this request
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
