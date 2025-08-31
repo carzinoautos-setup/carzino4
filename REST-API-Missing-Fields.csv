@@ -1,0 +1,22 @@
+MISSING FIELD,WOOCOMMERCE META KEY,WHY NEEDED
+categories,categories,WooCommerce product categories (SUV Sedan Truck)
+stock_status,stock_status,WooCommerce inventory status (instock outofstock)
+stock_quantity,stock_quantity,WooCommerce stock count
+description,description,Product description text
+short_description,short_description,Product excerpt/summary
+regular_price,regular_price,WooCommerce regular price (before sale)
+sale_price,sale_price,WooCommerce sale price
+featured,featured,WooCommerce featured product flag
+images,images,WooCommerce product image gallery array
+_product_image_gallery,_product_image_gallery,Product gallery meta field
+vehicle_year,vehicle_year,Alternative year field name
+vehicle_make,vehicle_make,Alternative make field name  
+vehicle_model,vehicle_model,Alternative model field name
+vehicle_condition,vehicle_condition,Alternative condition field name
+vehicle_transmission,vehicle_transmission,Alternative transmission field name
+vehicle_mileage,vehicle_mileage,Alternative mileage field name
+_vehicle_seller_account,_vehicle_seller_account,Critical seller linking field
+acount_name_seller,acount_name_seller,Typo field that exists in data
+drive_type,drive_type,Alternative drivetrain field name
+dealer_phone,dealer_phone,Dealer phone number
+location,location,Combined location field
