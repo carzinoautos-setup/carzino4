@@ -3565,7 +3565,7 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
             {/* Mobile Filter Action Buttons */}
-            <div className="lg:hidden sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
+            <div className="lg:hidden sticky bottom-0 bg-white p-4 mt-6 shadow-lg">
               <div className="flex gap-3">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
@@ -3649,7 +3649,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }}
                         className="ml-1 text-white"
                       >
-                        ×
+                        ��
                       </button>
                     </span>
                   )}
