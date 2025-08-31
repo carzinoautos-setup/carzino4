@@ -1006,12 +1006,13 @@ export class WooCommerceApiService {
     try {
       console.log("🏢 Extracting real dealers from WooCommerce products...");
 
-      // Fetch products to analyze dealer data
+      // PERFORMANCE: Fetch minimal data needed for dealer extraction
       const params = new URLSearchParams({
         page: '1',
-        per_page: '100',
+        per_page: '30', // Reduced from 100 - dealers repeat across products
         status: 'publish',
-        stock_status: 'instock'
+        stock_status: 'instock',
+        _fields: 'id,name,meta_data' // PERFORMANCE: Only fetch meta_data for dealer extraction
       });
 
       const products = await this.makeRequest('products', params);
