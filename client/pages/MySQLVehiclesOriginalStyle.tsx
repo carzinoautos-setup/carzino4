@@ -345,8 +345,15 @@ function MySQLVehiclesOriginalStyleInner() {
   const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
-      console.log("🚫 Component unmounted, skipping fetch");
+      if (import.meta.env.DEV) {
+        console.log("🚫 Component unmounted, skipping fetch");
+      }
       return;
+    }
+
+    if (import.meta.env.DEV) {
+      console.log("🔄 fetchVehicles called with params:", apiParams);
+      console.log("🔄 Current state:", { currentPage, loading, vehicleCount: vehicles.length });
     }
 
     try {
@@ -1607,7 +1614,7 @@ function MySQLVehiclesOriginalStyleInner() {
           const errorResult = await response.json();
           console.warn(`❌ ZIP ${zip} not found: ${errorResult.message}`);
         } catch {
-          console.warn(`❌ ZIP ${zip} not found`);
+          console.warn(`�� ZIP ${zip} not found`);
         }
       } else {
         console.error(
