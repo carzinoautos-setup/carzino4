@@ -1726,7 +1726,10 @@ function MySQLVehiclesOriginalStyleInner() {
             try {
               controller.abort();
             } catch (err) {
-              console.log("⏰ Geocoding timeout abort completed");
+              // Ignore timeout abort errors
+              if (import.meta.env.DEV) {
+                console.log("⏰ Geocoding timeout abort handled:", err?.message);
+              }
             }
           }
         }, 10000); // 10 second timeout
