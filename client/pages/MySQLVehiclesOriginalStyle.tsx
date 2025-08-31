@@ -2202,14 +2202,19 @@ function MySQLVehiclesOriginalStyleInner() {
 
           .mobile-action-buttons {
             position: fixed !important;
+            position: -webkit-fixed !important;
             bottom: 0 !important;
             left: 0 !important;
             right: 0 !important;
             z-index: 60 !important;
             background: white !important;
             padding: 16px !important;
-            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.1) !important;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.15) !important;
             border-top: 1px solid #e5e7eb !important;
+            -webkit-transform: translateZ(0) !important;
+            transform: translateZ(0) !important;
+            min-height: 80px !important;
           }
 
           .mobile-filter-sidebar.open {
@@ -3874,7 +3879,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }}
                         className="ml-1 text-white"
                       >
-                        ��
+                        ���
                       </button>
                     </span>
                   )}
