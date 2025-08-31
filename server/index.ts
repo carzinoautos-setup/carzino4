@@ -28,6 +28,7 @@ import {
   createDatabaseConnection,
   testDatabaseConnection,
 } from "./db/connection.js";
+import { testWordPressConnection } from "./routes/testConnection.js";
 import {
   calculatePayment,
   calculateBulkPayments,
@@ -91,6 +92,7 @@ export function createServer() {
   app.get("/api/vehicle-types", getVehicleTypes);
   app.get("/api/simple-health", simpleHealthCheck);
   app.get("/api/debug/wordpress", checkWordPressData);
+  app.get("/api/test-connection", testWordPressConnection);
 
   // Payment calculation routes
   app.post("/api/payments/calculate", calculatePayment);
