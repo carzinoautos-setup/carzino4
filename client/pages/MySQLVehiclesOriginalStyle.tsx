@@ -700,6 +700,13 @@ function MySQLVehiclesOriginalStyleInner() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("🔍 FRONTEND: Filter options API response:", {
+            success: data.success,
+            hasData: !!data.data,
+            makesCount: data.data?.makes?.length,
+            sampleMakes: data.data?.makes?.slice(0, 3),
+            fullResponse: JSON.stringify(data).substring(0, 500)
+          });
           if (data.success && data.data) {
             setFilterOptions(data.data);
             // Also update vehicleTypes for backwards compatibility
@@ -715,6 +722,8 @@ function MySQLVehiclesOriginalStyleInner() {
               data.data.dealers?.length || 0, "dealers,",
               data.data.vehicleTypes?.length || 0, "vehicle types"
             );
+          } else {
+            console.error("🔍 FRONTEND: Filter options API returned unsuccessful response:", data);
           }
         } else {
           console.warn("⚠️ Failed to fetch filter options:", response.status);
@@ -1643,7 +1652,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }}
                         className="ml-1 text-white"
                       >
-                        ×
+                        ��
                       </button>
                     </span>
                   )}
