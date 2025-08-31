@@ -2459,7 +2459,7 @@ export default function MySQLVehiclesOriginalStyle() {
               onToggle={() => toggleFilter("vehicleType")}
             >
               <div className="grid grid-cols-2 gap-2">
-                {vehicleTypes.map((type, index) => (
+                {Array.isArray(vehicleTypes) && vehicleTypes.map((type, index) => (
                   <VehicleTypeCard
                     key={index}
                     type={type.name}
@@ -2478,7 +2478,7 @@ export default function MySQLVehiclesOriginalStyle() {
                     }}
                   />
                 ))}
-                {vehicleTypes.length === 0 && (
+                {(!Array.isArray(vehicleTypes) || vehicleTypes.length === 0) && (
                   <div className="text-gray-500 text-sm p-2 col-span-2 text-center">
                     Loading vehicle types...
                   </div>
