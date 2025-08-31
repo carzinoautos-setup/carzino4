@@ -2196,52 +2196,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Model - REMOVED: Demo data with random counts only */}
 
-            {/* Trim (Conditional) */}
-            <FilterSection
-              title="Trim"
-              isCollapsed={collapsedFilters.trim}
-              onToggle={() => toggleFilter("trim")}
-            >
-              <div className="space-y-1">
-                {appliedFilters.make.length === 0 ? (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    Select a make first to see available trims
-                  </div>
-                ) : (
-                  ["Premium", "Premium Plus", "Prestige", "S Line"].map(
-                    (trim) => (
-                      <label
-                        key={trim}
-                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          className="mr-2"
-                          checked={appliedFilters.trim.includes(trim)}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            if (e.target.checked) {
-                              const newFilters = {
-                                ...appliedFilters,
-                                trim: [...appliedFilters.trim, trim],
-                              };
-                              setAppliedFilters(newFilters);
-                              updateURLFromFilters(newFilters);
-                            } else {
-                              removeAppliedFilter("trim", trim);
-                            }
-                          }}
-                        />
-                        <span className="carzino-filter-option">{trim}</span>
-                        <span className="carzino-filter-count ml-1">
-                          ({Math.floor(Math.random() * 50) + 5})
-                        </span>
-                      </label>
-                    ),
-                  )
-                )}
-              </div>
-            </FilterSection>
+            {/* Trim - REMOVED: Demo data with hardcoded trims and random counts */}
 
             {/* Year Filter */}
             <FilterSection
