@@ -286,9 +286,18 @@ export class WooCommerceApiService {
       });
     }
 
-    // Get main product image
+    // Get medium-sized product images (450x300) for better performance
     const images = product.images && product.images.length > 0
-      ? product.images.map((img: any) => img.src)
+      ? product.images.map((img: any) => {
+          // Use medium size if available, otherwise modify the src URL to request medium size
+          if (img.sizes && img.sizes.medium) {
+            return img.sizes.medium;
+          } else if (img.src) {
+            // Modify URL to request medium size (450x300) if WooCommerce doesn't provide sizes
+            return img.src.replace(/\.(jpg|jpeg|png|webp)$/i, '-450x300.$1');
+          }
+          return img.src;
+        }).filter(Boolean)
       : [
           "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=450&h=300&fit=crop&auto=format",
           "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=450&h=300&fit=crop&auto=format"
