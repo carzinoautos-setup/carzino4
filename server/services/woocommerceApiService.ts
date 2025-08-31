@@ -311,12 +311,17 @@ export class WooCommerceApiService {
       dealer: getMeta('dealer_name') || "Carzino Autos",
       location: getMeta('location') || "Local Area",
       phone: getMeta('dealer_phone') || "Contact Dealer",
-      seller_type: "Dealer",
+      seller_type: sellerData.account_type_seller || "Dealer",
       seller_account_number: sellerAccountNumber,
       // Seller location data
       city_seller: sellerData.city_seller,
       state_seller: sellerData.state_seller,
       zip_seller: sellerData.zip_seller,
+      // Additional seller contact data
+      phone_number_seller: sellerData.phone_number_seller,
+      email_seller: sellerData.email_seller,
+      address_seller: sellerData.address_seller,
+      business_name_seller: sellerData.business_name_seller,
       // Additional WooCommerce data
       sku: product.sku,
       stock_status: product.stock_status,
