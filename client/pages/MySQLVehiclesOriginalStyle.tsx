@@ -911,12 +911,12 @@ function MySQLVehiclesOriginalStyleInner() {
     [navigate, location.pathname],
   );
 
-  // Performance: Fetch vehicles when memoized parameters change
+  // Performance: Fetch combined data when memoized parameters change
   useEffect(() => {
     if (!isMountedRef.current) return;
 
-    fetchVehicles();
-  }, [fetchVehicles]);
+    fetchCombinedData();
+  }, [fetchCombinedData]);
 
   // Cleanup effect to abort any pending requests on unmount
   useEffect(() => {
@@ -2675,7 +2675,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         onClick={() => removeAppliedFilter("driveType", item)}
                         className="ml-1 text-white hover:text-gray-300"
                       >
-                        ��
+                        ×
                       </button>
                     </span>
                   ))}
