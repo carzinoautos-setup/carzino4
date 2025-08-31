@@ -122,30 +122,41 @@ export class WordPressVehicleService {
       const offset = (pagination.page - 1) * pagination.pageSize;
       const totalPages = Math.ceil(totalRecords / pagination.pageSize);
 
-      // Main data query with all vehicle details
+      // OPTIMIZED: Single JOIN with pivot instead of 16+ subqueries per row
       const dataQuery = `
-        SELECT DISTINCT
+        SELECT
           p.ID as id,
           p.post_title as title,
           p.post_date,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'is_featured' LIMIT 1) as is_featured,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'year' LIMIT 1) as year,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'make' LIMIT 1) as make,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'model' LIMIT 1) as model,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'trim' LIMIT 1) as trim,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'mileage' LIMIT 1) as mileage,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'condition' LIMIT 1) as condition,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'drivetrain' LIMIT 1) as drivetrain,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'transmission' LIMIT 1) as transmission,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) as price,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'doors' LIMIT 1) as doors,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'exterior_color' LIMIT 1) as exterior_color,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_vehicle_seller_account' LIMIT 1) as seller_account,
-          (SELECT name FROM sellers WHERE account_number = (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_vehicle_seller_account' LIMIT 1) LIMIT 1) as dealer_name,
-          (SELECT CONCAT(city, ', ', state) FROM sellers WHERE account_number = (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_vehicle_seller_account' LIMIT 1) LIMIT 1) as location,
-          (SELECT phone FROM sellers WHERE account_number = (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_vehicle_seller_account' LIMIT 1) LIMIT 1) as phone
+          MAX(CASE WHEN pm.meta_key = 'is_featured' THEN pm.meta_value END) as is_featured,
+          MAX(CASE WHEN pm.meta_key = 'year' THEN pm.meta_value END) as year,
+          MAX(CASE WHEN pm.meta_key = 'make' THEN pm.meta_value END) as make,
+          MAX(CASE WHEN pm.meta_key = 'model' THEN pm.meta_value END) as model,
+          MAX(CASE WHEN pm.meta_key = 'trim' THEN pm.meta_value END) as trim,
+          MAX(CASE WHEN pm.meta_key = 'mileage' THEN pm.meta_value END) as mileage,
+          MAX(CASE WHEN pm.meta_key = 'condition' THEN pm.meta_value END) as condition,
+          MAX(CASE WHEN pm.meta_key = 'drivetrain' THEN pm.meta_value END) as drivetrain,
+          MAX(CASE WHEN pm.meta_key = 'transmission' THEN pm.meta_value END) as transmission,
+          MAX(CASE WHEN pm.meta_key = 'price' THEN pm.meta_value END) as price,
+          MAX(CASE WHEN pm.meta_key = 'doors' THEN pm.meta_value END) as doors,
+          MAX(CASE WHEN pm.meta_key = 'exterior_color' THEN pm.meta_value END) as exterior_color,
+          MAX(CASE WHEN pm.meta_key = '_vehicle_seller_account' THEN pm.meta_value END) as seller_account,
+          s.name as dealer_name,
+          CONCAT(s.city, ', ', s.state) as location,
+          s.phone as phone
         FROM wp_posts p
+        LEFT JOIN wp_postmeta pm ON p.ID = pm.post_id
+          AND pm.meta_key IN ('is_featured', 'year', 'make', 'model', 'trim', 'mileage',
+                             'condition', 'drivetrain', 'transmission', 'price', 'doors',
+                             'exterior_color', '_vehicle_seller_account')
+        LEFT JOIN sellers s ON s.account_number = (
+          SELECT pm2.meta_value
+          FROM wp_postmeta pm2
+          WHERE pm2.post_id = p.ID AND pm2.meta_key = '_vehicle_seller_account'
+          LIMIT 1
+        )
         ${whereClause}
+        GROUP BY p.ID, p.post_title, p.post_date, s.name, s.city, s.state, s.phone
         ORDER BY ${orderBy}
         LIMIT ? OFFSET ?
       `;
