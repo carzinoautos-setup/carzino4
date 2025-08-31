@@ -284,6 +284,11 @@ export default function MySQLVehiclesOriginalStyle() {
   // Fetch vehicles from API
   const fetchVehicles = useCallback(async () => {
     try {
+      // Abort any previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
       setLoading(true);
       setError(null);
 
