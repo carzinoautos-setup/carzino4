@@ -310,8 +310,19 @@ export class WooCommerceApiService {
                                 getMeta('account_number_seller') ||
                                 getMeta('_account_number_seller');
 
-    console.log(`🔍 Seller account lookup for product ${product.id}: ${sellerAccountNumber}`);
-    const sellerData = await this.fetchSellerData(sellerAccountNumber);
+    // Make seller data fetch optional and non-blocking
+    let sellerData = {};
+    try {
+      if (sellerAccountNumber) {
+        sellerData = await Promise.race([
+          this.fetchSellerData(sellerAccountNumber),
+          new Promise(resolve => setTimeout(() => resolve({}), 3000)) // 3 second fallback
+        ]);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Skipping seller data for product ${product.id}:`, error.message);
+      sellerData = {};
+    }
 
     return {
       id: product.id,
