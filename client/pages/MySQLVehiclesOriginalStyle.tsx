@@ -514,8 +514,15 @@ function MySQLVehiclesOriginalStyleInner() {
         setAvailableDealers(data.data.dealers || []);
         setVehicleTypes(data.data.filters?.vehicleTypes || []);
 
+        // Force update of totalResults and loading state
+        setLoading(false);
+
         if (import.meta.env.DEV) {
-          console.log("✅ COMBINED: Successfully loaded all data in one call");
+          console.log("✅ COMBINED: Successfully loaded all data in one call", {
+            vehiclesCount: data.data.vehicles?.length || 0,
+            totalRecords: data.data.meta?.totalRecords || 0,
+            filtersCount: Object.keys(data.data.filters || {}).length
+          });
         }
       } else {
         throw new Error(data.message || "Combined API returned error");
@@ -1046,7 +1053,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // RVs and Large Vehicles
       "RV": "🚐",
-      "RVs": "🚐",
+      "RVs": "��",
       "Motorhome": "🚐",
       "Recreational Vehicle": "🚐"
     };
@@ -2176,7 +2183,19 @@ function MySQLVehiclesOriginalStyleInner() {
             overflow-x: hidden;
             display: block !important;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 100px !important; /* Extra space for fixed action buttons */
+            padding-bottom: 120px !important; /* Extra space for fixed action buttons */
+          }
+
+          .mobile-action-buttons {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 60 !important;
+            background: white !important;
+            padding: 16px !important;
+            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.1) !important;
+            border-top: 1px solid #e5e7eb !important;
           }
 
           .mobile-filter-sidebar.open {
@@ -3744,11 +3763,12 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
             {/* Mobile Filter Action Buttons - Always Visible and Sticky */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white p-4 shadow-2xl border-t border-gray-200 z-50 safe-area-inset-bottom">
+            <div className="lg:hidden mobile-action-buttons">
               <div className="flex gap-3 max-w-md mx-auto">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors touch-manipulation"
+                  style={{ minHeight: '48px' }}
                 >
                   Cancel
                 </button>
@@ -3758,6 +3778,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     // Filters are already applied in real-time, so just close the panel
                   }}
                   className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors touch-manipulation"
+                  style={{ minHeight: '48px' }}
                 >
                   Apply Filters
                 </button>
@@ -4248,6 +4269,14 @@ function MySQLVehiclesOriginalStyleInner() {
                   <div className="text-sm text-gray-500 mt-2">
                     {import.meta.env.DEV && `API: ${getApiBaseUrl()}/api/simple-vehicles/combined`}
                   </div>
+                  {import.meta.env.DEV && (
+                    <button
+                      onClick={() => setLoading(false)}
+                      className="mt-4 px-4 py-2 bg-red-600 text-white rounded text-sm"
+                    >
+                      Force Stop Loading (Debug)
+                    </button>
+                  )}
                 </div>
               ) : error ? (
                 <div className="text-center py-12">
@@ -4309,9 +4338,19 @@ function MySQLVehiclesOriginalStyleInner() {
                     {import.meta.env.DEV && (
                       <div className="text-xs text-gray-400 mt-4 p-4 bg-gray-50 rounded">
                         <div>Debug: {vehicles.length} total vehicles loaded</div>
+                        <div>API Response: {apiResponse?.success ? 'Success' : 'Failed'}</div>
+                        <div>Total Records: {totalResults}</div>
+                        <div>Displayed: {displayedVehicles.length}</div>
+                        <div>View Mode: {viewMode}</div>
                         <div>Filters applied: {Object.keys(appliedFilters).filter(key =>
                           Array.isArray(appliedFilters[key]) ? appliedFilters[key].length > 0 : appliedFilters[key]
                         ).length}</div>
+                        <button
+                          onClick={() => console.log('State:', {vehicles, apiResponse, appliedFilters, loading})}
+                          className="mt-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                        >
+                          Log State
+                        </button>
                       </div>
                     )}
                   </div>
