@@ -3,6 +3,7 @@ import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
+import { getDatabase } from "../db/connection.js";
 
 /**
  * WooCommerce REST API Service for live inventory integration
@@ -12,6 +13,7 @@ export class WooCommerceApiService {
   private baseUrl: string;
   private consumerKey: string;
   private consumerSecret: string;
+  private db = getDatabase();
 
   constructor() {
     this.baseUrl = process.env.VITE_WP_URL || "https://env-uploadbackup62225-czdev.kinsta.cloud";
@@ -195,9 +197,39 @@ export class WooCommerceApiService {
   }
 
   /**
+   * Fetch seller data by account number from sellers table
+   */
+  private async fetchSellerData(sellerAccountNumber: string): Promise<{city_seller?: string, state_seller?: string, zip_seller?: string}> {
+    if (!sellerAccountNumber) {
+      return {};
+    }
+
+    try {
+      const [rows] = await this.db.execute(
+        'SELECT city, state, zip FROM sellers WHERE account_number = ? LIMIT 1',
+        [sellerAccountNumber]
+      );
+
+      const sellerRows = rows as any[];
+      if (sellerRows.length > 0) {
+        const seller = sellerRows[0];
+        return {
+          city_seller: seller.city || undefined,
+          state_seller: seller.state || undefined,
+          zip_seller: seller.zip || undefined
+        };
+      }
+    } catch (error) {
+      console.error(`❌ Error fetching seller data for account ${sellerAccountNumber}:`, error);
+    }
+
+    return {};
+  }
+
+  /**
    * Transform WooCommerce product to vehicle format
    */
-  private transformProductToVehicle(product: any, index: number): any {
+  private async transformProductToVehicle(product: any, index: number): Promise<any> {
     // Extract vehicle-specific meta data
     const metaData = product.meta_data || [];
     const getMeta = (key: string) => metaData.find((m: any) => m.key === key)?.value || "";
@@ -255,6 +287,10 @@ export class WooCommerceApiService {
     const price = parseFloat(product.price || product.regular_price || 0);
     const estimatedPayment = price > 0 ? Math.round(price / 60) : 0; // Rough 60-month estimate
 
+    // Fetch seller data using seller_account_number
+    const sellerAccountNumber = getMeta('seller_account_number') || getMeta('_vehicle_seller_account');
+    const sellerData = await this.fetchSellerData(sellerAccountNumber);
+
     return {
       id: product.id,
       featured: product.featured || false,
@@ -271,6 +307,11 @@ export class WooCommerceApiService {
       location: getMeta('location') || "Local Area",
       phone: getMeta('dealer_phone') || "Contact Dealer",
       seller_type: "Dealer",
+      seller_account_number: sellerAccountNumber,
+      // Seller location data
+      city_seller: sellerData.city_seller,
+      state_seller: sellerData.state_seller,
+      zip_seller: sellerData.zip_seller,
       // Additional WooCommerce data
       sku: product.sku,
       stock_status: product.stock_status,
@@ -407,9 +448,11 @@ export class WooCommerceApiService {
       const totalRecords = allProducts.length;
       const totalPages = Math.ceil(totalRecords / pagination.pageSize);
 
-      // Transform products to vehicle format first
-      let transformedVehicles = allProducts.map((product, index) =>
-        this.transformProductToVehicle(product, index)
+      // Transform products to vehicle format first (now async)
+      let transformedVehicles = await Promise.all(
+        allProducts.map((product, index) =>
+          this.transformProductToVehicle(product, index)
+        )
       );
 
       // Apply client-side filtering for vehicle-specific attributes
@@ -560,9 +603,11 @@ export class WooCommerceApiService {
       if (Object.keys(appliedFilters).length > 0) {
         console.log(`🔍 Applying conditional filtering to ${allProducts.length} products with filters:`, appliedFilters);
 
-        // Transform products to vehicles for filtering
-        const transformedVehicles = allProducts.map((product, index) =>
-          this.transformProductToVehicle(product, index)
+        // Transform products to vehicles for filtering (now async)
+        const transformedVehicles = await Promise.all(
+          allProducts.map((product, index) =>
+            this.transformProductToVehicle(product, index)
+          )
         );
 
         // Apply the same filtering logic as in getVehicles
