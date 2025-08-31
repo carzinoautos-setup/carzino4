@@ -431,11 +431,85 @@ export class WooCommerceApiService {
   }
 
   /**
-   * Get filter options from WooCommerce product data
+   * Get filter options with real counts from WooCommerce product data
    */
   async getFilterOptions() {
     try {
       console.log("🔍 Fetching filter options from WooCommerce...");
+
+      // Fetch all products to analyze for filter counts
+      let allProducts: any[] = [];
+      const maxPages = 10; // Fetch up to 10 pages for comprehensive analysis
+
+      for (let page = 1; page <= maxPages; page++) {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          per_page: '100',
+          status: 'publish',
+          stock_status: 'instock'
+        });
+
+        try {
+          const products = await this.makeRequest('products', params);
+
+          if (Array.isArray(products) && products.length > 0) {
+            allProducts.push(...products);
+            console.log(`📦 Analyzed ${products.length} products from page ${page}, total: ${allProducts.length}`);
+
+            if (products.length < 100) {
+              console.log(`✅ Reached end of products at page ${page}`);
+              break;
+            }
+          } else {
+            break;
+          }
+        } catch (error) {
+          console.error(`❌ Error fetching page ${page} for filter analysis:`, error);
+          break;
+        }
+      }
+
+      // Transform products to vehicle format for analysis
+      const transformedVehicles = allProducts.map((product, index) =>
+        this.transformProductToVehicle(product, index)
+      );
+
+      // Analyze makes
+      const makesCounts: { [key: string]: number } = {};
+      transformedVehicles.forEach(vehicle => {
+        const make = this.extractMakeFromTitle(vehicle.title);
+        if (make) {
+          makesCounts[make] = (makesCounts[make] || 0) + 1;
+        }
+      });
+
+      // Convert to array format
+      const makes = Object.entries(makesCounts).map(([name, count]) => ({
+        name: name,
+        count: count
+      })).sort((a, b) => b.count - a.count); // Sort by count descending
+
+      // Analyze conditions
+      const conditionCounts: { [key: string]: number } = {};
+      transformedVehicles.forEach(vehicle => {
+        if (vehicle.badges && Array.isArray(vehicle.badges)) {
+          vehicle.badges.forEach(badge => {
+            const badgeLower = badge.toLowerCase();
+            if (badgeLower.includes('new')) {
+              conditionCounts['New'] = (conditionCounts['New'] || 0) + 1;
+            } else if (badgeLower.includes('used')) {
+              conditionCounts['Used'] = (conditionCounts['Used'] || 0) + 1;
+            } else if (badgeLower.includes('certified')) {
+              conditionCounts['Certified'] = (conditionCounts['Certified'] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      const conditions = Object.entries(conditionCounts).map(([name, count]) => ({
+        name: name,
+        count: count
+      }));
 
       // Get product categories (used as vehicle types)
       const categories = await this.makeRequest('products/categories', new URLSearchParams({
@@ -443,25 +517,22 @@ export class WooCommerceApiService {
         hide_empty: 'true'
       }));
 
-      // Get product attributes for makes/models (if configured)
-      const attributes = await this.makeRequest('products/attributes');
-
-      // Transform categories to filter format
-      const vehicleTypes = Array.isArray(categories) 
+      const vehicleTypes = Array.isArray(categories)
         ? categories.map((cat: any) => ({
             name: cat.name,
             count: cat.count || 0
           }))
         : [];
 
-      console.log(`✅ Found ${vehicleTypes.length} categories as vehicle types`);
+      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${vehicleTypes.length} vehicle types`);
 
       return {
         success: true,
         data: {
-          makes: [], // Would need custom implementation based on product attributes
-          models: [], // Would need custom implementation
-          vehicleTypes: vehicleTypes
+          makes: makes,
+          conditions: conditions,
+          vehicleTypes: vehicleTypes,
+          totalVehicles: transformedVehicles.length
         }
       };
     } catch (error) {
@@ -470,8 +541,9 @@ export class WooCommerceApiService {
         success: true,
         data: {
           makes: [],
-          models: [],
-          vehicleTypes: []
+          conditions: [],
+          vehicleTypes: [],
+          totalVehicles: 0
         }
       };
     }
@@ -522,7 +594,7 @@ export class WooCommerceApiService {
    */
   async testConnection() {
     try {
-      console.log("��� Testing WooCommerce API connection...");
+      console.log("���� Testing WooCommerce API connection...");
       
       // Test basic API access
       const systemStatus = await this.makeRequest('system_status');
