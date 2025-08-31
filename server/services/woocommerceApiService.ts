@@ -499,6 +499,11 @@ export class WooCommerceApiService {
       const makesCounts: { [key: string]: number } = {};
       const conditionCounts: { [key: string]: number } = {};
       const categoryMap: { [key: string]: number } = {};
+      const driveTypeCounts: { [key: string]: number } = {};
+      const transmissionCounts: { [key: string]: number } = {};
+      const exteriorColorCounts: { [key: string]: number } = {};
+      const sellerTypeCounts: { [key: string]: number } = {};
+      const dealerCounts: { [key: string]: number } = {};
 
       allProducts.forEach(product => {
         // Helper function to get meta values (same as in transformWooCommerceProduct)
@@ -519,6 +524,51 @@ export class WooCommerceApiService {
                          (product.featured ? "Certified" : "Used");
         if (condition) {
           conditionCounts[condition] = (conditionCounts[condition] || 0) + 1;
+        }
+
+        // Extract drive type
+        const drivetrain = getMeta('drivetrain') || getMeta('drive_type') || "";
+        if (drivetrain) {
+          let driveType = "";
+          if (drivetrain.toLowerCase().includes('4wd') || drivetrain.toLowerCase().includes('awd')) {
+            driveType = "AWD/4WD";
+          } else if (drivetrain.toLowerCase().includes('fwd')) {
+            driveType = "FWD";
+          } else if (drivetrain.toLowerCase().includes('rwd')) {
+            driveType = "RWD";
+          }
+          if (driveType) {
+            driveTypeCounts[driveType] = (driveTypeCounts[driveType] || 0) + 1;
+          }
+        }
+
+        // Extract transmission
+        const transmission = getMeta('transmission') || "Auto";
+        if (transmission) {
+          let transType = "";
+          if (transmission.toLowerCase().includes('manual')) {
+            transType = "Manual";
+          } else if (transmission.toLowerCase().includes('cvt')) {
+            transType = "CVT";
+          } else {
+            transType = "Auto";
+          }
+          transmissionCounts[transType] = (transmissionCounts[transType] || 0) + 1;
+        }
+
+        // Extract exterior color
+        const exteriorColor = getMeta('exterior_color') || getMeta('color') || "";
+        if (exteriorColor && exteriorColor.length > 0) {
+          exteriorColorCounts[exteriorColor] = (exteriorColorCounts[exteriorColor] || 0) + 1;
+        }
+
+        // Extract seller type and dealer
+        const sellerType = "Dealer"; // Default for WooCommerce products
+        sellerTypeCounts[sellerType] = (sellerTypeCounts[sellerType] || 0) + 1;
+
+        const dealer = getMeta('dealer_name') || "Carzino Autos";
+        if (dealer) {
+          dealerCounts[dealer] = (dealerCounts[dealer] || 0) + 1;
         }
 
         // Track categories for vehicle types
