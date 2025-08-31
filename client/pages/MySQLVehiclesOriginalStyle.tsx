@@ -3548,9 +3548,9 @@ export default function MySQLVehiclesOriginalStyle() {
 
                 {viewMode === "all" && apiResponse?.meta && (
                   <Pagination
-                    currentPage={apiResponse.meta.currentPage}
-                    totalPages={apiResponse.meta.totalPages}
-                    totalResults={apiResponse.meta.totalRecords}
+                    currentPage={apiResponse?.meta?.currentPage || currentPage}
+                    totalPages={apiResponse?.meta?.totalPages || 1}
+                    totalResults={apiResponse?.meta?.totalRecords || 0}
                     resultsPerPage={apiResponse.meta.pageSize}
                     onPageChange={handlePageChange}
                   />
