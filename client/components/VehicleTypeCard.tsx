@@ -47,7 +47,8 @@ export const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({
         <img
           src={vehicleImage}
           alt={`${type} vehicle type`}
-          className="w-8 h-8 object-cover rounded"
+          className="w-full h-8 object-cover rounded block overflow-hidden"
+          style={{ objectFit: 'cover', backgroundSize: 'contain' }}
           onError={(e) => {
             // Fallback to a generic car emoji if image fails to load
             const target = e.target as HTMLImageElement;
