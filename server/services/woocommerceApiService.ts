@@ -320,15 +320,23 @@ export class WooCommerceApiService {
           break;
       }
 
-      // Fetch multiple pages to get more products for filtering
+      // For initial/health checks, only fetch one page for speed
+      // For actual filtering, fetch more pages when specific filters are applied
+      const hasSpecificFilters = filters.make || filters.model || filters.condition || filters.priceMin || filters.priceMax;
+      const maxPagesToFetch = hasSpecificFilters ? 3 : 1; // Only fetch multiple pages when filtering
+
       let allProducts: any[] = [];
-      const maxPagesToFetch = 5; // Fetch up to 5 pages (500 products)
 
       for (let page = 1; page <= maxPagesToFetch; page++) {
         params.set('page', page.toString());
 
         try {
+          // Add timeout for individual requests
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per request
+
           const products = await this.makeRequest('products', params);
+          clearTimeout(timeoutId);
 
           if (Array.isArray(products) && products.length > 0) {
             allProducts.push(...products);
@@ -339,12 +347,23 @@ export class WooCommerceApiService {
               console.log(`✅ Reached end of products at page ${page}`);
               break;
             }
+
+            // For performance, break early if we have enough products and no specific filters
+            if (!hasSpecificFilters && allProducts.length >= 100) {
+              console.log(`⚡ Breaking early for performance (${allProducts.length} products)`);
+              break;
+            }
           } else {
             console.log(`📦 No more products found on page ${page}`);
             break;
           }
         } catch (error) {
           console.error(`❌ Error fetching page ${page}:`, error);
+          if (page === 1) {
+            // If first page fails, throw error
+            throw error;
+          }
+          // If subsequent pages fail, just break and use what we have
           break;
         }
       }
