@@ -707,6 +707,11 @@ function MySQLVehiclesOriginalStyleInner() {
               "✅ Successfully loaded filter options:",
               data.data.makes?.length || 0, "makes,",
               data.data.conditions?.length || 0, "conditions,",
+              data.data.driveTypes?.length || 0, "drive types,",
+              data.data.transmissions?.length || 0, "transmissions,",
+              data.data.exteriorColors?.length || 0, "colors,",
+              data.data.sellerTypes?.length || 0, "seller types,",
+              data.data.dealers?.length || 0, "dealers,",
               data.data.vehicleTypes?.length || 0, "vehicle types"
             );
           }
