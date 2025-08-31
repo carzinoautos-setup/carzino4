@@ -692,7 +692,7 @@ function MySQLVehiclesOriginalStyleInner() {
         console.log("🔍 Fetching filter options from:", apiUrl);
 
         // Set timeout for this request
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
         const response = await fetch(apiUrl, {
           method: "GET",
