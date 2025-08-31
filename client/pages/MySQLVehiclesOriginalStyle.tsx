@@ -175,6 +175,19 @@ function MySQLVehiclesOriginalStyleInner() {
   const [vehicleTypes, setVehicleTypes] = useState<
     { name: string; count: number }[]
   >([]);
+
+  // Real filter options with counts
+  const [filterOptions, setFilterOptions] = useState<{
+    makes: { name: string; count: number }[];
+    conditions: { name: string; count: number }[];
+    vehicleTypes: { name: string; count: number }[];
+    totalVehicles: number;
+  }>({
+    makes: [],
+    conditions: [],
+    vehicleTypes: [],
+    totalVehicles: 0
+  });
   const [userLocation, setUserLocation] = useState<{
     lat: number;
     lng: number;
