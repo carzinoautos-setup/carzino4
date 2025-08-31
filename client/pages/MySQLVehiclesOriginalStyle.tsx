@@ -2044,7 +2044,10 @@ function MySQLVehiclesOriginalStyleInner() {
                 appliedFilters.vehicleType.length > 0 ||
                 appliedFilters.mileage ||
                 appliedFilters.exteriorColor.length > 0 ||
+                appliedFilters.interiorColor.length > 0 ||
                 appliedFilters.sellerType.length > 0 ||
+                appliedFilters.state.length > 0 ||
+                appliedFilters.city.length > 0 ||
                 appliedFilters.priceMin ||
                 appliedFilters.priceMax ||
                 appliedFilters.paymentMin ||
@@ -2204,7 +2207,10 @@ function MySQLVehiclesOriginalStyleInner() {
               appliedFilters.vehicleType.length > 0 ||
               appliedFilters.mileage ||
               appliedFilters.exteriorColor.length > 0 ||
+              appliedFilters.interiorColor.length > 0 ||
               appliedFilters.sellerType.length > 0 ||
+              appliedFilters.state.length > 0 ||
+              appliedFilters.city.length > 0 ||
               appliedFilters.priceMin ||
               appliedFilters.priceMax ||
               appliedFilters.paymentMin ||
@@ -2595,7 +2601,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 make: [...appliedFilters.make, makeOption.name],
                               };
-                              console.log("��� Adding make filter:", newFilters);
+                              console.log("🔧 Adding make filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
