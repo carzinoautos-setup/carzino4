@@ -103,7 +103,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           src={vehicle.images ? vehicle.images[0] : ""}
           alt={vehicle.title}
           className="w-full object-cover"
-          style={{ height: "200px" }}
+          style={{ aspectRatio: "450/300", height: "auto" }}
         />
         {vehicle.featured && (
           <div className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1.5 rounded-full carzino-featured-badge font-medium">
