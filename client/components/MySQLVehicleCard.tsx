@@ -136,7 +136,15 @@ export function MySQLVehicleCard({
         {/* Seller Info */}
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
           <MapPin className="w-4 h-4" />
-          <span>{vehicle.seller_type}</span>
+          <div className="flex flex-col">
+            <span>{vehicle.seller_type}</span>
+            {/* Add city, state, zip if available */}
+            {(vehicle.seller_city || vehicle.seller_state || vehicle.seller_zip) && (
+              <span className="text-xs text-gray-500">
+                {[vehicle.seller_city, vehicle.seller_state, vehicle.seller_zip].filter(Boolean).join(", ")}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Spacer */}
@@ -161,8 +169,8 @@ export function MySQLVehicleCard({
               <div className="flex justify-between items-center">
                 <span>Est. Payment:</span>
                 <span className="font-medium">
-                  {formatPrice(vehicle.payments)}/mo
-                </span>
+                {formatPrice(vehicle.payments)}/month*
+              </span>
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span>
