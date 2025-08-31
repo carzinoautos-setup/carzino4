@@ -205,42 +205,10 @@ export class WooCommerceApiService {
 
   /**
    * Fetch seller data by account number from sellers table
+   * Currently disabled due to database connection issues
    */
   private async fetchSellerData(sellerAccountNumber: string): Promise<{city_seller?: string, state_seller?: string, zip_seller?: string}> {
-    if (!sellerAccountNumber) {
-      return {};
-    }
-
-    try {
-      // Add timeout to database query to prevent hanging
-      const queryPromise = this.db.execute(
-        'SELECT city, state, zip FROM sellers WHERE account_number = ? LIMIT 1',
-        [sellerAccountNumber]
-      );
-
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Database query timeout')), 5000); // 5 second timeout
-      });
-
-      const [rows] = await Promise.race([queryPromise, timeoutPromise]) as any;
-      const sellerRows = rows as any[];
-
-      if (sellerRows.length > 0) {
-        const seller = sellerRows[0];
-        return {
-          city_seller: seller.city || undefined,
-          state_seller: seller.state || undefined,
-          zip_seller: seller.zip || undefined
-        };
-      }
-    } catch (error) {
-      if (error.message === 'Database query timeout') {
-        console.warn(`⏰ Seller data query timeout for account ${sellerAccountNumber}`);
-      } else {
-        console.error(`❌ Error fetching seller data for account ${sellerAccountNumber}:`, error);
-      }
-    }
-
+    // Temporarily disabled due to database connection issues
     return {};
   }
 
