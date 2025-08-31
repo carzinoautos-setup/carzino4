@@ -583,6 +583,15 @@ export class WooCommerceApiService {
   async getFilterOptions(appliedFilters: SimpleVehicleFilters = {}) {
     try {
       console.log("🔍 STARTING getFilterOptions - Fetching filter options from WooCommerce...");
+
+      // PERFORMANCE: Add caching for filter options (5 minute cache)
+      const filterCacheKey = `filter_options_${JSON.stringify(appliedFilters)}`;
+      const cachedFilters = this.getCachedData(filterCacheKey);
+      if (cachedFilters) {
+        console.log("⚡ Using cached filter options");
+        return cachedFilters;
+      }
+
       console.log("🔍 WooCommerce credentials check:", {
         hasConsumerKey: !!this.consumerKey,
         hasConsumerSecret: !!this.consumerSecret,
