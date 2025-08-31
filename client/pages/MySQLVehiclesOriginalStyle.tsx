@@ -3310,6 +3310,13 @@ function MySQLVehiclesOriginalStyleInner() {
                     sampleDealers: dealersToShow?.slice(0, 3)
                   });
 
+                  // NOTE: Dealer names should come from Advanced Custom Fields 'acount_name_seller'
+                  // Current implementation may be using demo data - check backend API
+                  if (import.meta.env.DEV && dealersToShow?.length > 0) {
+                    console.warn("🏪 DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
+                    console.log("🏪 Current dealer data source:", dealersToShow?.slice(0, 2));
+                  }
+
                   // Show dealers even if count is 0 for now, to debug the issue
                   const filteredDealers = dealersToShow.filter(dealer =>
                     dealer && dealer.name && dealer.name.trim() !== ''
