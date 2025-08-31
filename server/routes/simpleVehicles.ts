@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { SimpleMockVehicleService } from "../services/simpleMockVehicleService.js";
+import { WordPressVehicleService } from "../services/wordpressVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Use simplified mock service for testing
-console.log("🚀 Using SimpleMockVehicleService with original demo format");
-const vehicleService = new SimpleMockVehicleService();
+// Use WordPress/WooCommerce live data
+console.log("🚗 Using WordPressVehicleService with live WooCommerce inventory");
+const vehicleService = new WordPressVehicleService();
 
 /**
  * GET /api/simple-vehicles
@@ -98,8 +98,11 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     if (req.query.paymentMax)
       filters.paymentMax = req.query.paymentMax as string;
 
-    // Fetch vehicles from service (using mock service for now)
-    const result = await vehicleService.getVehicles(filters, pagination);
+    // Parse sorting parameter
+    const sortBy = (req.query.sortBy as string) || "relevance";
+
+    // Fetch vehicles from WordPress/WooCommerce
+    const result = await vehicleService.getVehicles(pagination, filters, sortBy);
 
     // Return response
     res.status(200).json(result);
