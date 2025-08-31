@@ -2194,50 +2194,7 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Model (Conditional) */}
-            <FilterSection
-              title={`Model${appliedFilters.make.length > 0 ? ` (${appliedFilters.make[0]})` : ""}`}
-              isCollapsed={collapsedFilters.model}
-              onToggle={() => toggleFilter("model")}
-            >
-              <div className="space-y-1">
-                {appliedFilters.make.length === 0 ? (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    Select a make first to see available models
-                  </div>
-                ) : (
-                  getModelsForMake(appliedFilters.make[0]).map((model) => (
-                    <label
-                      key={model}
-                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.model.includes(model)}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          if (e.target.checked) {
-                            const newFilters = {
-                              ...appliedFilters,
-                              model: [...appliedFilters.model, model],
-                            };
-                            setAppliedFilters(newFilters);
-                            updateURLFromFilters(newFilters);
-                          } else {
-                            removeAppliedFilter("model", model);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{model}</span>
-                      <span className="carzino-filter-count ml-1">
-                        ({Math.floor(Math.random() * 100) + 10})
-                      </span>
-                    </label>
-                  ))
-                )}
-              </div>
-            </FilterSection>
+            {/* Model - REMOVED: Demo data with random counts only */}
 
             {/* Trim (Conditional) */}
             <FilterSection
