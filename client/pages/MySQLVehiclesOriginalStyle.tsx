@@ -2150,7 +2150,9 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.makes.length > 0 ? (
-                  filterOptions.makes.map((makeOption) => (
+                  filterOptions.makes
+                    .filter(makeOption => makeOption.count > 0) // Only show makes with vehicles
+                    .map((makeOption) => (
                     <label
                       key={makeOption.name}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
