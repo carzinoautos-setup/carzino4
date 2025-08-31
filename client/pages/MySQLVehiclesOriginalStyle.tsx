@@ -457,6 +457,19 @@ function MySQLVehiclesOriginalStyleInner() {
         abortControllerRef.current = null;
       }
 
+      // Retry logic for network failures
+      if (err instanceof TypeError && err.message.includes("Failed to fetch") && retryCount < 2) {
+        console.log(`🔄 Retrying request (attempt ${retryCount + 1}/3)...`);
+        // Exponential backoff: 1s, 2s delays
+        const delay = Math.pow(2, retryCount) * 1000;
+        setTimeout(() => {
+          if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+            fetchVehicles(retryCount + 1);
+          }
+        }, delay);
+        return;
+      }
+
       // Provide specific error messages based on error type
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
         setError(
