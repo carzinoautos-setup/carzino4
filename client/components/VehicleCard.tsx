@@ -171,11 +171,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 className="w-4 h-4 object-contain"
               />
             ) : (
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F2b268dcc254a4017a2ef9d9e1c9b3acb?format=webp&width=800"
-                alt="Speedometer"
-                className="w-4 h-4 object-contain"
-              />
+              <Gauge className="w-4 h-4 text-gray-600" />
             )}
             <span className="text-black font-medium">
               {vehicle.mileage} Mi.
@@ -189,11 +185,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 className="w-4 h-4 object-contain"
               />
             ) : (
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F209b197e983f494e94b04a7d87b79174?format=webp&width=800"
-                alt="Car parts"
-                className="w-4 h-4 object-contain"
-              />
+              <Settings className="w-4 h-4 text-gray-600" />
             )}
             <span className="text-black font-medium">
               {vehicle.transmission}
@@ -208,11 +200,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                   className="w-4 h-4 object-contain"
                 />
               ) : (
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Ff5793a859e2548bc9bc984fcae57131c?format=webp&width=800"
-                  alt="Car door"
-                  className="w-4 h-4 object-contain"
-                />
+                <div className="w-4 h-4 border border-gray-600 rounded-sm flex items-center justify-center">
+                  <div className="w-2 h-3 border-r border-gray-600"></div>
+                </div>
               )}
             </div>
             <span className="text-black font-medium">
