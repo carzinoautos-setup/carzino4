@@ -583,9 +583,13 @@ function MySQLVehiclesOriginalStyleInner() {
     [navigate, location.pathname],
   );
 
-  // Fetch vehicles when dependencies change
+  // Fetch vehicles when dependencies change with debouncing
   useEffect(() => {
-    fetchVehicles();
+    const debounceTimer = setTimeout(() => {
+      fetchVehicles();
+    }, 300); // 300ms debounce to prevent rapid firing
+
+    return () => clearTimeout(debounceTimer);
   }, [fetchVehicles]);
 
   // Cleanup effect to abort any pending requests on unmount
