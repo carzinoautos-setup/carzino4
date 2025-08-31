@@ -242,6 +242,9 @@ export default function MySQLVehiclesOriginalStyle() {
   const [interestRate, setInterestRate] = useState("5");
   const [downPayment, setDownPayment] = useState("2000");
 
+  // Keep track of active controller to abort previous requests
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // Get the API base URL - handle different environments
   const getApiBaseUrl = () => {
     // In development, use relative URLs
