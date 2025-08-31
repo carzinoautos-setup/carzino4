@@ -1191,9 +1191,10 @@ export class WooCommerceApiService {
       const systemStatus = await this.makeRequest('system_status');
       
       // Test products endpoint
-      const products = await this.makeRequest('products', new URLSearchParams({
+      const response = await this.makeRequest('products', new URLSearchParams({
         per_page: '1'
       }));
+      const products = response.data;
 
       return {
         success: true,
