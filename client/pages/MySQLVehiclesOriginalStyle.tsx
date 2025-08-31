@@ -2843,6 +2843,7 @@ function MySQLVehiclesOriginalStyleInner() {
                           checked={appliedFilters.make.includes(makeOption.name)}
                           onChange={(e) => {
                             console.log("🔧 Make filter clicked:", makeOption.name, "checked:", e.target.checked);
+                            console.log("🔧 Current applied makes:", appliedFilters.make);
                             e.stopPropagation();
                             try {
                               if (e.target.checked) {
@@ -2850,11 +2851,11 @@ function MySQLVehiclesOriginalStyleInner() {
                                   ...appliedFilters,
                                   make: [...appliedFilters.make, makeOption.name],
                                 };
-                                console.log("🔧 Adding make filter:", newFilters);
+                                console.log("🔧 Adding make filter. New makes array:", newFilters.make);
                                 setAppliedFilters(newFilters);
                                 updateURLFromFilters(newFilters);
                               } else {
-                                console.log("🔧 Removing make filter:", makeOption.name);
+                                console.log("🔧 Removing make filter:", makeOption.name, "from:", appliedFilters.make);
                                 removeAppliedFilter("make", makeOption.name);
                               }
                             } catch (error) {
