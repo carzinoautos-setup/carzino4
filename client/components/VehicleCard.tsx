@@ -234,9 +234,6 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                     </div>
                     <div className="carzino-price-value text-red-600">
                       {getDisplayPayment()}
-                      <span className="text-xs text-black font-normal">
-                        /mo*
-                      </span>
                     </div>
                   </div>
                 </>
