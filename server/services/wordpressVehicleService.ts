@@ -81,26 +81,26 @@ export class WordPressVehicleService {
         params.push(parseFloat(filters.priceMax));
       }
 
-      // Build ORDER BY clause
+      // Build ORDER BY clause - OPTIMIZED to use aggregated fields
       let orderBy = "p.post_date DESC"; // Default ordering
       switch (sortBy) {
         case "price-low":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) AS DECIMAL(10,2)) ASC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'price' THEN pm.meta_value END) AS DECIMAL(10,2)) ASC";
           break;
         case "price-high":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) AS DECIMAL(10,2)) DESC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'price' THEN pm.meta_value END) AS DECIMAL(10,2)) DESC";
           break;
         case "miles-low":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'mileage' LIMIT 1) AS UNSIGNED) ASC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'mileage' THEN pm.meta_value END) AS UNSIGNED) ASC";
           break;
         case "miles-high":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'mileage' LIMIT 1) AS UNSIGNED) DESC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'mileage' THEN pm.meta_value END) AS UNSIGNED) DESC";
           break;
         case "year-newest":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'year' LIMIT 1) AS UNSIGNED) DESC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'year' THEN pm.meta_value END) AS UNSIGNED) DESC";
           break;
         case "year-oldest":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'year' LIMIT 1) AS UNSIGNED) ASC";
+          orderBy = "CAST(MAX(CASE WHEN pm.meta_key = 'year' THEN pm.meta_value END) AS UNSIGNED) ASC";
           break;
       }
 
