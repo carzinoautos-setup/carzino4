@@ -50,7 +50,7 @@ export class WooCommerceApiService {
     try {
       // Create abort controller for timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30 second timeout
 
       const response = await fetch(url, {
         method: 'GET',
@@ -61,12 +61,18 @@ export class WooCommerceApiService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`WooCommerce API Error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text().catch(() => 'Unknown error');
+        throw new Error(`WooCommerce API Error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
+      if (error.name === 'AbortError') {
+        const timeoutError = new Error(`Request timeout after 30 seconds for endpoint: ${endpoint}`);
+        console.error(`⏰ WooCommerce API Timeout for ${endpoint}:`, timeoutError.message);
+        throw timeoutError;
+      }
       console.error(`❌ WooCommerce API Error for ${endpoint}:`, error);
       throw error;
     }
