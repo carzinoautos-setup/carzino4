@@ -773,7 +773,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err instanceof Error && err.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("��� Request aborted (expected behavior)");
+          console.log("🚫 Request aborted (expected behavior)");
         }
         // Clear controller reference if this was the active request
         if (abortControllerRef.current === requestController) {
@@ -863,7 +863,7 @@ function MySQLVehiclesOriginalStyleInner() {
     isMountedRef.current = true;
     return () => {
       if (import.meta.env.DEV) {
-        console.log("🧹 Component unmounting - cleaning up requests");
+        console.log("�� Component unmounting - cleaning up requests");
       }
       isMountedRef.current = false;
 
@@ -961,6 +961,20 @@ function MySQLVehiclesOriginalStyleInner() {
 
     fetchCombinedData();
   }, [fetchCombinedData]);
+
+  // Safety mechanism: Force clear loading state after 15 seconds on mobile
+  useEffect(() => {
+    if (loading) {
+      const timeout = setTimeout(() => {
+        if (loading && import.meta.env.DEV) {
+          console.warn("⚠️ Loading timeout - forcing loading state to false");
+          setLoading(false);
+        }
+      }, 15000); // 15 second timeout
+
+      return () => clearTimeout(timeout);
+    }
+  }, [loading]);
 
   // Cleanup effect to abort any pending requests on unmount
   useEffect(() => {
@@ -2948,7 +2962,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 model: [...appliedFilters.model, modelOption.name],
                               };
-                              console.log("��� Adding model filter:", newFilters);
+                              console.log("����� Adding model filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
