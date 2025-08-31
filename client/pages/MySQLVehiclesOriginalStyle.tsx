@@ -2075,16 +2075,23 @@ export default function MySQLVehiclesOriginalStyle() {
                       className="mr-2"
                       checked={appliedFilters.make.includes(make)}
                       onChange={(e) => {
+                        console.log("🔧 Make filter clicked:", make, "checked:", e.target.checked);
                         e.stopPropagation();
-                        if (e.target.checked) {
-                          const newFilters = {
-                            ...appliedFilters,
-                            make: [...appliedFilters.make, make],
-                          };
-                          setAppliedFilters(newFilters);
-                          updateURLFromFilters(newFilters);
-                        } else {
-                          removeAppliedFilter("make", make);
+                        try {
+                          if (e.target.checked) {
+                            const newFilters = {
+                              ...appliedFilters,
+                              make: [...appliedFilters.make, make],
+                            };
+                            console.log("🔧 Adding make filter:", newFilters);
+                            setAppliedFilters(newFilters);
+                            updateURLFromFilters(newFilters);
+                          } else {
+                            console.log("🔧 Removing make filter:", make);
+                            removeAppliedFilter("make", make);
+                          }
+                        } catch (error) {
+                          console.error("❌ Error in make filter handler:", error);
                         }
                       }}
                     />
