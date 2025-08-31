@@ -378,9 +378,9 @@ function MySQLVehiclesOriginalStyleInner() {
         params.append("paymentMax", appliedFilters.paymentMax);
       }
 
-      const apiUrl = `${getApiBaseUrl()}/api/vehicles?${params}`;
+      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles?${params}`;
       console.log("🔍 Fetching vehicles from:", apiUrl);
-      console.log("�� Environment:", {
+      console.log("🌐 Environment:", {
         hostname: window.location.hostname,
         origin: window.location.origin,
         retryAttempt: retryCount
@@ -752,7 +752,7 @@ function MySQLVehiclesOriginalStyleInner() {
         params.append("priceMax", currentFilters.priceMax);
       }
 
-      const apiUrl = `${getApiBaseUrl()}/api/vehicles/filters${params.toString() ? `?${params.toString()}` : ''}`;
+      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters${params.toString() ? `?${params.toString()}` : ''}`;
       console.log("🔍 Fetching conditional filter options from:", apiUrl);
       console.log("🔍 Applied filters for conditional filtering:", currentFilters);
 

@@ -3,15 +3,15 @@ import { VehicleService } from "../services/vehicleService.js";
 import { MockVehicleService } from "../services/mockVehicleService.js";
 import { PaginationParams, VehicleFilters } from "../types/vehicle.js";
 
-// Use real MySQL VehicleService for production data
+// Temporarily using MockVehicleService due to MySQL connection issues
 console.log(
-  "🚀 Using VehicleService with real MySQL database",
+  "🚀 Using MockVehicleService with 50,000 sample vehicles",
 );
 console.log(
-  "   Connected to MySQL vehicles table with LIMIT/OFFSET pagination",
+  "   MySQL connection lost - switching to mock data for demo",
 );
 
-const vehicleService = new VehicleService();
+const vehicleService = new MockVehicleService();
 
 /**
  * GET /api/vehicles
