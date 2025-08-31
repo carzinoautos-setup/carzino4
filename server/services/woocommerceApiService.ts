@@ -776,7 +776,7 @@ export class WooCommerceApiService {
           exteriorColors: exteriorColors,
           sellerTypes: sellerTypes,
           dealers: dealers,
-          totalVehicles: allProducts.length
+          totalVehicles: filteredProducts.length
         }
       };
 
