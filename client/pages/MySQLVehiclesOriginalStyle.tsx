@@ -1278,6 +1278,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
     setAppliedFilters(emptyFilters);
 
+    // Reset Show More state for Make filter
+    setShowAllMakes(false);
+
     // Reset price and payment input fields
     setPriceMin("10000");
     setPriceMax("100000");
