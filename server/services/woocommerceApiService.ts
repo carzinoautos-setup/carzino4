@@ -304,17 +304,43 @@ export class WooCommerceApiService {
           break;
       }
 
-      // Make the API request
-      const products = await this.makeRequest('products', params);
+      // Fetch multiple pages to get more products for filtering
+      let allProducts: any[] = [];
+      const maxPagesToFetch = 5; // Fetch up to 5 pages (500 products)
 
-      // Get total count for pagination (WooCommerce provides this in headers, but we'll estimate)
-      const totalRecords = Array.isArray(products) ? products.length * 10 : 0; // Rough estimate
+      for (let page = 1; page <= maxPagesToFetch; page++) {
+        params.set('page', page.toString());
+
+        try {
+          const products = await this.makeRequest('products', params);
+
+          if (Array.isArray(products) && products.length > 0) {
+            allProducts.push(...products);
+            console.log(`📦 Fetched ${products.length} products from page ${page}, total: ${allProducts.length}`);
+
+            // If we got less than the max per page, we've reached the end
+            if (products.length < 100) {
+              console.log(`✅ Reached end of products at page ${page}`);
+              break;
+            }
+          } else {
+            console.log(`📦 No more products found on page ${page}`);
+            break;
+          }
+        } catch (error) {
+          console.error(`❌ Error fetching page ${page}:`, error);
+          break;
+        }
+      }
+
+      // Get total count for pagination
+      const totalRecords = allProducts.length;
       const totalPages = Math.ceil(totalRecords / pagination.pageSize);
 
       // Transform products to vehicle format first
-      let transformedVehicles = Array.isArray(products)
-        ? products.map((product, index) => this.transformProductToVehicle(product, index))
-        : [];
+      let transformedVehicles = allProducts.map((product, index) =>
+        this.transformProductToVehicle(product, index)
+      );
 
       // Apply client-side filtering for vehicle-specific attributes
       transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
