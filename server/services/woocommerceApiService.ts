@@ -413,12 +413,7 @@ export class WooCommerceApiService {
         params.set('page', page.toString());
 
         try {
-          // Add timeout for individual requests
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per request
-
           const products = await this.makeRequest('products', params);
-          clearTimeout(timeoutId);
 
           if (Array.isArray(products) && products.length > 0) {
             allProducts.push(...products);
