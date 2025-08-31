@@ -1125,6 +1125,15 @@ function MySQLVehiclesOriginalStyleInner() {
   // Load initial data on component mount
   useEffect(() => {
     if (isMountedRef.current) {
+      if (import.meta.env.DEV) {
+        console.log("🚀 Component mounted - starting initial data load");
+        console.log("📊 Initial state:", {
+          appliedFilters,
+          searchTerm,
+          currentPage,
+          loading
+        });
+      }
       fetchFilterOptions();
       fetchVehicles(); // Also fetch vehicles on initial load
     }
