@@ -153,7 +153,13 @@ function MySQLVehiclesOriginalStyleInner() {
     totalPages,
     loading,
     error,
-    hasApiResponse: !!apiResponse
+    hasApiResponse: !!apiResponse,
+    filterOptions: {
+      makesCount: filterOptions.makes?.length,
+      sampleMakes: filterOptions.makes?.slice(0, 3)?.map(m => m.name),
+      conditionsCount: filterOptions.conditions?.length,
+      isEmpty: Object.keys(filterOptions).every(key => !filterOptions[key]?.length)
+    }
   });
 
   // Filter states - exactly like original
@@ -1652,7 +1658,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }}
                         className="ml-1 text-white"
                       >
-                        ��
+                        ×
                       </button>
                     </span>
                   )}
