@@ -1305,8 +1305,10 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       setCurrentPage(1); // Reset to first page when applying filters
-      console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
-    } else {
+      if (import.meta.env.DEV) {
+        console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
+      }
+    } else if (import.meta.env.DEV) {
       console.log("💰 Payment filters unchanged, skipping update");
     }
   }, [paymentMin, paymentMax, termLength, interestRate, downPayment, appliedFilters.paymentMin, appliedFilters.paymentMax]);
