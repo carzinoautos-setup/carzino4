@@ -970,6 +970,29 @@ export class WooCommerceApiService {
   }
 
   /**
+   * Get a single vehicle by ID
+   */
+  async getVehicleById(id: number) {
+    try {
+      console.log(`🔍 Fetching vehicle with ID: ${id}`);
+
+      const product = await this.makeRequest(`products/${id}`);
+
+      if (!product) {
+        return null;
+      }
+
+      // Transform the single product to vehicle format
+      const vehicle = await this.transformProductToVehicle(product, 0);
+
+      return vehicle;
+    } catch (error) {
+      console.error(`❌ Error fetching vehicle with ID ${id}:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Test WooCommerce API connection
    */
   async testConnection() {
