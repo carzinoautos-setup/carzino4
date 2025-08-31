@@ -282,7 +282,9 @@ export class WooCommerceApiService {
 
       // For vehicle-specific filters, we'll need to fetch more products and filter client-side
       // since WooCommerce doesn't have built-in vehicle filters
-      params.set('per_page', '100'); // Fetch more to allow for filtering
+      // Fetch more products to ensure we have a good selection for filtering
+      const fetchSize = Math.max(pagination.pageSize * 10, 200); // At least 200 products
+      params.set('per_page', Math.min(fetchSize, 100).toString()); // WooCommerce max is 100 per request
 
       // Add sorting
       switch (sortBy) {
