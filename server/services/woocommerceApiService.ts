@@ -212,7 +212,7 @@ export class WooCommerceApiService {
           vehicle.city_seller?.toLowerCase().includes(city.toLowerCase())
         );
       });
-      console.log(`📊 After city filter: ${filteredVehicles.length} vehicles`);
+      console.log(`��� After city filter: ${filteredVehicles.length} vehicles`);
     }
 
     // Filter by state
@@ -406,13 +406,14 @@ export class WooCommerceApiService {
     try {
       console.log("🔍 Fetching products from WooCommerce REST API...");
 
-      // Build WooCommerce API parameters
+      // Build optimized WooCommerce API parameters
       const params = new URLSearchParams({
         page: pagination.page.toString(),
-        per_page: Math.min(pagination.pageSize, 100).toString(), // WooCommerce max is 100
+        per_page: Math.min(pagination.pageSize, 50).toString(), // Reduced from 100 to 50 for performance
         status: 'publish',           // Only published products
         stock_status: 'instock',     // Only in-stock products
-        catalog_visibility: 'visible' // Only catalog-visible products
+        catalog_visibility: 'visible', // Only catalog-visible products
+        _fields: 'id,name,price,regular_price,featured,stock_status,categories,meta_data,images' // PERFORMANCE: Only fetch needed fields
       });
 
       // Build search terms from filters and explicit search
@@ -442,14 +443,13 @@ export class WooCommerceApiService {
         console.log(`🔍 Using search terms: "${searchTerms.join(' ')}"`);
       }
 
-      // Add stock status filter
-      params.append('stock_status', 'instock'); // Only show in-stock items
+      // REMOVED: Duplicate stock_status parameter (already set above)
 
-      // For vehicle-specific filters, we'll need to fetch more products and filter client-side
-      // since WooCommerce doesn't have built-in vehicle filters
-      // Fetch more products to ensure we have a good selection for filtering
-      const fetchSize = Math.max(pagination.pageSize * 10, 200); // At least 200 products
-      params.set('per_page', Math.min(fetchSize, 100).toString()); // WooCommerce max is 100 per request
+      // PERFORMANCE: Reduced data fetching for better response times
+      // Only fetch what we need for current page + small buffer for filtering
+      const hasSpecificFilters = filters.make || filters.model || filters.condition || filters.priceMin || filters.priceMax;
+      const fetchSize = hasSpecificFilters ? Math.min(pagination.pageSize * 3, 50) : pagination.pageSize; // Reduced from 200+ to max 50
+      params.set('per_page', fetchSize.toString());
 
       // Add sorting
       switch (sortBy) {
@@ -469,10 +469,8 @@ export class WooCommerceApiService {
           break;
       }
 
-      // For initial/health checks, only fetch one page for speed
-      // For actual filtering, fetch more pages when specific filters are applied
-      const hasSpecificFilters = filters.make || filters.model || filters.condition || filters.priceMin || filters.priceMax;
-      const maxPagesToFetch = hasSpecificFilters ? 3 : 1; // Only fetch multiple pages when filtering
+      // PERFORMANCE: Reduced pagination fetching from 3 pages to 1-2 max
+      const maxPagesToFetch = hasSpecificFilters ? 2 : 1; // Maximum 2 pages instead of 3
 
       let allProducts: any[] = [];
 
@@ -492,8 +490,8 @@ export class WooCommerceApiService {
               break;
             }
 
-            // For performance, break early if we have enough products and no specific filters
-            if (!hasSpecificFilters && allProducts.length >= 100) {
+            // PERFORMANCE: Break early with much smaller dataset
+            if (!hasSpecificFilters && allProducts.length >= 50) {
               console.log(`⚡ Breaking early for performance (${allProducts.length} products)`);
               break;
             }
