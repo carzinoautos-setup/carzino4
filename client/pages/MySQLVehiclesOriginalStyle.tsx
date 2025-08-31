@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -19,6 +19,7 @@ import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
+import { useDebounce, apiCache, OptimizedApiClient, PerformanceMonitor } from "@/lib/performance";
 
 // Vehicle interface for live WooCommerce data
 interface Vehicle {
@@ -269,27 +270,24 @@ function MySQLVehiclesOriginalStyleInner() {
   const [interestRate, setInterestRate] = useState("5");
   const [downPayment, setDownPayment] = useState("2000");
 
-  // Debug logging for rendering - moved after all state declarations
-  console.log("📊 Render State:", {
-    vehiclesCount: vehicles.length,
-    totalResults,
-    totalPages,
-    loading,
-    error,
-    hasApiResponse: !!apiResponse,
-    filterOptions: {
-      makesCount: filterOptions.makes?.length,
-      sampleMakes: filterOptions.makes?.slice(0, 3)?.map(m => m.name),
-      modelsCount: filterOptions.models?.length,
-      trimsCount: filterOptions.trims?.length,
-      conditionsCount: filterOptions.conditions?.length,
-      isEmpty: Object.keys(filterOptions).every(key => !filterOptions[key]?.length)
-    }
-  });
+  // Performance monitoring (only in development)
+  if (import.meta.env.DEV && Math.random() < 0.1) { // Log only 10% of renders
+    console.log("📊 Render State:", {
+      vehiclesCount: vehicles.length,
+      totalResults,
+      loading,
+      error
+    });
+  }
 
   // Keep track of active controller to abort previous requests
   const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
+  const apiClient = useRef(new OptimizedApiClient());
+
+  // Performance: Debounce search term and filters
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const debouncedAppliedFilters = useDebounce(appliedFilters, 500);
 
   // Get the API base URL - handle different environments
   const getApiBaseUrl = () => {
@@ -304,7 +302,44 @@ function MySQLVehiclesOriginalStyleInner() {
     return [];
   };
 
-  // Fetch vehicles from API with retry logic
+  // Performance: Memoize API parameters to prevent unnecessary calls
+  const apiParams = useMemo(() => {
+    const params = new URLSearchParams({
+      page: currentPage.toString(),
+      pageSize: resultsPerPage.toString(),
+    });
+
+    if (debouncedSearchTerm.trim()) {
+      params.append("search", debouncedSearchTerm.trim());
+    }
+
+    if (sortBy !== "relevance") {
+      params.append("sortBy", sortBy);
+    }
+
+    if (appliedLocation && appliedRadius !== "nationwide") {
+      params.append("lat", appliedLocation.lat.toString());
+      params.append("lng", appliedLocation.lng.toString());
+      params.append("radius", appliedRadius);
+    }
+
+    // Add filters
+    Object.entries(debouncedAppliedFilters).forEach(([key, value]) => {
+      if (Array.isArray(value) && value.length > 0) {
+        if (key === 'vehicleType') {
+          params.append('body_type', value.join(','));
+        } else {
+          params.append(key, value.join(','));
+        }
+      } else if (typeof value === 'string' && value.trim()) {
+        params.append(key, value);
+      }
+    });
+
+    return params.toString();
+  }, [currentPage, debouncedSearchTerm, sortBy, appliedLocation, appliedRadius, debouncedAppliedFilters, resultsPerPage]);
+
+  // Fetch vehicles from API with retry logic and caching
   const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
@@ -342,83 +377,27 @@ function MySQLVehiclesOriginalStyleInner() {
       setLoading(true);
       setError(null);
 
-      // Build query parameters
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        pageSize: resultsPerPage.toString(),
-      });
+      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles?${apiParams}`;
 
-      // Add search term
-      if (searchTerm.trim()) {
-        params.append("search", searchTerm.trim());
-      }
+      PerformanceMonitor.startMeasure('fetchVehicles');
 
-      // Add sorting parameter
-      if (sortBy !== "relevance") {
-        params.append("sortBy", sortBy);
-      }
-
-      // Add location/distance parameters
-      if (appliedLocation && appliedRadius !== "nationwide") {
-        params.append("lat", appliedLocation.lat.toString());
-        params.append("lng", appliedLocation.lng.toString());
-        params.append("radius", appliedRadius);
+      // Check cache first (2 minute TTL for vehicle data)
+      const cacheKey = `vehicles_${apiParams}`;
+      const cachedData = apiCache.get(cacheKey);
+      if (cachedData && retryCount === 0) {
+        if (import.meta.env.DEV) {
+          console.log("⚡ Using cached vehicle data");
+        }
+        setVehicles(cachedData.data || []);
+        setApiResponse(cachedData);
+        setLoading(false);
+        PerformanceMonitor.endMeasure('fetchVehicles');
+        return;
       }
 
-      // Add filters
-      if (appliedFilters.condition.length > 0) {
-        params.append("condition", appliedFilters.condition.join(","));
+      if (import.meta.env.DEV && retryCount === 0) {
+        console.log("🔍 Fetching vehicles from:", apiUrl);
       }
-      if (appliedFilters.make.length > 0) {
-        params.append("make", appliedFilters.make.join(","));
-      }
-      if (appliedFilters.model.length > 0) {
-        params.append("model", appliedFilters.model.join(","));
-      }
-      if (appliedFilters.trim.length > 0) {
-        params.append("trim", appliedFilters.trim.join(","));
-      }
-      if (appliedFilters.vehicleType.length > 0) {
-        params.append("body_type", appliedFilters.vehicleType.join(","));
-      }
-      if (appliedFilters.driveType.length > 0) {
-        params.append("driveType", appliedFilters.driveType.join(","));
-      }
-      if (appliedFilters.transmission.length > 0) {
-        params.append("transmission", appliedFilters.transmission.join(","));
-      }
-      if (appliedFilters.mileage) {
-        params.append("mileage", appliedFilters.mileage);
-      }
-      if (appliedFilters.exteriorColor.length > 0) {
-        params.append("exteriorColor", appliedFilters.exteriorColor.join(","));
-      }
-      if (appliedFilters.sellerType.length > 0) {
-        params.append("sellerType", appliedFilters.sellerType.join(","));
-      }
-      if (appliedFilters.dealer.length > 0) {
-        params.append("dealer", appliedFilters.dealer.join(","));
-      }
-      if (appliedFilters.priceMin) {
-        params.append("priceMin", appliedFilters.priceMin);
-      }
-      if (appliedFilters.priceMax) {
-        params.append("priceMax", appliedFilters.priceMax);
-      }
-      if (appliedFilters.paymentMin) {
-        params.append("paymentMin", appliedFilters.paymentMin);
-      }
-      if (appliedFilters.paymentMax) {
-        params.append("paymentMax", appliedFilters.paymentMax);
-      }
-
-      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles?${params}`;
-      console.log("🔍 Fetching vehicles from:", apiUrl);
-      console.log("🌐 Environment:", {
-        hostname: window.location.hostname,
-        origin: window.location.origin,
-        retryAttempt: retryCount
-      });
 
       // Set timeout for this specific request
       let timeoutId: NodeJS.Timeout | null = null;
@@ -482,15 +461,23 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       if (data.success) {
-        console.log("🚗 Setting vehicles:", data.data?.length, "vehicles");
-        console.log("📊 Meta data:", data.meta);
+        // Cache successful response (2 minute TTL)
+        apiCache.set(cacheKey, data, 2 * 60 * 1000);
+
         setVehicles(data.data || []);
         setApiResponse(data);
-        console.log("✅ Successfully loaded", data.data?.length || 0, "vehicles");
+
+        if (import.meta.env.DEV) {
+          console.log("✅ Successfully loaded", data.data?.length || 0, "vehicles");
+        }
       } else {
-        console.error("❌ API returned error:", data.message);
+        if (import.meta.env.DEV) {
+          console.error("❌ API returned error:", data.message);
+        }
         throw new Error(data.message || "API returned error");
       }
+
+      PerformanceMonitor.endMeasure('fetchVehicles');
     } catch (err) {
       // Ensure timeout is cleared on error
       cleanup();
@@ -503,7 +490,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err instanceof Error && err.name === "AbortError") {
-        console.log("🚫 Request aborted (filter change, timeout, or navigation)");
+        if (import.meta.env.DEV) {
+          console.log("🚫 Request aborted (filter change, timeout, or navigation)");
+        }
         // Clear controller reference if this was the active request
         if (abortControllerRef.current === requestController) {
           abortControllerRef.current = null;
@@ -511,7 +500,9 @@ function MySQLVehiclesOriginalStyleInner() {
         return; // Don't set error state for aborted requests
       }
 
-      console.error("❌ Vehicle fetch error:", err);
+      if (import.meta.env.DEV) {
+        console.error("❌ Vehicle fetch error:", err);
+      }
 
       // Clear the controller reference on error (but not on abort)
       if (abortControllerRef.current === requestController) {
@@ -520,7 +511,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Retry logic for network failures
       if (err instanceof TypeError && err.message.includes("Failed to fetch") && retryCount < 2) {
-        console.log(`🔄 Retrying request (attempt ${retryCount + 1}/3)...`);
+        if (import.meta.env.DEV) {
+          console.log(`🔄 Retrying request (attempt ${retryCount + 1}/3)...`);
+        }
         // Exponential backoff: 1s, 2s delays
         const delay = Math.pow(2, retryCount) * 1000;
         setTimeout(() => {
@@ -577,15 +570,7 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
       }
     }
-  }, [
-    currentPage,
-    appliedFilters,
-    searchTerm,
-    appliedLocation,
-    appliedRadius,
-    sortBy,
-    resultsPerPage,
-  ]);
+  }, [apiParams, currentPage, resultsPerPage]);
 
   // Cleanup effect to abort pending requests on unmount
   useEffect(() => {
@@ -679,17 +664,11 @@ function MySQLVehiclesOriginalStyleInner() {
     [navigate, location.pathname],
   );
 
-  // Fetch vehicles when dependencies change with debouncing
+  // Performance: Fetch vehicles when memoized parameters change
   useEffect(() => {
     if (!isMountedRef.current) return;
 
-    const debounceTimer = setTimeout(() => {
-      if (isMountedRef.current) {
-        fetchVehicles();
-      }
-    }, 300); // 300ms debounce to prevent rapid firing
-
-    return () => clearTimeout(debounceTimer);
+    fetchVehicles();
   }, [fetchVehicles]);
 
   // Cleanup effect to abort any pending requests on unmount
@@ -886,8 +865,8 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, []);
 
-  // Function to fetch filter options with conditional filtering
-  const fetchFilterOptions = useCallback(async (currentFilters = appliedFilters) => {
+  // Performance: Optimize filter options fetching with caching and reduced calls
+  const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
       console.log("🚫 Component unmounted, skipping filter options fetch");
@@ -940,8 +919,22 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters${params.toString() ? `?${params.toString()}` : ''}`;
-      console.log("🔍 Fetching conditional filter options from:", apiUrl);
-      console.log("🔍 Applied filters for conditional filtering:", currentFilters);
+
+      // Check cache first (5 minute TTL for filter options)
+      const filterCacheKey = `filters_${params.toString()}`;
+      const cachedFilters = apiCache.get(filterCacheKey);
+      if (cachedFilters) {
+        if (import.meta.env.DEV) {
+          console.log("⚡ Using cached filter options");
+        }
+        setFilterOptions(cachedFilters.data);
+        setVehicleTypes(cachedFilters.data.vehicleTypes || []);
+        return;
+      }
+
+      if (import.meta.env.DEV) {
+        console.log("🔍 Fetching conditional filter options from:", apiUrl);
+      }
 
       // Set timeout for this request
       if (isMountedRef.current) {
@@ -979,33 +972,22 @@ function MySQLVehiclesOriginalStyleInner() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("🔍 FRONTEND: Conditional filter options API response:", {
-          success: data.success,
-          hasData: !!data.data,
-          makesCount: data.data?.makes?.length,
-          modelsCount: data.data?.models?.length,
-          trimsCount: data.data?.trims?.length,
-          sampleMakes: data.data?.makes?.slice(0, 3),
-          appliedFilters: currentFilters
-        });
+
         if (data.success && data.data) {
+          // Cache successful filter response (5 minute TTL)
+          apiCache.set(filterCacheKey, data, 5 * 60 * 1000);
+
           setFilterOptions(data.data);
-          // Also update vehicleTypes for backwards compatibility
           setVehicleTypes(data.data.vehicleTypes || []);
-          console.log(
-            "✅ Successfully loaded conditional filter options:",
-            data.data.makes?.length || 0, "makes,",
-            data.data.models?.length || 0, "models,",
-            data.data.trims?.length || 0, "trims,",
-            data.data.conditions?.length || 0, "conditions,",
-            data.data.driveTypes?.length || 0, "drive types,",
-            data.data.transmissions?.length || 0, "transmissions,",
-            data.data.exteriorColors?.length || 0, "colors,",
-            data.data.sellerTypes?.length || 0, "seller types,",
-            data.data.dealers?.length || 0, "dealers,",
-            data.data.vehicleTypes?.length || 0, "vehicle types"
-          );
-        } else {
+
+          if (import.meta.env.DEV) {
+            console.log(
+              "✅ Successfully loaded conditional filter options:",
+              data.data.makes?.length || 0, "makes,",
+              data.data.models?.length || 0, "models"
+            );
+          }
+        } else if (import.meta.env.DEV) {
           console.error("🔍 FRONTEND: Filter options API returned unsuccessful response:", data);
         }
       } else {
@@ -1117,7 +1099,7 @@ function MySQLVehiclesOriginalStyleInner() {
       setVehicleTypes(fallbackFilterOptions.vehicleTypes);
       console.log("📝 Using fallback filter data - filters will work but counts may be inaccurate");
     }
-  }, [appliedFilters]);
+  }, [debouncedAppliedFilters]);
 
   // Load initial filter options
   useEffect(() => {
@@ -1126,18 +1108,22 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, []);
 
-  // Re-fetch filter options when applied filters change (for conditional filtering)
+  // Performance: Only re-fetch filter options when filters significantly change
+  const filterChangeDebounced = useDebounce(appliedFilters, 1000); // 1 second debounce
+
   useEffect(() => {
-    // Only re-fetch if we have some filters applied and component is mounted (avoid infinite loop)
-    const hasFilters = Object.values(appliedFilters).some(filter =>
+    // Only re-fetch if we have some filters applied and component is mounted
+    const hasFilters = Object.values(filterChangeDebounced).some(filter =>
       Array.isArray(filter) ? filter.length > 0 : Boolean(filter)
     );
 
     if (hasFilters && isMountedRef.current) {
-      console.log("🔄 Filters changed, re-fetching conditional filter options...");
-      fetchFilterOptions(appliedFilters);
+      if (import.meta.env.DEV) {
+        console.log("🔄 Filters changed, re-fetching conditional filter options...");
+      }
+      fetchFilterOptions(filterChangeDebounced);
     }
-  }, [appliedFilters, fetchFilterOptions]);
+  }, [filterChangeDebounced, fetchFilterOptions]);
 
   // Helper functions for price formatting
   const formatPrice = (value: string): string => {
