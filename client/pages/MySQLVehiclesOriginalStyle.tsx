@@ -707,7 +707,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Vehicle type images - using emoji/icon-based approach for better UX
   useEffect(() => {
-    // Use high-quality vehicle type images from Unsplash
+    // Use placeholders for all vehicle types as requested by user
     const vehicleImageMap = {
       // Cars and Sedans
       "Car": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
