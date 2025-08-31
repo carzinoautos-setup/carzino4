@@ -666,12 +666,12 @@ function MySQLVehiclesOriginalStyleInner() {
     fetchDealers();
   }, []);
 
-  // Load available vehicle types
+  // Load real filter options with counts
   useEffect(() => {
-    const fetchVehicleTypes = async () => {
+    const fetchFilterOptions = async () => {
       try {
-        const apiUrl = `${getApiBaseUrl()}/api/vehicle-types`;
-        console.log("🔍 Fetching vehicle types from:", apiUrl);
+        const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters`;
+        console.log("🔍 Fetching filter options from:", apiUrl);
 
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -683,19 +683,18 @@ function MySQLVehiclesOriginalStyleInner() {
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data) {
-            // Handle both array and object responses
-            const vehicleTypesArray = Array.isArray(data.data)
-              ? data.data
-              : data.data.vehicleTypes || data.data || [];
-            setVehicleTypes(vehicleTypesArray);
+            setFilterOptions(data.data);
+            // Also update vehicleTypes for backwards compatibility
+            setVehicleTypes(data.data.vehicleTypes || []);
             console.log(
-              "✅ Successfully loaded",
-              vehicleTypesArray.length,
-              "vehicle types",
+              "✅ Successfully loaded filter options:",
+              data.data.makes?.length || 0, "makes,",
+              data.data.conditions?.length || 0, "conditions,",
+              data.data.vehicleTypes?.length || 0, "vehicle types"
             );
           }
         } else {
-          console.warn("⚠️ Failed to fetch vehicle types:", response.status);
+          console.warn("⚠️ Failed to fetch filter options:", response.status);
           // Set fallback vehicle types for now
           setVehicleTypes([
             { name: "Sedan", count: 1698 },
