@@ -269,7 +269,9 @@ export class WooCommerceApiService {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         per_page: Math.min(pagination.pageSize, 100).toString(), // WooCommerce max is 100
-        status: 'publish'
+        status: 'publish',           // Only published products
+        stock_status: 'instock',     // Only in-stock products
+        catalog_visibility: 'visible' // Only catalog-visible products
       });
 
       // Build search terms from filters and explicit search
