@@ -383,9 +383,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       PerformanceMonitor.startMeasure('fetchVehicles');
 
-      // Check cache first (2 minute TTL for vehicle data)
+      // Check cache first (disabled in development for debugging)
       const cacheKey = `vehicles_${apiParams}`;
-      const cachedData = apiCache.get(cacheKey);
+      const cachedData = import.meta.env.DEV ? null : apiCache.get(cacheKey);
       if (cachedData && retryCount === 0) {
         if (import.meta.env.DEV) {
           console.log("⚡ Using cached vehicle data");
