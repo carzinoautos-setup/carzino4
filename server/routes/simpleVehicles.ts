@@ -279,6 +279,107 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
 };
 
 /**
+ * GET /api/simple-vehicles/combined
+ * PERFORMANCE OPTIMIZATION: Get vehicles + filters + dealers in single call
+ * Reduces 3 API calls to 1 call for significant performance improvement
+ */
+export const getCombinedVehicleData: RequestHandler = async (req, res) => {
+  try {
+    console.log("🚀 COMBINED ENDPOINT: Starting combined data fetch");
+    const startTime = Date.now();
+
+    // Parse pagination parameters (same as getSimpleVehicles)
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = Math.min(parseInt(req.query.pageSize as string) || 20, 100);
+
+    if (page < 1 || pageSize < 1 || pageSize > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid pagination parameters",
+      });
+    }
+
+    const pagination: SimplePaginationParams = { page, pageSize };
+
+    // Parse filters (same logic as both endpoints)
+    const filters: SimpleVehicleFilters = {};
+
+    // Array filters
+    if (req.query.make) filters.make = (req.query.make as string).split(",");
+    if (req.query.model) filters.model = (req.query.model as string).split(",");
+    if (req.query.trim) filters.trim = (req.query.trim as string).split(",");
+    if (req.query.condition) filters.condition = (req.query.condition as string).split(",");
+    if (req.query.vehicleType || req.query.body_type) {
+      filters.vehicleType = ((req.query.vehicleType || req.query.body_type) as string).split(",");
+    }
+    if (req.query.driveType) filters.driveType = (req.query.driveType as string).split(",");
+    if (req.query.transmission) filters.transmission = (req.query.transmission as string).split(",");
+    if (req.query.exteriorColor) filters.exteriorColor = (req.query.exteriorColor as string).split(",");
+    if (req.query.sellerType) filters.sellerType = (req.query.sellerType as string).split(",");
+    if (req.query.dealer) filters.dealer = (req.query.dealer as string).split(",");
+    if (req.query.interiorColor) filters.interiorColor = (req.query.interiorColor as string).split(",");
+    if (req.query.city) filters.city = (req.query.city as string).split(",");
+    if (req.query.state) filters.state = (req.query.state as string).split(",");
+
+    // Single value filters
+    if (req.query.search) filters.search = req.query.search as string;
+    if (req.query.mileage) filters.mileage = req.query.mileage as string;
+    if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
+    if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
+
+    // Parse sort parameter
+    const sortBy = (req.query.sortBy as string) || "relevance";
+
+    console.log("🚀 COMBINED: Fetching all data in parallel");
+
+    // PERFORMANCE: Execute all three calls in parallel instead of sequential
+    const [vehiclesResult, filtersResult, dealersResult] = await Promise.all([
+      vehicleService.getVehicles(pagination, filters, sortBy),
+      vehicleService.getFilterOptions(filters),
+      vehicleService.getDealers()
+    ]);
+
+    const endTime = Date.now();
+    console.log(`🚀 COMBINED ENDPOINT: Completed in ${endTime - startTime}ms`);
+
+    // Return combined response
+    res.status(200).json({
+      success: true,
+      data: {
+        vehicles: vehiclesResult.data,
+        meta: vehiclesResult.meta,
+        filters: filtersResult.data,
+        dealers: dealersResult.data
+      },
+      message: `Combined data fetched in ${endTime - startTime}ms`
+    });
+
+  } catch (error) {
+    console.error("❌ Error in getCombinedVehicleData:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error in combined endpoint",
+      data: {
+        vehicles: [],
+        meta: {
+          totalRecords: 0,
+          totalPages: 0,
+          currentPage: 1,
+          pageSize: 20,
+          hasNextPage: false,
+          hasPreviousPage: false
+        },
+        filters: {
+          makes: [], models: [], trims: [], conditions: [],
+          driveTypes: [], sellerTypes: [], dealers: []
+        },
+        dealers: []
+      }
+    });
+  }
+};
+
+/**
  * GET /api/dealers
  * Get available dealers (only those with seller_type = "Dealer")
  */
