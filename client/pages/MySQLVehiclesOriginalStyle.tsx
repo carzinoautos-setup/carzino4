@@ -2822,7 +2822,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       onBlur={(e) => {
                         // Auto-apply when user finishes editing
                         if (e.target.value !== (appliedFilters.paymentMax || "")) {
-                          console.log("💰 Auto-applying payment max filter on blur:", e.target.value);
+                          console.log("���� Auto-applying payment max filter on blur:", e.target.value);
                           applyPaymentFilters();
                         }
                       }}
@@ -3273,9 +3273,181 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* State - REMOVED: Demo data only */}
+            {/* Interior Color */}
+            <FilterSection
+              title="Interior Color"
+              isCollapsed={collapsedFilters.interiorColor}
+              onToggle={() => toggleFilter("interiorColor")}
+            >
+              <div className="space-y-1">
+                {filterOptions.interiorColors && filterOptions.interiorColors.length > 0 ? (
+                  filterOptions.interiorColors
+                    .filter(colorOption => colorOption.count > 0)
+                    .map((colorOption) => (
+                    <label
+                      key={colorOption.name}
+                      className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.interiorColor && appliedFilters.interiorColor.includes(colorOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              interiorColor: [...(prev.interiorColor || []), colorOption.name],
+                            }));
+                          } else {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              interiorColor: (prev.interiorColor || []).filter(
+                                (item) => item !== colorOption.name
+                              ),
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{colorOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({colorOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  interiorColors.map((color) => (
+                    <label
+                      key={color.name}
+                      className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.interiorColor && appliedFilters.interiorColor.includes(color.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              interiorColor: [...(prev.interiorColor || []), color.name],
+                            }));
+                          } else {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              interiorColor: (prev.interiorColor || []).filter(
+                                (item) => item !== color.name
+                              ),
+                            }));
+                          }
+                        }}
+                      />
+                      <div
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{ backgroundColor: color.color }}
+                      ></div>
+                      <span className="carzino-filter-option">{color.name}</span>
+                      <span className="carzino-filter-count ml-1">({color.count})</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
 
-            {/* City - REMOVED: Demo data only */}
+            {/* State */}
+            <FilterSection
+              title="State"
+              isCollapsed={collapsedFilters.state}
+              onToggle={() => toggleFilter("state")}
+            >
+              <div className="space-y-1">
+                {filterOptions.states && filterOptions.states.length > 0 ? (
+                  filterOptions.states
+                    .filter(stateOption => stateOption.count > 0)
+                    .map((stateOption) => (
+                    <label
+                      key={stateOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.state && appliedFilters.state.includes(stateOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              state: [...(prev.state || []), stateOption.name],
+                            }));
+                          } else {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              state: (prev.state || []).filter(
+                                (item) => item !== stateOption.name
+                              ),
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{stateOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({stateOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading states...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
+
+            {/* City */}
+            <FilterSection
+              title="City"
+              isCollapsed={collapsedFilters.city}
+              onToggle={() => toggleFilter("city")}
+            >
+              <div className="space-y-1">
+                {filterOptions.cities && filterOptions.cities.length > 0 ? (
+                  filterOptions.cities
+                    .filter(cityOption => cityOption.count > 0)
+                    .slice(0, 20) // Limit to first 20 cities to avoid overwhelming the UI
+                    .map((cityOption) => (
+                    <label
+                      key={cityOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.city && appliedFilters.city.includes(cityOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              city: [...(prev.city || []), cityOption.name],
+                            }));
+                          } else {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              city: (prev.city || []).filter(
+                                (item) => item !== cityOption.name
+                              ),
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{cityOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({cityOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading cities...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
 
             {/* Mobile Filter Action Buttons */}
             <div className="lg:hidden sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
