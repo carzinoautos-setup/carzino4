@@ -274,27 +274,11 @@ function MySQLVehiclesOriginalStyleInner() {
     return "";
   };
 
-  // Get models for a specific make
-  const getModelsForMake = (make: string): string[] => {
-    const modelsByMake: { [key: string]: string[] } = {
-      Audi: ["A3", "A4", "A6", "Q5", "Q7", "Q8"],
-      BMW: ["3 Series", "5 Series", "X3", "X5", "X7"],
-      Chevrolet: [
-        "Silverado",
-        "Equinox",
-        "Malibu",
-        "Traverse",
-        "Camaro",
-        "Tahoe",
-      ],
-      Ford: ["F-150", "Escape", "Explorer", "Mustang", "Edge", "Expedition"],
-      Honda: ["Civic", "Accord", "CR-V", "Pilot", "HR-V"],
-      Hyundai: ["Elantra", "Sonata", "Tucson", "Santa Fe", "Palisade"],
-      "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE", "S-Class"],
-      Nissan: ["Altima", "Sentra", "Rogue", "Pathfinder", "Murano"],
-    };
-
-    return modelsByMake[make] || [];
+  // Get models for a specific make from live filter options
+  const getModelsForMake = (make: string): { name: string; count: number }[] => {
+    // This will be populated by the live API data
+    // For now, return empty array - models will be fetched from the server
+    return [];
   };
 
   // Fetch vehicles from API with retry logic
