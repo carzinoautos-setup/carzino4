@@ -1,0 +1,70 @@
+FIELD_REACT,YOUR_WOOCOMMERCE_META_KEY,NOTES
+id,id,WooCommerce product ID
+sku,sku,WooCommerce product SKU
+make,make,Primary make field
+model,model,Primary model field
+year,year,Primary year field
+trim,trim,Primary trim field
+mileage,mileage,Primary mileage field
+condition,condition,Primary condition field
+price,price,Primary price field
+transmission,transmission,Primary transmission field
+doors,doors,Number of doors
+drivetrain,drivetrain,Primary drivetrain field
+fuel_type,fuel_type,Fuel type
+body_style,body_style,Body style/type
+highway_mpg,highway_mpg,Highway MPG rating
+exterior_color,exterior_color,Exterior color
+interior_color,interior_color,Interior color
+certified,certified,Certified pre-owned flag
+title_status,title_status,Title status
+is_featured,is_featured,Custom featured flag
+dealer_name,dealer_name,Dealer/business name (CORRECTED)
+seller_type,account_type_seller,Seller type
+city_seller,city_seller,Seller city
+state_seller,state_seller,Seller state
+zip_seller,zip_seller,Seller ZIP code
+phone_number_seller,phone_number_seller,Seller phone
+email_seller,email_seller,Seller email
+address_seller,address_seller,Seller address
+business_name_seller,business_name_seller,Business name
+account_number_seller,account_number_seller,Seller account number
+seller_account_number,_vehicle_seller_account,Vehicle-to-seller link (CORRECTED)
+car_location_latitude,car_location_latitude,GPS latitude
+car_location_longitude,car_location_longitude,GPS longitude
+engine_cylinders,engine_cylinders,Engine cylinders
+transmission_speed,transmission_speed,Transmission speed
+engine,engine,Engine specification
+vin,vin,Vehicle VIN
+interest_rate,interest_rate,Financing rate
+down_payment,down_payment,Down payment
+loan_term,loan_term,Loan term
+payment,payment,Monthly payment
+is_certified,is_certified,Alternative certified field
+featured_image,featured_image,Main product image
+body_class,body_class,Body class
+status,status,Post status
+has_warranty,has_warranty,Warranty flag
+product_url,external_product_url,External product URL
+post_title,post_title,WordPress post title
+product_sku,sku,Alternative SKU field
+vehicle_year,vehicle_year,Alternative year field
+vehicle_make,vehicle_make,Alternative make field
+vehicle_model,vehicle_model,Alternative model field
+vehicle_condition,vehicle_condition,Alternative condition field
+vehicle_transmission,vehicle_transmission,Alternative transmission field
+vehicle_mileage,vehicle_mileage,Alternative mileage field
+acount_name_seller,acount_name_seller,Typo field that exists
+drive_type,drive_type,Alternative drivetrain field
+dealer_phone,dealer_phone,Dealer phone number
+location,location,Combined location string
+categories,categories,WooCommerce categories array
+stock_status,stock_status,WooCommerce stock status
+stock_quantity,stock_quantity,WooCommerce stock quantity
+description,description,Product description
+short_description,short_description,Product short description
+regular_price,regular_price,WooCommerce regular price
+sale_price,sale_price,WooCommerce sale price
+featured,featured,WooCommerce featured flag
+images,images,Product images array
+_product_image_gallery,_product_image_gallery,Gallery meta field
