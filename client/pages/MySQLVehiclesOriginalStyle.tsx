@@ -687,7 +687,15 @@ function MySQLVehiclesOriginalStyleInner() {
           ]);
         }
       } catch (error) {
-        console.error("❌ Error fetching dealers:", error);
+        // Handle different types of errors gracefully
+        if (error.name === "AbortError") {
+          console.log("🚫 Dealers request timed out");
+        } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+          console.warn("⚠️ Unable to connect to dealers API - using fallback data");
+        } else {
+          console.error("❌ Error fetching dealers:", error);
+        }
+
         // Set fallback dealers for now
         setAvailableDealers([
           { name: "Bayside Auto Sales", count: 234 },
