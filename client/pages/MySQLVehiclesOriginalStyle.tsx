@@ -118,7 +118,7 @@ const normalizeFilterValue = (value: string) => {
     .join(" ");
 };
 
-export default function MySQLVehiclesOriginalStyle() {
+function MySQLVehiclesOriginalStyleInner() {
   // React Router hooks
   const location = useLocation();
   const navigate = useNavigate();
