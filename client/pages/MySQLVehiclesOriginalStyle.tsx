@@ -547,6 +547,16 @@ export default function MySQLVehiclesOriginalStyle() {
     fetchVehicles();
   }, [fetchVehicles]);
 
+  // Cleanup effect to abort any pending requests on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    };
+  }, []);
+
   // Geocode ZIP code when it changes (with debouncing)
   useEffect(() => {
     const debounceTimer = setTimeout(async () => {
