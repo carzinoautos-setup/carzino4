@@ -465,7 +465,12 @@ export class WooCommerceApiService {
    */
   async getFilterOptions() {
     try {
-      console.log("🔍 Fetching filter options from WooCommerce...");
+      console.log("🔍 STARTING getFilterOptions - Fetching filter options from WooCommerce...");
+      console.log("🔍 WooCommerce credentials check:", {
+        hasConsumerKey: !!this.consumerKey,
+        hasConsumerSecret: !!this.consumerSecret,
+        baseUrl: this.baseUrl
+      });
 
       // Fetch only first 2 pages for speed (200 products max)
       let allProducts: any[] = [];
