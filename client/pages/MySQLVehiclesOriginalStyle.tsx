@@ -299,7 +299,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
-      console.log("🚫 Component unmounted, skipping fetch");
+      console.log("�� Component unmounted, skipping fetch");
       return;
     }
 
@@ -787,7 +787,14 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Function to fetch filter options with conditional filtering
   const fetchFilterOptions = useCallback(async (currentFilters = appliedFilters) => {
+    // Don't proceed if component is unmounted
+    if (!isMountedRef.current) {
+      console.log("🚫 Component unmounted, skipping filter options fetch");
+      return;
+    }
+
     const controller = new AbortController();
+    let timeoutId: NodeJS.Timeout | null = null;
 
     try {
       // Build query parameters from current filters for conditional filtering
@@ -836,12 +843,18 @@ function MySQLVehiclesOriginalStyleInner() {
       console.log("🔍 Applied filters for conditional filtering:", currentFilters);
 
       // Set timeout for this request
-      const timeoutId = setTimeout(() => {
-        if (!controller.signal.aborted) {
-          console.log("⏰ Filter options request timeout after 30 seconds");
-          controller.abort();
-        }
-      }, 30000); // 30 second timeout
+      if (isMountedRef.current) {
+        timeoutId = setTimeout(() => {
+          if (!controller.signal.aborted && isMountedRef.current) {
+            console.log("⏰ Filter options request timeout after 30 seconds");
+            try {
+              controller.abort();
+            } catch (err) {
+              console.log("⏰ Filter options timeout abort completed");
+            }
+          }
+        }, 30000); // 30 second timeout
+      }
 
       const response = await fetch(apiUrl, {
         method: "GET",
