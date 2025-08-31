@@ -789,7 +789,7 @@ function MySQLVehiclesOriginalStyleInner() {
             console.log("✅ Successfully loaded", data.data.length, "dealers");
           }
         } else {
-          console.warn("���️ Failed to fetch dealers:", response.status);
+          console.warn("������ Failed to fetch dealers:", response.status);
           // Use empty array instead of demo dealers
           setAvailableDealers([]);
         }
@@ -1409,6 +1409,14 @@ function MySQLVehiclesOriginalStyleInner() {
   } | null> => {
     if (!zip || zip.length < 5) return null;
 
+    // Don't proceed if component is unmounted
+    if (!isMountedRef.current) {
+      console.log("🚫 Component unmounted, skipping geocoding");
+      return null;
+    }
+
+    let timeoutId: NodeJS.Timeout | null = null;
+
     try {
       setIsGeocodingLoading(true);
 
@@ -1417,7 +1425,18 @@ function MySQLVehiclesOriginalStyleInner() {
       console.log("🔍 Geocoding ZIP:", zip, "using:", apiUrl);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      if (isMountedRef.current) {
+        timeoutId = setTimeout(() => {
+          if (!controller.signal.aborted && isMountedRef.current) {
+            try {
+              controller.abort();
+            } catch (err) {
+              console.log("⏰ Geocoding timeout abort completed");
+            }
+          }
+        }, 10000); // 10 second timeout
+      }
 
       const response = await fetch(apiUrl, {
         method: "GET",
@@ -1427,7 +1446,16 @@ function MySQLVehiclesOriginalStyleInner() {
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      // Check if component is still mounted
+      if (!isMountedRef.current) {
+        console.log("🚫 Component unmounted during geocoding");
+        return null;
+      }
 
       if (response.ok) {
         const result = await response.json();
@@ -1459,9 +1487,21 @@ function MySQLVehiclesOriginalStyleInner() {
 
       return null;
     } catch (error) {
+      // Clear timeout on error
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      // Check if component is still mounted
+      if (!isMountedRef.current) {
+        console.log("🚫 Ignoring geocoding error from unmounted component");
+        return null;
+      }
+
       // Handle AbortError gracefully
       if (error.name === "AbortError") {
-        console.log("🚫 Geocoding request aborted (timeout)");
+        console.log("🚫 Geocoding request aborted (timeout or navigation)");
         return null;
       }
 
@@ -1552,7 +1592,10 @@ function MySQLVehiclesOriginalStyleInner() {
 
       return null;
     } finally {
-      setIsGeocodingLoading(false);
+      // Only update loading state if component is still mounted
+      if (isMountedRef.current) {
+        setIsGeocodingLoading(false);
+      }
     }
   };
 
