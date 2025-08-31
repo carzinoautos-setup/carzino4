@@ -487,7 +487,7 @@ export class WooCommerceApiService {
 
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout per request
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per request
 
           const products = await this.makeRequest('products', params);
           clearTimeout(timeoutId);
