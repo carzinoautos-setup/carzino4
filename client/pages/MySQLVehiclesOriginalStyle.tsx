@@ -2695,69 +2695,11 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Transmission Speed */}
-            <FilterSection
-              title="Transmission Speed"
-              isCollapsed={collapsedFilters.transmissionSpeed}
-              onToggle={() => toggleFilter("transmissionSpeed")}
-            >
-              <div className="space-y-1">
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">
-                    4-Speed Automatic
-                  </span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">
-                    6-Speed Automatic
-                  </span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">
-                    8-Speed Automatic
-                  </span>
-                </label>
-              </div>
-            </FilterSection>
+            {/* Transmission Speed - REMOVED: Demo data only */}
 
-            {/* Exterior Color */}
-            <FilterSection
-              title="Exterior Color"
-              isCollapsed={collapsedFilters.exteriorColor}
-              onToggle={() => toggleFilter("exteriorColor")}
-            >
-              <div className="space-y-1">
-                {exteriorColors.map((color, index) => (
-                  <ColorSwatch
-                    key={index}
-                    color={color.color}
-                    name={color.name}
-                    count={color.count}
-                  />
-                ))}
-              </div>
-            </FilterSection>
+            {/* Exterior Color - REMOVED: Demo data only */}
 
-            {/* Interior Color */}
-            <FilterSection
-              title="Interior Color"
-              isCollapsed={collapsedFilters.interiorColor}
-              onToggle={() => toggleFilter("interiorColor")}
-            >
-              <div className="space-y-1">
-                {interiorColors.map((color, index) => (
-                  <ColorSwatch
-                    key={index}
-                    color={color.color}
-                    name={color.name}
-                    count={color.count}
-                  />
-                ))}
-              </div>
-            </FilterSection>
+            {/* Interior Color - REMOVED: Demo data only */}
 
             {/* Seller Type */}
             <FilterSection
@@ -2847,45 +2789,9 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* State */}
-            <FilterSection
-              title="State"
-              isCollapsed={collapsedFilters.state}
-              onToggle={() => toggleFilter("state")}
-            >
-              <div className="space-y-1">
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">Washington</span>
-                  <span className="carzino-filter-count ml-1">(12,456)</span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">Oregon</span>
-                  <span className="carzino-filter-count ml-1">(8,234)</span>
-                </label>
-              </div>
-            </FilterSection>
+            {/* State - REMOVED: Demo data only */}
 
-            {/* City */}
-            <FilterSection
-              title="City"
-              isCollapsed={collapsedFilters.city}
-              onToggle={() => toggleFilter("city")}
-            >
-              <div className="space-y-1">
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">Seattle</span>
-                  <span className="carzino-filter-count ml-1">(4,567)</span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input type="checkbox" className="mr-2" />
-                  <span className="carzino-filter-option">Portland</span>
-                  <span className="carzino-filter-count ml-1">(3,234)</span>
-                </label>
-              </div>
-            </FilterSection>
+            {/* City - REMOVED: Demo data only */}
 
             {/* Mobile Filter Action Buttons */}
             <div className="lg:hidden sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-6">
