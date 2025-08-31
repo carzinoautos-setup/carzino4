@@ -655,11 +655,8 @@ function MySQLVehiclesOriginalStyleInner() {
           }
         } else {
           console.warn("���️ Failed to fetch dealers:", response.status);
-          // Set fallback dealers for now
-          setAvailableDealers([
-            { name: "Bayside Auto Sales", count: 234 },
-            { name: "ABC Car Sales", count: 156 },
-          ]);
+          // Use empty array instead of demo dealers
+          setAvailableDealers([]);
         }
       } catch (error) {
         // Handle different types of errors gracefully
