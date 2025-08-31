@@ -110,6 +110,12 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     // Parse sorting parameter
     const sortBy = (req.query.sortBy as string) || "relevance";
 
+    console.log("🔍 DEBUG: Parsed filters to send to WooCommerce service:", {
+      filters,
+      sortBy,
+      hasFilters: Object.keys(filters).length > 0
+    });
+
     // Fetch vehicles from WordPress/WooCommerce
     const result = await vehicleService.getVehicles(pagination, filters, sortBy);
 
