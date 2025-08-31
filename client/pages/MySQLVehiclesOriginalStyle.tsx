@@ -323,18 +323,20 @@ function MySQLVehiclesOriginalStyleInner() {
       params.append("radius", appliedRadius);
     }
 
-    // Add filters
-    Object.entries(debouncedAppliedFilters).forEach(([key, value]) => {
-      if (Array.isArray(value) && value.length > 0) {
-        if (key === 'vehicleType') {
-          params.append('body_type', value.join(','));
-        } else {
-          params.append(key, value.join(','));
+    // Add filters (only if not empty)
+    if (debouncedAppliedFilters) {
+      Object.entries(debouncedAppliedFilters).forEach(([key, value]) => {
+        if (Array.isArray(value) && value.length > 0) {
+          if (key === 'vehicleType') {
+            params.append('body_type', value.join(','));
+          } else {
+            params.append(key, value.join(','));
+          }
+        } else if (typeof value === 'string' && value.trim()) {
+          params.append(key, value);
         }
-      } else if (typeof value === 'string' && value.trim()) {
-        params.append(key, value);
-      }
-    });
+      });
+    }
 
     return params.toString();
   }, [currentPage, debouncedSearchTerm, sortBy, appliedLocation, appliedRadius, debouncedAppliedFilters, resultsPerPage]);
@@ -721,7 +723,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Trucks": "🚚",
       "Pickup": "🚚",
       "Pickup Truck": "🚚",
-      "Crew Cab Truck": "����",
+      "Crew Cab Truck": "🚚",
       "Regular Cab Truck": "��",
       "Extended Cab Truck": "🚚",
       "Full Size Truck": "🚚",
