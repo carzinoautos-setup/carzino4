@@ -1711,6 +1711,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
     // Clear the search input
     setUnifiedSearch("");
+
+    // Close mobile filter panel after search
+    setMobileFiltersOpen(false);
   };
 
   // Geocoding function to convert ZIP to lat/lng using optimized backend
@@ -2173,6 +2176,7 @@ function MySQLVehiclesOriginalStyleInner() {
             overflow-x: hidden;
             display: block !important;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 100px !important; /* Extra space for fixed action buttons */
           }
 
           .mobile-filter-sidebar.open {
@@ -3739,9 +3743,9 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Mobile Filter Action Buttons */}
-            <div className="lg:hidden sticky bottom-0 bg-white p-4 mt-6 shadow-lg">
-              <div className="flex gap-3">
+            {/* Mobile Filter Action Buttons - Always Visible and Sticky */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white p-4 shadow-2xl border-t border-gray-200 z-50">
+              <div className="flex gap-3 max-w-md mx-auto">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
@@ -3755,10 +3759,13 @@ function MySQLVehiclesOriginalStyleInner() {
                   }}
                   className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors"
                 >
-                  Apply
+                  Apply Filters
                 </button>
               </div>
             </div>
+
+            {/* Spacer to prevent content from being hidden behind fixed buttons */}
+            <div className="lg:hidden h-20"></div>
           </div>
         </div>
 
