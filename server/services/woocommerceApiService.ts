@@ -634,12 +634,19 @@ export class WooCommerceApiService {
       if (Object.keys(appliedFilters).length > 0) {
         console.log(`�� Applying conditional filtering to ${allProducts.length} products with filters:`, appliedFilters);
 
-        // Transform products to vehicles for filtering (now async)
-        const transformedVehicles = await Promise.all(
-          allProducts.map((product, index) =>
-            this.transformProductToVehicle(product, index)
-          )
-        );
+        // Transform products to vehicles for filtering in batches
+        let transformedVehicles = [];
+        const batchSize = 10; // Process 10 products at a time
+
+        for (let i = 0; i < allProducts.length; i += batchSize) {
+          const batch = allProducts.slice(i, i + batchSize);
+          const batchResults = await Promise.all(
+            batch.map((product, batchIndex) =>
+              this.transformProductToVehicle(product, i + batchIndex)
+            )
+          );
+          transformedVehicles.push(...batchResults);
+        }
 
         // Apply the same filtering logic as in getVehicles
         const filteredVehicles = this.applyVehicleFilters(transformedVehicles, appliedFilters);
