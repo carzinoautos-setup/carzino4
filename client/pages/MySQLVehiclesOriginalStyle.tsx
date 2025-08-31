@@ -2375,6 +2375,51 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
+            {/* Make */}
+            <FilterSection
+              title="Make"
+              isCollapsed={collapsedFilters.make}
+              onToggle={() => toggleFilter("make")}
+            >
+              <div className="space-y-1">
+                {filterOptions.makes.length > 0 ? (
+                  filterOptions.makes
+                    .filter(makeOption => makeOption.count > 0) // Only show makes with vehicles
+                    .map((makeOption) => (
+                      <label
+                        key={makeOption.name}
+                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={appliedFilters.make.includes(makeOption.name)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.checked) {
+                              const newFilters = {
+                                ...appliedFilters,
+                                make: [...appliedFilters.make, makeOption.name],
+                              };
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                            } else {
+                              removeAppliedFilter("make", makeOption.name);
+                            }
+                          }}
+                        />
+                        <span className="carzino-filter-option">{makeOption.name}</span>
+                        <span className="carzino-filter-count ml-1">({makeOption.count})</span>
+                      </label>
+                    ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading makes...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
+
             {/* Condition */}
             <FilterSection
               title="Condition"
