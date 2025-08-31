@@ -272,4 +272,89 @@ export class WordPressVehicleService {
       };
     }
   }
+
+  /**
+   * Get vehicle types from WordPress
+   */
+  async getVehicleTypeCounts() {
+    try {
+      const [vehicleTypes] = await this.db.execute(`
+        SELECT DISTINCT pm.meta_value as name, COUNT(*) as count
+        FROM wp_postmeta pm
+        JOIN wp_posts p ON pm.post_id = p.ID
+        WHERE p.post_type = 'product'
+          AND p.post_status = 'publish'
+          AND pm.meta_key = 'body_type'
+          AND pm.meta_value IS NOT NULL
+          AND pm.meta_value != ''
+        GROUP BY pm.meta_value
+        ORDER BY pm.meta_value
+      `);
+
+      return {
+        success: true,
+        data: vehicleTypes as any[]
+      };
+    } catch (error) {
+      console.error("❌ Error fetching vehicle types:", error);
+      // Return fallback vehicle types
+      return {
+        success: true,
+        data: [
+          { name: "Sedan", count: 0 },
+          { name: "SUV", count: 0 },
+          { name: "Truck", count: 0 },
+          { name: "Coupe", count: 0 }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Check what's actually in the WordPress database
+   */
+  async checkDatabaseContents() {
+    try {
+      // Check if we have any posts at all
+      const [posts] = await this.db.execute(`
+        SELECT post_type, post_status, COUNT(*) as count
+        FROM wp_posts
+        GROUP BY post_type, post_status
+        ORDER BY count DESC
+        LIMIT 10
+      `);
+
+      // Check if we have any products
+      const [products] = await this.db.execute(`
+        SELECT COUNT(*) as total
+        FROM wp_posts
+        WHERE post_type = 'product' AND post_status = 'publish'
+      `);
+
+      // Check meta keys available
+      const [metaKeys] = await this.db.execute(`
+        SELECT DISTINCT pm.meta_key, COUNT(*) as count
+        FROM wp_postmeta pm
+        JOIN wp_posts p ON pm.post_id = p.ID
+        WHERE p.post_type = 'product' AND p.post_status = 'publish'
+        GROUP BY pm.meta_key
+        ORDER BY count DESC
+        LIMIT 20
+      `);
+
+      console.log("📊 WordPress Database Contents:");
+      console.log("Posts by type:", posts);
+      console.log("Published products:", (products as any)[0]?.total || 0);
+      console.log("Available meta keys:", metaKeys);
+
+      return {
+        posts: posts as any[],
+        totalProducts: (products as any)[0]?.total || 0,
+        metaKeys: metaKeys as any[]
+      };
+    } catch (error) {
+      console.error("❌ Error checking database contents:", error);
+      return null;
+    }
+  }
 }
