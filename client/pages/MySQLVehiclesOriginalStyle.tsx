@@ -615,10 +615,14 @@ export default function MySQLVehiclesOriginalStyle() {
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data) {
-            setVehicleTypes(data.data);
+            // Handle both array and object responses
+            const vehicleTypesArray = Array.isArray(data.data)
+              ? data.data
+              : data.data.vehicleTypes || data.data || [];
+            setVehicleTypes(vehicleTypesArray);
             console.log(
               "✅ Successfully loaded",
-              data.data.length,
+              vehicleTypesArray.length,
               "vehicle types",
             );
           }
