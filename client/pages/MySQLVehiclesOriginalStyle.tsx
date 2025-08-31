@@ -757,7 +757,12 @@ function MySQLVehiclesOriginalStyleInner() {
       console.log("🔍 Applied filters for conditional filtering:", currentFilters);
 
       // Set timeout for this request
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => {
+        if (!controller.signal.aborted) {
+          console.log("⏰ Filter options request timeout after 30 seconds");
+          controller.abort();
+        }
+      }, 30000); // 30 second timeout
 
       const response = await fetch(apiUrl, {
         method: "GET",
