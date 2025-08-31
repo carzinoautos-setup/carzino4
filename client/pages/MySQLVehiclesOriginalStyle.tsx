@@ -146,22 +146,6 @@ function MySQLVehiclesOriginalStyleInner() {
   const totalResults = apiResponse?.meta?.totalRecords || 0;
   const resultsPerPage = 20;
 
-  // Debug logging for rendering
-  console.log("📊 Render State:", {
-    vehiclesCount: vehicles.length,
-    totalResults,
-    totalPages,
-    loading,
-    error,
-    hasApiResponse: !!apiResponse,
-    filterOptions: {
-      makesCount: filterOptions.makes?.length,
-      sampleMakes: filterOptions.makes?.slice(0, 3)?.map(m => m.name),
-      conditionsCount: filterOptions.conditions?.length,
-      isEmpty: Object.keys(filterOptions).every(key => !filterOptions[key]?.length)
-    }
-  });
-
   // Filter states - exactly like original
   const [searchTerm, setSearchTerm] = useState("");
 
