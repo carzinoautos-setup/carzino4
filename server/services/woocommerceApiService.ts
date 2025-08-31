@@ -594,6 +594,33 @@ export class WooCommerceApiService {
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count);
 
+      const driveTypes = Object.entries(driveTypeCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const transmissions = Object.entries(transmissionCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const exteriorColors = Object.entries(exteriorColorCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10); // Limit to top 10 colors
+
+      const sellerTypes = Object.entries(sellerTypeCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const dealers = Object.entries(dealerCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10); // Limit to top 10 dealers
+
       // Get categories as vehicle types (excluding obvious non-vehicle categories)
       const excludeCategories = ['uncategorized', 'featured', 'sale', 'new arrivals'];
       const vehicleTypes = Object.entries(categoryMap)
@@ -606,7 +633,7 @@ export class WooCommerceApiService {
         .sort((a, b) => b.count - a.count)
         .slice(0, 15); // Limit to 15 vehicle types
 
-      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${vehicleTypes.length} vehicle types from meta data analysis`);
+      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} colors, ${vehicleTypes.length} vehicle types from meta data analysis`);
 
       return {
         success: true,
@@ -614,6 +641,11 @@ export class WooCommerceApiService {
           makes: makes,
           conditions: conditions,
           vehicleTypes: vehicleTypes,
+          driveTypes: driveTypes,
+          transmissions: transmissions,
+          exteriorColors: exteriorColors,
+          sellerTypes: sellerTypes,
+          dealers: dealers,
           totalVehicles: allProducts.length
         }
       };
