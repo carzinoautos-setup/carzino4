@@ -554,6 +554,8 @@ export class WooCommerceApiService {
 
       // Analyze products using same logic as transformWooCommerceProduct
       const makesCounts: { [key: string]: number } = {};
+      const modelCounts: { [key: string]: number } = {};
+      const trimCounts: { [key: string]: number } = {};
       const conditionCounts: { [key: string]: number } = {};
       const categoryMap: { [key: string]: number } = {};
       const driveTypeCounts: { [key: string]: number } = {};
