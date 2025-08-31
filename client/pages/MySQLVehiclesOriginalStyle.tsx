@@ -177,8 +177,11 @@ function MySQLVehiclesOriginalStyleInner() {
     driveTypes: { name: string; count: number }[];
     transmissions: { name: string; count: number }[];
     exteriorColors: { name: string; count: number }[];
+    interiorColors: { name: string; count: number }[];
     sellerTypes: { name: string; count: number }[];
     dealers: { name: string; count: number }[];
+    states: { name: string; count: number }[];
+    cities: { name: string; count: number }[];
     totalVehicles: number;
   }>({
     makes: [],
@@ -189,8 +192,11 @@ function MySQLVehiclesOriginalStyleInner() {
     driveTypes: [],
     transmissions: [],
     exteriorColors: [],
+    interiorColors: [],
     sellerTypes: [],
     dealers: [],
+    states: [],
+    cities: [],
     totalVehicles: 0
   });
   const [userLocation, setUserLocation] = useState<{
@@ -2589,7 +2595,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 make: [...appliedFilters.make, makeOption.name],
                               };
-                              console.log("🔧 Adding make filter:", newFilters);
+                              console.log("��� Adding make filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
