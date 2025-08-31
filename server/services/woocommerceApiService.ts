@@ -589,7 +589,7 @@ export class WooCommerceApiService {
       const sellerTypeCounts: { [key: string]: number } = {};
       const dealerCounts: { [key: string]: number } = {};
 
-      allProducts.forEach((product, index) => {
+      filteredProducts.forEach((product, index) => {
         // Helper function to get meta values (same as in transformWooCommerceProduct)
         const getMeta = (key: string): string => {
           if (!product.meta_data || !Array.isArray(product.meta_data)) return '';
