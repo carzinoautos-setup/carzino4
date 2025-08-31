@@ -436,11 +436,16 @@ function MySQLVehiclesOriginalStyleInner() {
           if (abortControllerRef.current === requestController &&
               !requestController.signal.aborted &&
               isMountedRef.current) {
-            console.log("⏰ Combined request timeout after 30 seconds");
             try {
               requestController.abort();
+              if (import.meta.env.DEV) {
+                console.log("⏰ Combined request timeout after 30 seconds");
+              }
             } catch (err) {
-              console.log("⏰ Combined timeout abort completed");
+              // Ignore timeout abort errors
+              if (import.meta.env.DEV) {
+                console.log("⏰ Timeout abort handled:", err?.message);
+              }
             }
           }
         }, 30000);
@@ -971,10 +976,10 @@ function MySQLVehiclesOriginalStyleInner() {
       // Trucks
       "Truck": "🚚",
       "Trucks": "🚚",
-      "Pickup": "����",
+      "Pickup": "🚚",
       "Pickup Truck": "🚚",
       "Crew Cab Truck": "🚚",
-      "Regular Cab Truck": "��",
+      "Regular Cab Truck": "���",
       "Extended Cab Truck": "🚚",
       "Full Size Truck": "🚚",
       "Compact Truck": "🚚",
@@ -1222,7 +1227,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Handle different types of errors gracefully
       if (error instanceof Error && error.name === "AbortError") {
-        console.log("🚫 Filter options request aborted (timeout, filter change, or navigation)");
+        console.log("��� Filter options request aborted (timeout, filter change, or navigation)");
         return; // Don't set fallback data for aborted requests
       } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
         console.warn("⚠️ Unable to connect to filter options API - using fallback data");
