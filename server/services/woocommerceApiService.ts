@@ -354,7 +354,7 @@ export class WooCommerceApiService {
       const endIndex = startIndex + pagination.pageSize;
       const paginatedVehicles = transformedVehicles.slice(startIndex, endIndex);
 
-      console.log(`✅ Fetched ${transformedVehicles.length} filtered products, showing ${paginatedVehicles.length} on page ${pagination.page}`);
+      console.log(`✅ Processed ${allProducts.length} total products, filtered to ${transformedVehicles.length} vehicles, showing ${paginatedVehicles.length} on page ${pagination.page}`);
 
       return {
         success: true,
