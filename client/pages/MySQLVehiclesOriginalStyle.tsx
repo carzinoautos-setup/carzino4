@@ -2068,51 +2068,48 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("make")}
             >
               <div className="space-y-1">
-                {[
-                  "Audi",
-                  "BMW",
-                  "Chevrolet",
-                  "Ford",
-                  "Honda",
-                  "Hyundai",
-                  "Mercedes-Benz",
-                  "Nissan",
-                ].map((make) => (
-                  <label
-                    key={make}
-                    className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.make.includes(make)}
-                      onChange={(e) => {
-                        console.log("🔧 Make filter clicked:", make, "checked:", e.target.checked);
-                        e.stopPropagation();
-                        try {
-                          if (e.target.checked) {
-                            const newFilters = {
-                              ...appliedFilters,
-                              make: [...appliedFilters.make, make],
-                            };
-                            console.log("🔧 Adding make filter:", newFilters);
-                            setAppliedFilters(newFilters);
-                            updateURLFromFilters(newFilters);
-                          } else {
-                            console.log("🔧 Removing make filter:", make);
-                            removeAppliedFilter("make", make);
+                {filterOptions.makes.length > 0 ? (
+                  filterOptions.makes.map((makeOption) => (
+                    <label
+                      key={makeOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.make.includes(makeOption.name)}
+                        onChange={(e) => {
+                          console.log("🔧 Make filter clicked:", makeOption.name, "checked:", e.target.checked);
+                          e.stopPropagation();
+                          try {
+                            if (e.target.checked) {
+                              const newFilters = {
+                                ...appliedFilters,
+                                make: [...appliedFilters.make, makeOption.name],
+                              };
+                              console.log("🔧 Adding make filter:", newFilters);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                            } else {
+                              console.log("🔧 Removing make filter:", makeOption.name);
+                              removeAppliedFilter("make", makeOption.name);
+                            }
+                          } catch (error) {
+                            console.error("❌ Error in make filter handler:", error);
                           }
-                        } catch (error) {
-                          console.error("❌ Error in make filter handler:", error);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{make}</span>
-                    <span className="carzino-filter-count ml-1">
-                      ({Math.floor(Math.random() * 1000) + 100})
-                    </span>
-                  </label>
-                ))}
+                        }}
+                      />
+                      <span className="carzino-filter-option">{makeOption.name}</span>
+                      <span className="carzino-filter-count ml-1">
+                        ({makeOption.count})
+                      </span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading makes...
+                  </div>
+                )}
               </div>
             </FilterSection>
 
