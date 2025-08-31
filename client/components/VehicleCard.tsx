@@ -175,7 +175,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               />
             ) : (
               <img
-                src="/icons/mileage-icon.svg"
+                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F0d6e752f5db34ab7b68d449bcd4c943c"
                 alt="Mileage icon"
                 className="w-4 h-4"
               />
