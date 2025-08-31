@@ -596,14 +596,14 @@ function MySQLVehiclesOriginalStyleInner() {
 
     try {
       // Abort any previous request safely
-      if (abortControllerRef.current) {
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
         try {
-          if (!abortControllerRef.current.signal.aborted) {
-            abortControllerRef.current.abort();
-          }
+          abortControllerRef.current.abort();
         } catch (err) {
-          // Ignore errors when aborting previous requests
-          console.log("🔄 Previous request already handled");
+          // Ignore abort errors - this is expected in some cases
+          if (import.meta.env.DEV) {
+            console.log("🔄 Previous request abort handled:", err?.message);
+          }
         }
       }
 
