@@ -923,9 +923,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters${params.toString() ? `?${params.toString()}` : ''}`;
 
-      // Check cache first (skip cache if forcing refresh)
+      // Check cache first (skip cache if forcing refresh or in development)
       const filterCacheKey = `filters_${params.toString()}`;
-      const cachedFilters = !forceRefresh ? apiCache.get(filterCacheKey) : null;
+      const cachedFilters = (!forceRefresh && !import.meta.env.DEV) ? apiCache.get(filterCacheKey) : null;
       if (cachedFilters) {
         if (import.meta.env.DEV) {
           console.log("⚡ Using cached filter options");
