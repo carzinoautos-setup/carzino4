@@ -1777,17 +1777,24 @@ function MySQLVehiclesOriginalStyleInner() {
         }
 
         input[type="checkbox"]:checked {
-          background-color: #dc2626;
-          border-color: #dc2626;
+          background-color: #dc2626 !important;
+          border-color: #dc2626 !important;
         }
 
         input[type="checkbox"]:checked::after {
-          content: '✓';
+          content: '✓' !important;
           position: absolute;
-          color: white;
-          font-size: 12px;
+          color: white !important;
+          font-size: 12px !important;
           top: -2px;
           left: 2px;
+          font-weight: bold !important;
+        }
+
+        /* Ensure checkbox visual state is properly maintained */
+        input[type="checkbox"]:focus {
+          outline: 2px solid #dc2626;
+          outline-offset: 2px;
         }
 
         @media (max-width: 639px) {
@@ -2573,16 +2580,23 @@ function MySQLVehiclesOriginalStyleInner() {
                         className="mr-2"
                         checked={appliedFilters.model.includes(modelOption.name)}
                         onChange={(e) => {
+                          console.log("🔧 Model filter clicked:", modelOption.name, "checked:", e.target.checked);
                           e.stopPropagation();
-                          if (e.target.checked) {
-                            const newFilters = {
-                              ...appliedFilters,
-                              model: [...appliedFilters.model, modelOption.name],
-                            };
-                            setAppliedFilters(newFilters);
-                            updateURLFromFilters(newFilters);
-                          } else {
-                            removeAppliedFilter("model", modelOption.name);
+                          try {
+                            if (e.target.checked) {
+                              const newFilters = {
+                                ...appliedFilters,
+                                model: [...appliedFilters.model, modelOption.name],
+                              };
+                              console.log("🔧 Adding model filter:", newFilters);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                            } else {
+                              console.log("🔧 Removing model filter:", modelOption.name);
+                              removeAppliedFilter("model", modelOption.name);
+                            }
+                          } catch (error) {
+                            console.error("❌ Error in model filter handler:", error);
                           }
                         }}
                       />
@@ -2618,16 +2632,23 @@ function MySQLVehiclesOriginalStyleInner() {
                         className="mr-2"
                         checked={appliedFilters.trim.includes(trimOption.name)}
                         onChange={(e) => {
+                          console.log("🔧 Trim filter clicked:", trimOption.name, "checked:", e.target.checked);
                           e.stopPropagation();
-                          if (e.target.checked) {
-                            const newFilters = {
-                              ...appliedFilters,
-                              trim: [...appliedFilters.trim, trimOption.name],
-                            };
-                            setAppliedFilters(newFilters);
-                            updateURLFromFilters(newFilters);
-                          } else {
-                            removeAppliedFilter("trim", trimOption.name);
+                          try {
+                            if (e.target.checked) {
+                              const newFilters = {
+                                ...appliedFilters,
+                                trim: [...appliedFilters.trim, trimOption.name],
+                              };
+                              console.log("🔧 Adding trim filter:", newFilters);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                            } else {
+                              console.log("🔧 Removing trim filter:", trimOption.name);
+                              removeAppliedFilter("trim", trimOption.name);
+                            }
+                          } catch (error) {
+                            console.error("❌ Error in trim filter handler:", error);
                           }
                         }}
                       />
