@@ -107,6 +107,17 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     if (req.query.paymentMax)
       filters.paymentMax = req.query.paymentMax as string;
 
+    // Parse new filter parameters
+    if (req.query.interiorColor) {
+      filters.interiorColor = (req.query.interiorColor as string).split(",");
+    }
+    if (req.query.city) {
+      filters.city = (req.query.city as string).split(",");
+    }
+    if (req.query.state) {
+      filters.state = (req.query.state as string).split(",");
+    }
+
     // Parse sorting parameter
     const sortBy = (req.query.sortBy as string) || "relevance";
 
