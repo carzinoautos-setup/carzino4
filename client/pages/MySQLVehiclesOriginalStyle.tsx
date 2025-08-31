@@ -1108,8 +1108,8 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, []);
 
-  // Performance: Only re-fetch filter options when filters significantly change
-  const filterChangeDebounced = useDebounce(appliedFilters, 1000); // 1 second debounce
+  // Performance: Only re-fetch filter options when filters change (reduced debounce)
+  const filterChangeDebounced = useDebounce(appliedFilters, 500); // 500ms debounce
 
   useEffect(() => {
     // Only re-fetch if we have some filters applied and component is mounted
@@ -2651,7 +2651,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 model: [...appliedFilters.model, modelOption.name],
                               };
-                              console.log("🔧 Adding model filter:", newFilters);
+                              console.log("��� Adding model filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
