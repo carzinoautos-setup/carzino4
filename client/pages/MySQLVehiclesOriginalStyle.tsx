@@ -297,8 +297,8 @@ function MySQLVehiclesOriginalStyleInner() {
     return modelsByMake[make] || [];
   };
 
-  // Fetch vehicles from API
-  const fetchVehicles = useCallback(async () => {
+  // Fetch vehicles from API with retry logic
+  const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Create new controller for this request
     const requestController = new AbortController();
 
