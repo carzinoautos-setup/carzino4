@@ -646,6 +646,9 @@ export class WooCommerceApiService {
       const driveTypeCounts: { [key: string]: number } = {};
       const transmissionCounts: { [key: string]: number } = {};
       const exteriorColorCounts: { [key: string]: number } = {};
+      const interiorColorCounts: { [key: string]: number } = {};
+      const cityCounts: { [key: string]: number } = {};
+      const stateCounts: { [key: string]: number } = {};
       const sellerTypeCounts: { [key: string]: number } = {};
       const dealerCounts: { [key: string]: number } = {};
 
@@ -733,16 +736,34 @@ export class WooCommerceApiService {
         }
 
         // Extract exterior color
-        const exteriorColor = getMeta('exterior_color') || getMeta('color') || "";
+        const exteriorColor = getMeta('exterior_color') || "";
         if (exteriorColor && exteriorColor.length > 0) {
           exteriorColorCounts[exteriorColor] = (exteriorColorCounts[exteriorColor] || 0) + 1;
+        }
+
+        // Extract interior color
+        const interiorColor = getMeta('interior_color') || "";
+        if (interiorColor && interiorColor.length > 0) {
+          interiorColorCounts[interiorColor] = (interiorColorCounts[interiorColor] || 0) + 1;
+        }
+
+        // Extract seller location data
+        const cityData = getMeta('city_seller') || "";
+        if (cityData && cityData.length > 0) {
+          cityCounts[cityData] = (cityCounts[cityData] || 0) + 1;
+        }
+
+        const stateData = getMeta('state_seller') || "";
+        if (stateData && stateData.length > 0) {
+          stateCounts[stateData] = (stateCounts[stateData] || 0) + 1;
         }
 
         // Extract seller type and dealer
         const sellerType = "Dealer"; // Default for WooCommerce products
         sellerTypeCounts[sellerType] = (sellerTypeCounts[sellerType] || 0) + 1;
 
-        const dealer = getMeta('dealer_name') || "Carzino Autos";
+        // Use correct dealer field: acount_name_seller
+        const dealer = getMeta('acount_name_seller') || getMeta('account_name_seller') || getMeta('business_name_seller') || "Carzino Autos";
         if (dealer) {
           dealerCounts[dealer] = (dealerCounts[dealer] || 0) + 1;
         }
