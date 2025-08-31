@@ -742,6 +742,8 @@ function MySQLVehiclesOriginalStyleInner() {
           // Set fallback data for now
           setFilterOptions({
             makes: [],
+            models: [],
+            trims: [],
             conditions: [],
             vehicleTypes: [
               { name: "Sedan", count: 0 },
