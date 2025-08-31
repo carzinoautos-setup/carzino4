@@ -380,7 +380,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       const apiUrl = `${getApiBaseUrl()}/api/vehicles?${params}`;
       console.log("🔍 Fetching vehicles from:", apiUrl);
-      console.log("🌐 Environment:", {
+      console.log("�� Environment:", {
         hostname: window.location.hostname,
         origin: window.location.origin,
         retryAttempt: retryCount
@@ -845,9 +845,9 @@ function MySQLVehiclesOriginalStyleInner() {
       }
     } catch (error) {
       // Handle different types of errors gracefully
-      if (error.name === "AbortError") {
-        console.log("🚫 Filter options request timed out after 30 seconds");
-        console.log("⚠️ This is likely due to WooCommerce API processing time - using fallback data");
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log("🚫 Filter options request aborted (timeout, filter change, or navigation)");
+        return; // Don't set fallback data for aborted requests
       } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
         console.warn("⚠️ Unable to connect to filter options API - using fallback data");
       } else {
