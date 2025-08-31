@@ -161,6 +161,10 @@ export class WooCommerceApiService {
       // Add stock status filter
       params.append('stock_status', 'instock'); // Only show in-stock items
 
+      // For vehicle-specific filters, we'll need to fetch more products and filter client-side
+      // since WooCommerce doesn't have built-in vehicle filters
+      params.set('per_page', '100'); // Fetch more to allow for filtering
+
       // Add sorting
       switch (sortBy) {
         case "price-low":
@@ -186,10 +190,13 @@ export class WooCommerceApiService {
       const totalRecords = Array.isArray(products) ? products.length * 10 : 0; // Rough estimate
       const totalPages = Math.ceil(totalRecords / pagination.pageSize);
 
-      // Transform products to vehicle format
-      const transformedVehicles = Array.isArray(products) 
+      // Transform products to vehicle format first
+      let transformedVehicles = Array.isArray(products)
         ? products.map((product, index) => this.transformProductToVehicle(product, index))
         : [];
+
+      // Apply client-side filtering for vehicle-specific attributes
+      transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
 
       console.log(`✅ Fetched ${transformedVehicles.length} products from WooCommerce`);
 
