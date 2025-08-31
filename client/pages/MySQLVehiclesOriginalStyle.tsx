@@ -470,6 +470,7 @@ export default function MySQLVehiclesOriginalStyle() {
     appliedLocation,
     appliedRadius,
     sortBy,
+    resultsPerPage,
   ]);
 
   // Load favorites from localStorage
