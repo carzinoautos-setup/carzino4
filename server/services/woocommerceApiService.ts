@@ -82,6 +82,24 @@ export class WooCommerceApiService {
   }
 
   /**
+   * PERFORMANCE: Cache helper methods
+   */
+  private getCachedData(key: string, maxAgeMs: number = 5 * 60 * 1000): any | null { // 5 minute default
+    const cached = this.cache.get(key);
+    if (cached && (Date.now() - cached.timestamp) < maxAgeMs) {
+      return cached.data;
+    }
+    if (cached) {
+      this.cache.delete(key); // Remove expired cache
+    }
+    return null;
+  }
+
+  private setCachedData(key: string, data: any): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  /**
    * Apply vehicle-specific filters to transformed products
    */
   private applyVehicleFilters(vehicles: any[], filters: SimpleVehicleFilters): any[] {
