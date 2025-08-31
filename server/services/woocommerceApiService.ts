@@ -742,6 +742,8 @@ export class WooCommerceApiService {
         success: true,
         data: {
           makes: makes,
+          models: models,
+          trims: trims,
           conditions: conditions,
           vehicleTypes: vehicleTypes,
           driveTypes: driveTypes,
