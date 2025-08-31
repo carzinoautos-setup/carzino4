@@ -1220,18 +1220,34 @@ function MySQLVehiclesOriginalStyleInner() {
       paymentMax,
       termLength,
       interestRate,
-      downPayment
+      downPayment,
+      currentAppliedPaymentMin: appliedFilters.paymentMin,
+      currentAppliedPaymentMax: appliedFilters.paymentMax
     });
 
-    setAppliedFilters((prev) => ({
-      ...prev,
-      paymentMin: paymentMin,
-      paymentMax: paymentMax,
-    }));
-    setCurrentPage(1); // Reset to first page when applying filters
+    // Only apply if values have actually changed
+    const newPaymentMin = paymentMin.trim();
+    const newPaymentMax = paymentMax.trim();
 
-    console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
-  }, [paymentMin, paymentMax, termLength, interestRate, downPayment]);
+    if (newPaymentMin !== (appliedFilters.paymentMin || "") ||
+        newPaymentMax !== (appliedFilters.paymentMax || "")) {
+
+      setAppliedFilters((prev) => {
+        const newFilters = {
+          ...prev,
+          paymentMin: newPaymentMin,
+          paymentMax: newPaymentMax,
+        };
+        console.log("💰 Payment filters state updated:", newFilters);
+        return newFilters;
+      });
+
+      setCurrentPage(1); // Reset to first page when applying filters
+      console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
+    } else {
+      console.log("💰 Payment filters unchanged, skipping update");
+    }
+  }, [paymentMin, paymentMax, termLength, interestRate, downPayment, appliedFilters.paymentMin, appliedFilters.paymentMax]);
 
   // Apply location filters handler
   const applyLocationFilters = () => {
@@ -2696,7 +2712,15 @@ function MySQLVehiclesOriginalStyleInner() {
                       placeholder="100"
                       value={paymentMin}
                       onChange={(e) => {
+                        console.log("💰 Payment min changed:", e.target.value);
                         setPaymentMin(e.target.value);
+                      }}
+                      onBlur={(e) => {
+                        // Auto-apply when user finishes editing
+                        if (e.target.value !== (appliedFilters.paymentMin || "")) {
+                          console.log("💰 Auto-applying payment min filter on blur:", e.target.value);
+                          applyPaymentFilters();
+                        }
                       }}
                       onClick={(e) => e.stopPropagation()}
                       className="carzino-search-input w-full pl-6 pr-8 py-1.5 border border-gray-300 rounded focus:outline-none"
@@ -2714,7 +2738,15 @@ function MySQLVehiclesOriginalStyleInner() {
                       placeholder="2,000"
                       value={paymentMax}
                       onChange={(e) => {
+                        console.log("💰 Payment max changed:", e.target.value);
                         setPaymentMax(e.target.value);
+                      }}
+                      onBlur={(e) => {
+                        // Auto-apply when user finishes editing
+                        if (e.target.value !== (appliedFilters.paymentMax || "")) {
+                          console.log("💰 Auto-applying payment max filter on blur:", e.target.value);
+                          applyPaymentFilters();
+                        }
                       }}
                       onClick={(e) => e.stopPropagation()}
                       className="carzino-search-input w-full pl-6 pr-8 py-1.5 border border-gray-300 rounded focus:outline-none"
