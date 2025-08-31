@@ -721,7 +721,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Trucks": "🚚",
       "Pickup": "🚚",
       "Pickup Truck": "🚚",
-      "Crew Cab Truck": "🚚",
+      "Crew Cab Truck": "����",
       "Regular Cab Truck": "��",
       "Extended Cab Truck": "🚚",
       "Full Size Truck": "🚚",
@@ -1120,10 +1120,11 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, [debouncedAppliedFilters]);
 
-  // Load initial filter options
+  // Load initial data on component mount
   useEffect(() => {
     if (isMountedRef.current) {
       fetchFilterOptions();
+      fetchVehicles(); // Also fetch vehicles on initial load
     }
   }, []);
 
