@@ -710,28 +710,77 @@ function MySQLVehiclesOriginalStyleInner() {
   // Vehicle type images - using emoji/icon-based approach for better UX
   useEffect(() => {
     // Use emoji icons for vehicle types instead of external images
-    setVehicleImages({
+    const vehicleImageMap = {
+      // Cars and Sedans
+      "Car": "🚗",
       "Cars": "🚗",
       "Sedan": "🚗",
+      "Sedans": "🚗",
+
+      // SUVs and Crossovers
       "SUV": "🚙",
+      "SUVs": "🚙",
       "Crossover": "🚙",
+      "Crossovers": "🚙",
       "Crossover/SUV": "🚙",
       "SUV / Crossover": "🚙",
+      "SUV/Crossover": "🚙",
+      "Sport Utility Vehicle": "🚙",
+
+      // Trucks
       "Truck": "🚚",
       "Trucks": "🚚",
+      "Pickup": "🚚",
+      "Pickup Truck": "🚚",
       "Crew Cab Truck": "🚚",
-      "Regular Cab Truck": "🚚",
+      "Regular Cab Truck": "��",
       "Extended Cab Truck": "🚚",
+      "Full Size Truck": "🚚",
+      "Compact Truck": "🚚",
+
+      // Sports Cars and Coupes
       "Coupe": "🏎️",
+      "Coupes": "🏎️",
+      "Sports Car": "🏎️",
+      "Sports Cars": "🏎️",
       "Convertible": "🏎️",
+      "Convertibles": "🏎️",
+      "Roadster": "🏎️",
+
+      // Hatchbacks and Compacts
       "Hatchback": "🚗",
-      "Van / Minivan": "🚐",
+      "Hatchbacks": "🚗",
+      "Compact": "🚗",
+      "Compact Car": "🚗",
+
+      // Vans and Minivans
       "Van": "🚐",
+      "Vans": "🚐",
       "Minivan": "🚐",
+      "Minivans": "🚐",
+      "Van / Minivan": "🚐",
+      "Cargo Van": "🚐",
+      "Passenger Van": "🚐",
+
+      // Wagons
       "Wagon": "🚗",
+      "Wagons": "🚗",
+      "Station Wagon": "🚗",
+
+      // Motorcycles
       "Motorcycle": "🏍️",
-      "RV": "🚐"
-    });
+      "Motorcycles": "🏍️",
+      "Bike": "🏍️",
+
+      // RVs and Large Vehicles
+      "RV": "🚐",
+      "RVs": "🚐",
+      "Motorhome": "🚐",
+      "Recreational Vehicle": "🚐"
+    };
+
+    console.log("🖼️ Setting up vehicle type images mapping...");
+    setVehicleImages(vehicleImageMap);
   }, []);
 
   // Load available dealers
