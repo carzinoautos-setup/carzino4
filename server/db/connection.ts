@@ -34,7 +34,7 @@ export function createDatabaseConnection(): mysql.Pool {
     acquireTimeout: 30000,
     timeout: 30000,
     reconnect: true, // Auto-reconnect
-    ssl: false, // Kinsta may require SSL, but let's try without first
+    ssl: { rejectUnauthorized: false }, // Enable SSL for Kinsta
     idleTimeout: 300000, // 5 minutes idle timeout
     maxIdle: 2, // Maximum idle connections
   };
