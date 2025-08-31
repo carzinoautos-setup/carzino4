@@ -946,6 +946,18 @@ function MySQLVehiclesOriginalStyleInner() {
         setVehicleTypes([]);
       }
     } catch (error) {
+      // Clear timeout on error
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      // Check if component is still mounted
+      if (!isMountedRef.current) {
+        console.log("🚫 Ignoring filter options error from unmounted component");
+        return;
+      }
+
       // Handle different types of errors gracefully
       if (error instanceof Error && error.name === "AbortError") {
         console.log("🚫 Filter options request aborted (timeout, filter change, or navigation)");
@@ -1008,17 +1020,19 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Load initial filter options
   useEffect(() => {
-    fetchFilterOptions();
+    if (isMountedRef.current) {
+      fetchFilterOptions();
+    }
   }, []);
 
   // Re-fetch filter options when applied filters change (for conditional filtering)
   useEffect(() => {
-    // Only re-fetch if we have some filters applied (avoid infinite loop)
+    // Only re-fetch if we have some filters applied and component is mounted (avoid infinite loop)
     const hasFilters = Object.values(appliedFilters).some(filter =>
       Array.isArray(filter) ? filter.length > 0 : Boolean(filter)
     );
 
-    if (hasFilters) {
+    if (hasFilters && isMountedRef.current) {
       console.log("🔄 Filters changed, re-fetching conditional filter options...");
       fetchFilterOptions(appliedFilters);
     }
