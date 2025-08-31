@@ -590,7 +590,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
     if (import.meta.env.DEV) {
       console.log("🔄 fetchVehicles called with params:", apiParams);
-      console.log("🔄 Current state:", { currentPage, loading, vehicleCount: vehicles.length });
+      console.log("�� Current state:", { currentPage, loading, vehicleCount: vehicles.length });
     }
 
     try {
@@ -1450,19 +1450,12 @@ function MySQLVehiclesOriginalStyleInner() {
     });
 
     if (import.meta.env.DEV) {
-      console.log("🔄 Clearing all filter state and refreshing with empty filters...");
+      console.log("🔄 Clearing all filter state and refreshing with COMBINED endpoint...");
     }
 
-    // Force refresh with truly empty filters to get ALL available options
+    // PERFORMANCE: Use combined endpoint to get fresh vehicles + filters + dealers
     if (isMountedRef.current) {
-      const trueEmptyFilters = {
-        condition: [], make: [], model: [], trim: [], year: [],
-        bodyStyle: [], vehicleType: [], driveType: [], transmission: [],
-        mileage: "", exteriorColor: [], interiorColor: [], sellerType: [],
-        dealer: [], state: [], city: [], priceMin: "", priceMax: "",
-        paymentMin: "", paymentMax: ""
-      };
-      fetchFilterOptions(trueEmptyFilters, true); // Force refresh with truly empty filters
+      fetchCombinedData(); // Single call instead of separate filter fetch
     }
 
     if (import.meta.env.DEV) {
