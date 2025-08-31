@@ -485,8 +485,8 @@ export class WooCommerceApiService {
 
     } catch (error) {
       console.error("❌ Error fetching products from WooCommerce:", error);
-      
-      // Return empty result on error
+
+      // Return empty result on error with better error handling
       return {
         success: false,
         data: [],
@@ -498,7 +498,7 @@ export class WooCommerceApiService {
           hasNextPage: false,
           hasPreviousPage: false
         },
-        error: error.message
+        error: error?.message || error?.toString() || 'Unknown API error'
       };
     }
   }
