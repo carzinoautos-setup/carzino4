@@ -984,6 +984,9 @@ export class WooCommerceApiService {
         dataKeys: Object.keys(result.data)
       });
 
+      // PERFORMANCE: Cache the result for 5 minutes
+      this.setCachedData(filterCacheKey, result);
+
       return result;
     } catch (error) {
       console.error("❌ Error fetching filter options:", error);
