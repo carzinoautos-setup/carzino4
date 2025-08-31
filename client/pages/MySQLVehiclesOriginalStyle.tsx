@@ -421,9 +421,9 @@ export default function MySQLVehiclesOriginalStyle() {
           "Unable to connect to vehicle database. Please refresh the page or try again later.",
         );
       } else if (err.name === "AbortError") {
-        setError(
-          "Request timed out. Please check your internet connection and try again.",
-        );
+        // Don't show error for aborted requests (user likely changed filters)
+        console.log("🚫 Request aborted (filter change or timeout)");
+        return; // Don't set error state for aborted requests
       } else if (
         err instanceof Error &&
         err.message.includes("API error: 404")
