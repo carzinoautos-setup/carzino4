@@ -259,3 +259,23 @@ export const simpleHealthCheck: RequestHandler = async (req, res) => {
     });
   }
 };
+
+/**
+ * Debug endpoint to check WordPress database contents
+ */
+export const checkWordPressData: RequestHandler = async (req, res) => {
+  try {
+    const result = await (vehicleService as any).checkDatabaseContents();
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error("Error checking WordPress data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to check database",
+      error: error.message
+    });
+  }
+};
