@@ -1045,12 +1045,22 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Apply payment filters handler
   const applyPaymentFilters = () => {
+    console.log("💰 Applying payment filters:", {
+      paymentMin,
+      paymentMax,
+      termLength,
+      interestRate,
+      downPayment
+    });
+
     setAppliedFilters((prev) => ({
       ...prev,
       paymentMin: paymentMin,
       paymentMax: paymentMax,
     }));
     setCurrentPage(1); // Reset to first page when applying filters
+
+    console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
   };
 
   // Apply location filters handler
