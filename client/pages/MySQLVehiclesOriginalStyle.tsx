@@ -2697,7 +2697,48 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Transmission Speed - REMOVED: Demo data only */}
 
-            {/* Exterior Color - REMOVED: Demo data only */}
+            {/* Exterior Color */}
+            <FilterSection
+              title="Exterior Color"
+              isCollapsed={collapsedFilters.exteriorColor}
+              onToggle={() => toggleFilter("exteriorColor")}
+            >
+              <div className="space-y-1">
+                {filterOptions.exteriorColors.length > 0 ? (
+                  filterOptions.exteriorColors
+                    .filter(color => color.count > 0) // Only show colors with vehicles
+                    .map((colorOption) => (
+                      <label
+                        key={colorOption.name}
+                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={appliedFilters.exteriorColor.includes(colorOption.name)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.checked) {
+                              setAppliedFilters((prev) => ({
+                                ...prev,
+                                exteriorColor: [...prev.exteriorColor, colorOption.name],
+                              }));
+                            } else {
+                              removeAppliedFilter("exteriorColor", colorOption.name);
+                            }
+                          }}
+                        />
+                        <span className="carzino-filter-option">{colorOption.name}</span>
+                        <span className="carzino-filter-count ml-1">({colorOption.count})</span>
+                      </label>
+                    ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    No exterior color data available
+                  </div>
+                )}
+              </div>
+            </FilterSection>
 
             {/* Interior Color - REMOVED: Demo data only */}
 
