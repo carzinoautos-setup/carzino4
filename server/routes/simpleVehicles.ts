@@ -234,8 +234,8 @@ export const simpleHealthCheck: RequestHandler = async (req, res) => {
   try {
     // Test service connectivity
     const testResult = await vehicleService.getVehicles(
-      {},
-      { page: 1, pageSize: 1 },
+      { page: 1, pageSize: 1 }, // pagination params
+      {}, // filters
     );
 
     res.status(200).json({
