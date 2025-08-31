@@ -80,8 +80,13 @@ export class WooCommerceApiService {
       make: filters.make,
       model: filters.model,
       condition: filters.condition,
+      vehicleType: filters.vehicleType,
+      driveType: filters.driveType,
+      transmission: filters.transmission,
+      exteriorColor: filters.exteriorColor,
       priceMin: filters.priceMin,
-      priceMax: filters.priceMax
+      priceMax: filters.priceMax,
+      allFilters: JSON.stringify(filters)
     });
 
     // Check if "model" is actually a trim level
