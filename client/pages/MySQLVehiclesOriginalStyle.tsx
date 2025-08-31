@@ -383,6 +383,11 @@ export default function MySQLVehiclesOriginalStyle() {
 
       clearTimeout(timeoutId);
 
+      // Clear the controller reference if this is still the active request
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
+
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
