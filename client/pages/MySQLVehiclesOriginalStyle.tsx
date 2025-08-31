@@ -1252,13 +1252,31 @@ function MySQLVehiclesOriginalStyleInner() {
       navigate("/cars-for-sale/", { replace: true });
     }
 
-    // Clear cache and force refresh filter options with empty filters to show all available options
+    // Critical fix: Reset filter options to empty state first, then force refresh
     apiCache.clear(); // Clear cache to ensure fresh data
+
+    // Reset filter options to empty state immediately
+    setFilterOptions({
+      makes: [], models: [], trims: [], conditions: [],
+      vehicleTypes: [], driveTypes: [], transmissions: [],
+      exteriorColors: [], interiorColors: [], sellerTypes: [],
+      dealers: [], states: [], cities: [], totalVehicles: 0
+    });
+
     if (import.meta.env.DEV) {
-      console.log("🔄 Refreshing filter options after clearing filters...");
+      console.log("🔄 Clearing all filter state and refreshing with empty filters...");
     }
+
+    // Force refresh with truly empty filters to get ALL available options
     if (isMountedRef.current) {
-      fetchFilterOptions(emptyFilters, true); // Force refresh
+      const trueEmptyFilters = {
+        condition: [], make: [], model: [], trim: [], year: [],
+        bodyStyle: [], vehicleType: [], driveType: [], transmission: [],
+        mileage: "", exteriorColor: [], interiorColor: [], sellerType: [],
+        dealer: [], state: [], city: [], priceMin: "", priceMax: "",
+        paymentMin: "", paymentMax: ""
+      };
+      fetchFilterOptions(trueEmptyFilters, true); // Force refresh with truly empty filters
     }
 
     if (import.meta.env.DEV) {
