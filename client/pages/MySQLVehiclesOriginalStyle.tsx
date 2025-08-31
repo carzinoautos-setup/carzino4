@@ -865,8 +865,8 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, []);
 
-  // Performance: Optimize filter options fetching with caching and reduced calls
-  const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters) => {
+  // Fix: Optimize filter options fetching - support force refresh to avoid demo data
+  const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters, forceRefresh = false) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
       console.log("🚫 Component unmounted, skipping filter options fetch");
