@@ -2986,7 +2986,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <input
                     type="text"
                     placeholder="Down Payment: $2,000"
-                    value={`Down Payment: ${downPayment}`}
+                    value={`Down Payment: $${formatPrice(downPayment)}`}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^\d]/g, "");
                       setDownPayment(value);
