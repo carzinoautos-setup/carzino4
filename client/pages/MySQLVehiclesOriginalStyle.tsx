@@ -721,15 +721,44 @@ function MySQLVehiclesOriginalStyleInner() {
           setVehicleTypes([]);
         }
       } catch (error) {
-        console.error("❌ Error fetching vehicle types:", error);
-        // Set fallback data for now
-        setFilterOptions({
-          makes: [],
-          conditions: [],
-          vehicleTypes: [],
+        // Handle different types of errors gracefully
+        if (error.name === "AbortError") {
+          console.log("🚫 Filter options request timed out");
+        } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+          console.warn("⚠️ Unable to connect to filter options API - using fallback data");
+        } else {
+          console.error("❌ Error fetching filter options:", error);
+        }
+
+        // Set fallback data with common makes for basic functionality
+        const fallbackFilterOptions = {
+          makes: [
+            { name: "Ford", count: 0 },
+            { name: "Chevrolet", count: 0 },
+            { name: "Toyota", count: 0 },
+            { name: "Honda", count: 0 },
+            { name: "BMW", count: 0 },
+            { name: "Audi", count: 0 },
+            { name: "Mercedes-Benz", count: 0 },
+            { name: "Nissan", count: 0 }
+          ],
+          conditions: [
+            { name: "Used", count: 0 },
+            { name: "New", count: 0 },
+            { name: "Certified", count: 0 }
+          ],
+          vehicleTypes: [
+            { name: "Sedan", count: 0 },
+            { name: "SUV", count: 0 },
+            { name: "Truck", count: 0 },
+            { name: "Coupe", count: 0 }
+          ],
           totalVehicles: 0
-        });
-        setVehicleTypes([]);
+        };
+
+        setFilterOptions(fallbackFilterOptions);
+        setVehicleTypes(fallbackFilterOptions.vehicleTypes);
+        console.log("📝 Using fallback filter data - filters will work but counts may be inaccurate");
       }
     };
 
