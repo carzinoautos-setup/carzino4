@@ -2460,7 +2460,9 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("vehicleType")}
             >
               <div className="grid grid-cols-2 gap-2">
-                {Array.isArray(vehicleTypes) && vehicleTypes.map((type, index) => (
+                {Array.isArray(vehicleTypes) && vehicleTypes
+                  .filter(type => type.count > 0) // Only show vehicle types with vehicles
+                  .map((type, index) => (
                   <VehicleTypeCard
                     key={index}
                     type={type.name}
