@@ -407,7 +407,7 @@ export class SimpleMockVehicleService {
     return this.vehicles.find((vehicle) => vehicle.id === id) || null;
   }
 
-  async getDealers(): Promise<{ name: string; count: number }[]> {
+  async getDealers(): Promise<{ success: boolean; data: { name: string; count: number }[] }> {
     // Get dealers only from vehicles where seller_type = "Dealer" AND valid body_type
     const dealerVehicles = this.vehicles.filter(
       (v) =>
@@ -429,7 +429,10 @@ export class SimpleMockVehicleService {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    return dealers;
+    return {
+      success: true,
+      data: dealers
+    };
   }
 
   async getVehicleTypeCounts(): Promise<{ name: string; count: number }[]> {
@@ -456,11 +459,24 @@ export class SimpleMockVehicleService {
     return types;
   }
 
-  async getFilterOptions(): Promise<{
-    makes: string[];
-    conditions: string[];
-    driveTypes: string[];
-    sellerTypes: string[];
+  async getFilterOptions(appliedFilters: SimpleVehicleFilters = {}): Promise<{
+    success: boolean;
+    data: {
+      makes: { name: string; count: number }[];
+      models: { name: string; count: number }[];
+      trims: { name: string; count: number }[];
+      conditions: { name: string; count: number }[];
+      vehicleTypes: { name: string; count: number }[];
+      driveTypes: { name: string; count: number }[];
+      transmissions: { name: string; count: number }[];
+      exteriorColors: { name: string; count: number }[];
+      interiorColors: { name: string; count: number }[];
+      cities: { name: string; count: number }[];
+      states: { name: string; count: number }[];
+      sellerTypes: { name: string; count: number }[];
+      dealers: { name: string; count: number }[];
+      totalVehicles: number;
+    };
   }> {
     // Only include options from vehicles with valid body_type
     const validVehicles = this.vehicles.filter(
@@ -483,11 +499,35 @@ export class SimpleMockVehicleService {
       new Set(validVehicles.map((v) => v.seller_type)),
     ).sort();
 
+    // Convert to the format expected by the frontend (with counts)
+    const makesWithCounts = makes.map(make => ({ name: make, count: validVehicles.filter(v => v.title.includes(make)).length }));
+    const conditionsWithCounts = conditions.map(condition => ({ name: condition, count: validVehicles.filter(v => v.condition === condition).length }));
+    const driveTypesWithCounts = driveTypes.map(driveType => ({ name: driveType, count: validVehicles.filter(v => v.drivetrain === driveType).length }));
+    const sellerTypesWithCounts = sellerTypes.map(sellerType => ({ name: sellerType, count: validVehicles.filter(v => v.seller_type === sellerType).length }));
+
     return {
-      makes,
-      conditions,
-      driveTypes,
-      sellerTypes,
+      success: true,
+      data: {
+        makes: makesWithCounts,
+        models: [], // Could be expanded
+        trims: [], // Could be expanded
+        conditions: conditionsWithCounts,
+        vehicleTypes: Array.from(new Set(validVehicles.map(v => v.body_type))).map(type => ({ name: type, count: validVehicles.filter(v => v.body_type === type).length })),
+        driveTypes: driveTypesWithCounts,
+        transmissions: Array.from(new Set(validVehicles.map(v => v.transmission))).map(trans => ({ name: trans, count: validVehicles.filter(v => v.transmission === trans).length })),
+        exteriorColors: [], // Could be expanded
+        interiorColors: [], // Could be expanded
+        cities: [], // Could be expanded
+        states: [], // Could be expanded
+        sellerTypes: sellerTypesWithCounts,
+        dealers: this.vehicles.filter(v => v.seller_type === 'Dealer').reduce((acc, v) => {
+          const existing = acc.find(d => d.name === v.dealer);
+          if (existing) existing.count++;
+          else acc.push({ name: v.dealer, count: 1 });
+          return acc;
+        }, [] as { name: string; count: number }[]),
+        totalVehicles: validVehicles.length
+      }
     };
   }
 }
