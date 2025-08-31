@@ -525,13 +525,33 @@ export class WooCommerceApiService {
       const sellerTypeCounts: { [key: string]: number } = {};
       const dealerCounts: { [key: string]: number } = {};
 
-      allProducts.forEach(product => {
+      allProducts.forEach((product, index) => {
         // Helper function to get meta values (same as in transformWooCommerceProduct)
         const getMeta = (key: string): string => {
           if (!product.meta_data || !Array.isArray(product.meta_data)) return '';
           const meta = product.meta_data.find((item: any) => item.key === key);
           return meta?.value ? String(meta.value).trim() : '';
         };
+
+        // Debug: Log first few products' meta data to see what fields are actually available
+        if (index < 3) {
+          console.log(`🔍 Product ${index + 1} Debug:`, {
+            id: product.id,
+            name: product.name,
+            categories: product.categories?.map(c => c.name),
+            metaKeys: product.meta_data?.map(m => m.key).slice(0, 10) || [],
+            sampleMeta: {
+              make: getMeta('make'),
+              vehicle_make: getMeta('vehicle_make'),
+              model: getMeta('model'),
+              vehicle_model: getMeta('vehicle_model'),
+              condition: getMeta('condition'),
+              vehicle_condition: getMeta('vehicle_condition'),
+              year: getMeta('year'),
+              vehicle_year: getMeta('vehicle_year')
+            }
+          });
+        }
 
         // Extract make using same logic as transformWooCommerceProduct
         const make = getMeta('make') || getMeta('vehicle_make') || product.categories?.[0]?.name || "";
