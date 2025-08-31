@@ -1366,11 +1366,11 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, [debouncedAppliedFilters]);
 
-  // Load initial data on component mount
+  // Load initial data on component mount - OPTIMIZED: Single combined call
   useEffect(() => {
     if (isMountedRef.current) {
       if (import.meta.env.DEV) {
-        console.log("🚀 Component mounted - starting initial data load");
+        console.log("🚀 Component mounted - starting COMBINED data load");
         console.log("📊 Initial state:", {
           appliedFilters,
           searchTerm,
@@ -1378,10 +1378,10 @@ function MySQLVehiclesOriginalStyleInner() {
           loading
         });
       }
-      fetchFilterOptions();
-      fetchVehicles(); // Also fetch vehicles on initial load
+      // PERFORMANCE: Single call instead of 3 separate calls
+      fetchCombinedData();
     }
-  }, []);
+  }, [fetchCombinedData]);
 
   // Performance: Only re-fetch filter options when filters change (reduced debounce)
   const filterChangeDebounced = useDebounce(appliedFilters, 500); // 500ms debounce
@@ -2675,7 +2675,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         onClick={() => removeAppliedFilter("driveType", item)}
                         className="ml-1 text-white hover:text-gray-300"
                       >
-                        ×
+                        ��
                       </button>
                     </span>
                   ))}
