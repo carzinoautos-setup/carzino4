@@ -242,7 +242,7 @@ export class WooCommerceApiService {
 
     // Debug: Log first few products' transformation
     if (index < 2) {
-      console.log(`🚗 Transforming Product ${index + 1}:`, {
+      console.log(`�� Transforming Product ${index + 1}:`, {
         id: product.id,
         name: product.name,
         price: product.price,
@@ -293,8 +293,13 @@ export class WooCommerceApiService {
     const price = parseFloat(product.price || product.regular_price || 0);
     const estimatedPayment = price > 0 ? Math.round(price / 60) : 0; // Rough 60-month estimate
 
-    // Fetch seller data using seller_account_number
-    const sellerAccountNumber = getMeta('seller_account_number') || getMeta('_vehicle_seller_account');
+    // Fetch seller data using seller_account_number (check multiple possible field names)
+    const sellerAccountNumber = getMeta('seller_account_number') ||
+                                getMeta('_vehicle_seller_account') ||
+                                getMeta('account_number_seller') ||
+                                getMeta('_account_number_seller');
+
+    console.log(`🔍 Seller account lookup for product ${product.id}: ${sellerAccountNumber}`);
     const sellerData = await this.fetchSellerData(sellerAccountNumber);
 
     return {
