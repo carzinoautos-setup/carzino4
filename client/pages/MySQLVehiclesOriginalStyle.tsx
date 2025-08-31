@@ -366,7 +366,12 @@ export default function MySQLVehiclesOriginalStyle() {
       console.log("🔍 Fetching vehicles from:", apiUrl);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      abortControllerRef.current = controller;
+      const timeoutId = setTimeout(() => {
+        if (abortControllerRef.current === controller) {
+          controller.abort();
+        }
+      }, 30000); // 30 second timeout
 
       const response = await fetch(apiUrl, {
         method: "GET",
