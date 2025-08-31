@@ -3508,8 +3508,12 @@ export default function MySQLVehiclesOriginalStyle() {
               </div>
             ) : (
               <div>
+                {/* Debug info */}
+                <div className="text-xs text-gray-500 mb-2 p-2 bg-yellow-50 rounded">
+                  🔍 Debug: vehicles={vehicles.length}, displayed={displayedVehicles.length}, loading={loading.toString()}, error={error || 'none'}
+                </div>
                 <div className="vehicle-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                  {displayedVehicles.map((vehicle) => (
+                  {displayedVehicles.length > 0 ? displayedVehicles.map((vehicle) => (
                     <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
@@ -3520,7 +3524,12 @@ export default function MySQLVehiclesOriginalStyle() {
                       interestRate={interestRate}
                       downPayment={downPayment}
                     />
-                  ))}
+                  )) : (
+                    <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+                      🚗 No vehicles found matching current filters.<br/>
+                      <small>Total vehicles loaded: {vehicles.length}</small>
+                    </div>
+                  )}
                 </div>
 
                 {viewMode === "all" && apiResponse?.meta && (
