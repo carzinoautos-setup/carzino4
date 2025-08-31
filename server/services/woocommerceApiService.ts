@@ -300,17 +300,26 @@ export class WooCommerceApiService {
       // Apply client-side filtering for vehicle-specific attributes
       transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
 
-      console.log(`✅ Fetched ${transformedVehicles.length} products from WooCommerce`);
+      // Calculate pagination based on filtered results
+      const filteredTotalRecords = transformedVehicles.length;
+      const filteredTotalPages = Math.ceil(filteredTotalRecords / pagination.pageSize);
+
+      // Apply pagination to filtered results
+      const startIndex = (pagination.page - 1) * pagination.pageSize;
+      const endIndex = startIndex + pagination.pageSize;
+      const paginatedVehicles = transformedVehicles.slice(startIndex, endIndex);
+
+      console.log(`✅ Fetched ${transformedVehicles.length} filtered products, showing ${paginatedVehicles.length} on page ${pagination.page}`);
 
       return {
         success: true,
-        data: transformedVehicles,
+        data: paginatedVehicles,
         meta: {
-          totalRecords,
-          totalPages,
+          totalRecords: filteredTotalRecords,
+          totalPages: filteredTotalPages,
           currentPage: pagination.page,
           pageSize: pagination.pageSize,
-          hasNextPage: pagination.page < totalPages,
+          hasNextPage: pagination.page < filteredTotalPages,
           hasPreviousPage: pagination.page > 1
         }
       };
