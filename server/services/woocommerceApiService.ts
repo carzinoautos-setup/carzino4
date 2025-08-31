@@ -1177,7 +1177,8 @@ export class WooCommerceApiService {
     try {
       console.log(`🔍 Fetching vehicle with ID: ${id}`);
 
-      const product = await this.makeRequest(`products/${id}`);
+      const response = await this.makeRequest(`products/${id}`);
+      const product = response.data;
 
       if (!product) {
         return null;
