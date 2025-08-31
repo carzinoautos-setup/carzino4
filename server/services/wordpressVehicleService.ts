@@ -137,7 +137,7 @@ export class WordPressVehicleService {
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'condition' LIMIT 1) as condition,
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'drivetrain' LIMIT 1) as drivetrain,
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'transmission' LIMIT 1) as transmission,
-          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_price' LIMIT 1) as price,
+          (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) as price,
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'doors' LIMIT 1) as doors,
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'exterior_color' LIMIT 1) as exterior_color,
           (SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_vehicle_seller_account' LIMIT 1) as seller_account,
