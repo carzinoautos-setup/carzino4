@@ -2636,45 +2636,60 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.makes.length > 0 ? (
-                  filterOptions.makes
-                    .filter(makeOption => makeOption.count > 0) // Only show makes with vehicles
-                    .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically
-                    .map((makeOption) => (
-                    <label
-                      key={makeOption.name}
-                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.make.includes(makeOption.name)}
-                        onChange={(e) => {
-                          console.log("🔧 Make filter clicked:", makeOption.name, "checked:", e.target.checked);
-                          e.stopPropagation();
-                          try {
-                            if (e.target.checked) {
-                              const newFilters = {
-                                ...appliedFilters,
-                                make: [...appliedFilters.make, makeOption.name],
-                              };
-                              console.log("🔧 Adding make filter:", newFilters);
-                              setAppliedFilters(newFilters);
-                              updateURLFromFilters(newFilters);
-                            } else {
-                              console.log("🔧 Removing make filter:", makeOption.name);
-                              removeAppliedFilter("make", makeOption.name);
+                  <>
+                    {filterOptions.makes
+                      .filter(makeOption => makeOption.count > 0) // Only show makes with vehicles
+                      .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically
+                      .slice(0, showAllMakes ? undefined : 10) // Show first 10 or all
+                      .map((makeOption) => (
+                      <label
+                        key={makeOption.name}
+                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={appliedFilters.make.includes(makeOption.name)}
+                          onChange={(e) => {
+                            console.log("🔧 Make filter clicked:", makeOption.name, "checked:", e.target.checked);
+                            e.stopPropagation();
+                            try {
+                              if (e.target.checked) {
+                                const newFilters = {
+                                  ...appliedFilters,
+                                  make: [...appliedFilters.make, makeOption.name],
+                                };
+                                console.log("🔧 Adding make filter:", newFilters);
+                                setAppliedFilters(newFilters);
+                                updateURLFromFilters(newFilters);
+                              } else {
+                                console.log("🔧 Removing make filter:", makeOption.name);
+                                removeAppliedFilter("make", makeOption.name);
+                              }
+                            } catch (error) {
+                              console.error("❌ Error in make filter handler:", error);
                             }
-                          } catch (error) {
-                            console.error("❌ Error in make filter handler:", error);
-                          }
+                          }}
+                        />
+                        <span className="carzino-filter-option">{makeOption.name}</span>
+                        <span className="carzino-filter-count ml-1">
+                          ({makeOption.count})
+                        </span>
+                      </label>
+                    ))}
+                    {/* Show More/Show Less button */}
+                    {filterOptions.makes.filter(makeOption => makeOption.count > 0).length > 10 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAllMakes(!showAllMakes);
                         }}
-                      />
-                      <span className="carzino-filter-option">{makeOption.name}</span>
-                      <span className="carzino-filter-count ml-1">
-                        ({makeOption.count})
-                      </span>
-                    </label>
-                  ))
+                        className="carzino-show-more text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer p-1 w-full text-left"
+                      >
+                        {showAllMakes ? 'Show Less' : 'Show More'}
+                      </button>
+                    )}
+                  </>
                 ) : (
                   <div className="text-gray-500 text-sm p-2">
                     Loading makes...
