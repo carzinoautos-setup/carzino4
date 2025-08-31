@@ -712,7 +712,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Crossovers": "🚙",
       "Crossover/SUV": "🚙",
       "SUV / Crossover": "🚙",
-      "SUV/Crossover": "🚙",
+      "SUV/Crossover": "����",
       "Sport Utility Vehicle": "🚙",
 
       // Trucks
@@ -1276,15 +1276,14 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Apply payment filters handler
   const applyPaymentFilters = useCallback(() => {
-    console.log("💰 Applying payment filters:", {
-      paymentMin,
-      paymentMax,
-      termLength,
-      interestRate,
-      downPayment,
-      currentAppliedPaymentMin: appliedFilters.paymentMin,
-      currentAppliedPaymentMax: appliedFilters.paymentMax
-    });
+    if (import.meta.env.DEV) {
+      console.log("💰 Applying payment filters:", {
+        paymentMin,
+        paymentMax,
+        currentAppliedPaymentMin: appliedFilters.paymentMin,
+        currentAppliedPaymentMax: appliedFilters.paymentMax
+      });
+    }
 
     // Only apply if values have actually changed
     const newPaymentMin = paymentMin.trim();
@@ -1299,7 +1298,9 @@ function MySQLVehiclesOriginalStyleInner() {
           paymentMin: newPaymentMin,
           paymentMax: newPaymentMax,
         };
-        console.log("💰 Payment filters state updated:", newFilters);
+        if (import.meta.env.DEV) {
+          console.log("💰 Payment filters state updated:", newFilters);
+        }
         return newFilters;
       });
 
