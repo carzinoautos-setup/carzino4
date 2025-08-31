@@ -15,12 +15,8 @@ export const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({
   isSelected,
   onToggle,
 }) => {
-  // Use placeholder for all vehicle types as requested by user
-  const getVehicleImage = () => {
-    return '/placeholder.svg'; // Use placeholder instead of specific images
-  };
-
-  const vehicleImage = getVehicleImage();
+  // Always use placeholder as requested by user
+  const vehicleImage = '/placeholder.svg';
 
   return (
     <div
