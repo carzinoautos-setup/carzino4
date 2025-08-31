@@ -485,7 +485,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Only handle errors for the current active request and if component is mounted
       if (abortControllerRef.current !== requestController || !isMountedRef.current) {
-        console.log("🚫 Ignoring error from superseded request or unmounted component");
+        console.log("�� Ignoring error from superseded request or unmounted component");
         return;
       }
 
@@ -571,7 +571,7 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
       }
     }
-  }, [apiParams, currentPage, resultsPerPage]);
+  }, [apiParams]);
 
   // Cleanup effect to abort pending requests on unmount
   useEffect(() => {
