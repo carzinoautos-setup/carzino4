@@ -1157,13 +1157,16 @@ function MySQLVehiclesOriginalStyleInner() {
   const clearAllFilters = useCallback(() => {
     console.log("🧹 Clearing all filters and resetting state");
 
+    // Reset all filter-related state
     setSearchTerm("");
     setUnifiedSearch("");
     setZipCode(""); // Reset ZIP code
     setRadius("200"); // Reset to default radius
     setAppliedLocation(null);
     setAppliedRadius("200");
-    setAppliedFilters({
+
+    // Reset all applied filters
+    const emptyFilters = {
       condition: [],
       make: [],
       model: [],
@@ -1181,7 +1184,11 @@ function MySQLVehiclesOriginalStyleInner() {
       priceMax: "",
       paymentMin: "",
       paymentMax: "",
-    });
+    };
+
+    setAppliedFilters(emptyFilters);
+
+    // Reset price and payment input fields
     setPriceMin("10000");
     setPriceMax("100000");
     setPaymentMin("100");
@@ -1196,10 +1203,11 @@ function MySQLVehiclesOriginalStyleInner() {
       navigate("/cars-for-sale/", { replace: true });
     }
 
-    // Force refresh filter options with empty filters
-    setTimeout(() => {
-      fetchFilterOptions({});
-    }, 100);
+    // Immediately refresh filter options with empty filters to show all available options
+    console.log("🔄 Refreshing filter options after clearing filters...");
+    if (isMountedRef.current) {
+      fetchFilterOptions(emptyFilters);
+    }
 
     console.log("✅ All filters cleared successfully");
   }, [location.pathname, navigate, fetchFilterOptions]);
