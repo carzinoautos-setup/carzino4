@@ -38,6 +38,9 @@ interface Vehicle {
   location: string;
   phone: string;
   seller_type: string;
+  city_seller?: string;
+  state_seller?: string;
+  zip_seller?: string;
 }
 
 // API types
