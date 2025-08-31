@@ -65,6 +65,108 @@ export class WooCommerceApiService {
   }
 
   /**
+   * Apply vehicle-specific filters to transformed products
+   */
+  private applyVehicleFilters(vehicles: any[], filters: SimpleVehicleFilters): any[] {
+    let filteredVehicles = [...vehicles];
+
+    console.log(`🔍 Applying filters to ${filteredVehicles.length} vehicles:`, {
+      make: filters.make,
+      model: filters.model,
+      condition: filters.condition,
+      priceMin: filters.priceMin,
+      priceMax: filters.priceMax
+    });
+
+    // Filter by make
+    if (filters.make && filters.make.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        const vehicleMake = this.extractMakeFromTitle(vehicle.title);
+        return filters.make.some(make =>
+          vehicleMake.toLowerCase().includes(make.toLowerCase())
+        );
+      });
+      console.log(`📊 After make filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by model
+    if (filters.model && filters.model.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        const vehicleModel = this.extractModelFromTitle(vehicle.title);
+        return filters.model.some(model =>
+          vehicleModel.toLowerCase().includes(model.toLowerCase())
+        );
+      });
+      console.log(`📊 After model filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by condition
+    if (filters.condition && filters.condition.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        return filters.condition.some(condition =>
+          vehicle.badges.some((badge: string) =>
+            badge.toLowerCase().includes(condition.toLowerCase())
+          )
+        );
+      });
+      console.log(`📊 After condition filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by price range
+    if (filters.priceMin || filters.priceMax) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        if (!vehicle.salePrice) return false;
+
+        const price = parseFloat(vehicle.salePrice.replace(/[^\d.]/g, ''));
+
+        if (filters.priceMin && price < parseFloat(filters.priceMin)) {
+          return false;
+        }
+
+        if (filters.priceMax && price > parseFloat(filters.priceMax)) {
+          return false;
+        }
+
+        return true;
+      });
+      console.log(`📊 After price filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by vehicle type (categories)
+    if (filters.vehicleType && filters.vehicleType.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        return filters.vehicleType.some(type =>
+          vehicle.categories?.some((cat: string) =>
+            cat.toLowerCase().includes(type.toLowerCase())
+          ) || vehicle.title.toLowerCase().includes(type.toLowerCase())
+        );
+      });
+      console.log(`📊 After vehicle type filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    console.log(`✅ Final filtered results: ${filteredVehicles.length} vehicles`);
+    return filteredVehicles;
+  }
+
+  /**
+   * Extract make from vehicle title
+   */
+  private extractMakeFromTitle(title: string): string {
+    const titleParts = title.split(' ');
+    // Usually the make is the second part (after year)
+    return titleParts.length > 1 ? titleParts[1] : '';
+  }
+
+  /**
+   * Extract model from vehicle title
+   */
+  private extractModelFromTitle(title: string): string {
+    const titleParts = title.split(' ');
+    // Usually the model is the third part (after year make)
+    return titleParts.length > 2 ? titleParts[2] : '';
+  }
+
+  /**
    * Transform WooCommerce product to vehicle format
    */
   private transformProductToVehicle(product: any, index: number): any {
