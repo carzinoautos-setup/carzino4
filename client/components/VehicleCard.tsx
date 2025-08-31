@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Gauge, Settings, ChevronDown, Heart, Check } from "lucide-react";
+import { ChevronDown, Heart, Check } from "lucide-react";
 
 interface Vehicle {
   id: number;
