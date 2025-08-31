@@ -15,30 +15,36 @@ export const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({
   isSelected,
   onToggle,
 }) => {
-  // Get the image for this vehicle type or provide a fallback
+  // Get the image URL for this vehicle type or provide a fallback
   const getVehicleImage = (vehicleType: string) => {
     if (vehicleImages[vehicleType]) {
       return vehicleImages[vehicleType];
     }
 
-    // Fallback logic based on common vehicle type keywords
+    // Fallback logic based on common vehicle type keywords with image URLs
     const lowerType = vehicleType.toLowerCase();
     if (lowerType.includes('suv') || lowerType.includes('crossover')) {
-      return '🚙';
+      return 'https://images.unsplash.com/photo-1566473965997-3de9c817e938?w=64&h=64&fit=crop&crop=center';
     } else if (lowerType.includes('truck') || lowerType.includes('pickup')) {
-      return '🚚';
+      return 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=64&h=64&fit=crop&crop=center';
     } else if (lowerType.includes('van') || lowerType.includes('minivan')) {
-      return '🚐';
+      return 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center';
     } else if (lowerType.includes('coupe') || lowerType.includes('convertible') || lowerType.includes('sport')) {
-      return '🏎️';
+      return 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=64&h=64&fit=crop&crop=center';
     } else if (lowerType.includes('motorcycle') || lowerType.includes('bike')) {
-      return '🏍️';
+      return 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=64&h=64&fit=crop&crop=center';
+    } else if (lowerType.includes('sedan')) {
+      return 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center';
+    } else if (lowerType.includes('hatchback')) {
+      return 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=64&h=64&fit=crop&crop=center';
+    } else if (lowerType.includes('wagon')) {
+      return 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=64&h=64&fit=crop&crop=center';
     } else {
-      return '🚗'; // Default car emoji
+      return 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center'; // Default sedan image
     }
   };
 
-  const vehicleEmoji = getVehicleImage(type);
+  const vehicleImage = getVehicleImage(type);
 
   return (
     <div
