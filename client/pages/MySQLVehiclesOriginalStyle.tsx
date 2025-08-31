@@ -169,6 +169,8 @@ function MySQLVehiclesOriginalStyleInner() {
   // Real filter options with counts
   const [filterOptions, setFilterOptions] = useState<{
     makes: { name: string; count: number }[];
+    models: { name: string; count: number }[];
+    trims: { name: string; count: number }[];
     conditions: { name: string; count: number }[];
     vehicleTypes: { name: string; count: number }[];
     driveTypes: { name: string; count: number }[];
@@ -179,6 +181,8 @@ function MySQLVehiclesOriginalStyleInner() {
     totalVehicles: number;
   }>({
     makes: [],
+    models: [],
+    trims: [],
     conditions: [],
     vehicleTypes: [],
     driveTypes: [],
