@@ -19,7 +19,7 @@ import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
 
-// Simple vehicle interface matching original demo exactly
+// Vehicle interface for live WooCommerce data
 interface Vehicle {
   id: number;
   featured: boolean;
