@@ -305,12 +305,11 @@ export class WooCommerceApiService {
     const condition = getMeta('condition') || getMeta('vehicle_condition') || 
                      (product.featured ? "Certified" : "Used");
 
-    // Build badges
+    // Build badges - only condition and drivetrain as requested
+    const drivetrain = getMeta('drivetrain') || getMeta('drive_type') || "";
     const badges = [
       condition,
-      getMeta('drivetrain') && getMeta('drivetrain').includes('4') ? "4WD" : "",
-      product.featured ? "Featured!" : "",
-      product.on_sale ? "Sale" : ""
+      drivetrain
     ].filter(Boolean);
 
     // Calculate estimated payment (simple calculation)
