@@ -712,7 +712,7 @@ export class WooCommerceApiService {
 
       console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} colors, ${vehicleTypes.length} vehicle types from meta data analysis`);
 
-      return {
+      const result = {
         success: true,
         data: {
           makes: makes,
@@ -726,6 +726,15 @@ export class WooCommerceApiService {
           totalVehicles: allProducts.length
         }
       };
+
+      console.log("🔍 RETURNING getFilterOptions result:", {
+        success: result.success,
+        makesCount: result.data.makes.length,
+        sampleMakes: result.data.makes.slice(0, 3),
+        dataKeys: Object.keys(result.data)
+      });
+
+      return result;
     } catch (error) {
       console.error("❌ Error fetching filter options:", error);
       return {
