@@ -181,11 +181,21 @@ function MySQLVehiclesOriginalStyleInner() {
     makes: { name: string; count: number }[];
     conditions: { name: string; count: number }[];
     vehicleTypes: { name: string; count: number }[];
+    driveTypes: { name: string; count: number }[];
+    transmissions: { name: string; count: number }[];
+    exteriorColors: { name: string; count: number }[];
+    sellerTypes: { name: string; count: number }[];
+    dealers: { name: string; count: number }[];
     totalVehicles: number;
   }>({
     makes: [],
     conditions: [],
     vehicleTypes: [],
+    driveTypes: [],
+    transmissions: [],
+    exteriorColors: [],
+    sellerTypes: [],
+    dealers: [],
     totalVehicles: 0
   });
   const [userLocation, setUserLocation] = useState<{
