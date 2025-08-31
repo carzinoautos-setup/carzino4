@@ -236,6 +236,17 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
     if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
     if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
 
+    // Handle new filter parameters
+    if (req.query.interiorColor) {
+      filters.interiorColor = (req.query.interiorColor as string).split(",");
+    }
+    if (req.query.city) {
+      filters.city = (req.query.city as string).split(",");
+    }
+    if (req.query.state) {
+      filters.state = (req.query.state as string).split(",");
+    }
+
     console.log("🔍 ROUTE: Parsed applied filters for conditional filtering:", filters);
 
     const result = await vehicleService.getFilterOptions(filters);
