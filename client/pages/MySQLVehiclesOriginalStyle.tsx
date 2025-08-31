@@ -2622,7 +2622,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         onClick={() => removeAppliedFilter("driveType", item)}
                         className="ml-1 text-white hover:text-gray-300"
                       >
-                        ×
+                        ��
                       </button>
                     </span>
                   ))}
@@ -3744,11 +3744,11 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
             {/* Mobile Filter Action Buttons - Always Visible and Sticky */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white p-4 shadow-2xl border-t border-gray-200 z-50">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white p-4 shadow-2xl border-t border-gray-200 z-50 safe-area-inset-bottom">
               <div className="flex gap-3 max-w-md mx-auto">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors touch-manipulation"
                 >
                   Cancel
                 </button>
@@ -3757,7 +3757,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     setMobileFiltersOpen(false);
                     // Filters are already applied in real-time, so just close the panel
                   }}
-                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors"
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors touch-manipulation"
                 >
                   Apply Filters
                 </button>
