@@ -222,8 +222,11 @@ function MySQLVehiclesOriginalStyleInner() {
     transmission: [] as string[],
     mileage: "",
     exteriorColor: [] as string[],
+    interiorColor: [] as string[],
     sellerType: [] as string[],
     dealer: [] as string[],
+    state: [] as string[],
+    city: [] as string[],
     priceMin: "",
     priceMax: "",
     paymentMin: "",
@@ -1227,8 +1230,11 @@ function MySQLVehiclesOriginalStyleInner() {
       transmission: [],
       mileage: "",
       exteriorColor: [],
+      interiorColor: [],
       sellerType: [],
       dealer: [],
+      state: [],
+      city: [],
       priceMin: "",
       priceMax: "",
       paymentMin: "",
@@ -2822,7 +2828,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       onBlur={(e) => {
                         // Auto-apply when user finishes editing
                         if (e.target.value !== (appliedFilters.paymentMax || "")) {
-                          console.log("���� Auto-applying payment max filter on blur:", e.target.value);
+                          console.log("💰 Auto-applying payment max filter on blur:", e.target.value);
                           applyPaymentFilters();
                         }
                       }}
