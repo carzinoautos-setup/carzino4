@@ -432,7 +432,7 @@ export class WooCommerceApiService {
 
   /**
    * Get filter options with real counts from WooCommerce product data
-   * Optimized for speed - only fetches first few pages
+   * Uses same meta field extraction logic as transformWooCommerceProduct
    */
   async getFilterOptions() {
     try {
@@ -495,58 +495,68 @@ export class WooCommerceApiService {
         }
       }
 
-      // Quick analysis of available products
+      // Analyze products using same logic as transformWooCommerceProduct
       const makesCounts: { [key: string]: number } = {};
       const conditionCounts: { [key: string]: number } = {};
+      const categoryMap: { [key: string]: number } = {};
 
       allProducts.forEach(product => {
-        // Extract make from title quickly
-        const titleParts = product.name?.split(' ') || [];
-        if (titleParts.length > 1) {
-          const possibleMake = titleParts[1]; // Usually second word after year
-          if (possibleMake && possibleMake.length > 2) {
-            makesCounts[possibleMake] = (makesCounts[possibleMake] || 0) + 1;
-          }
+        // Helper function to get meta values (same as in transformWooCommerceProduct)
+        const getMeta = (key: string): string => {
+          if (!product.meta_data || !Array.isArray(product.meta_data)) return '';
+          const meta = product.meta_data.find((item: any) => item.key === key);
+          return meta?.value ? String(meta.value).trim() : '';
+        };
+
+        // Extract make using same logic as transformWooCommerceProduct
+        const make = getMeta('make') || getMeta('vehicle_make') || product.categories?.[0]?.name || "";
+        if (make && make.length > 1) {
+          makesCounts[make] = (makesCounts[make] || 0) + 1;
         }
 
-        // Quick condition analysis from categories
+        // Extract condition using same logic as transformWooCommerceProduct
+        const condition = getMeta('condition') || getMeta('vehicle_condition') ||
+                         (product.featured ? "Certified" : "Used");
+        if (condition) {
+          conditionCounts[condition] = (conditionCounts[condition] || 0) + 1;
+        }
+
+        // Track categories for vehicle types
         if (product.categories && Array.isArray(product.categories)) {
           product.categories.forEach((cat: any) => {
-            const catName = cat.name?.toLowerCase() || '';
-            if (catName.includes('new')) {
-              conditionCounts['New'] = (conditionCounts['New'] || 0) + 1;
-            } else if (catName.includes('used')) {
-              conditionCounts['Used'] = (conditionCounts['Used'] || 0) + 1;
-            } else if (catName.includes('certified')) {
-              conditionCounts['Certified'] = (conditionCounts['Certified'] || 0) + 1;
+            const catName = cat.name;
+            if (catName && catName.length > 0) {
+              categoryMap[catName] = (categoryMap[catName] || 0) + 1;
             }
           });
         }
       });
 
-      // Convert to array format
+      // Convert to array format, sorted by count
       const makes = Object.entries(makesCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 20); // Limit to top 20 makes
 
       const conditions = Object.entries(conditionCounts)
-        .map(([name, count]) => ({ name, count }));
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
 
-      // Get product categories quickly
-      const categories = await this.makeRequest('products/categories', new URLSearchParams({
-        per_page: '20',
-        hide_empty: 'true'
-      }));
+      // Get categories as vehicle types (excluding obvious non-vehicle categories)
+      const excludeCategories = ['uncategorized', 'featured', 'sale', 'new arrivals'];
+      const vehicleTypes = Object.entries(categoryMap)
+        .filter(([name, count]) =>
+          name.length > 0 &&
+          count > 0 &&
+          !excludeCategories.includes(name.toLowerCase())
+        )
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 15); // Limit to 15 vehicle types
 
-      const vehicleTypes = Array.isArray(categories)
-        ? categories.map((cat: any) => ({
-            name: cat.name,
-            count: cat.count || 0
-          })).slice(0, 15) // Limit to 15 vehicle types
-        : [];
-
-      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${vehicleTypes.length} vehicle types (sample analysis)`);
+      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${vehicleTypes.length} vehicle types from meta data analysis`);
 
       return {
         success: true,
