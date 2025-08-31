@@ -181,6 +181,50 @@ export class WooCommerceApiService {
       console.log(`📊 After vehicle type filter: ${filteredVehicles.length} vehicles`);
     }
 
+    // Filter by exterior color
+    if (filters.exteriorColor && filters.exteriorColor.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        // Access exterior color from meta fields that were extracted during transformation
+        const vehicleExteriorColor = vehicle.exterior_color || '';
+        return filters.exteriorColor.some(color =>
+          vehicleExteriorColor.toLowerCase().includes(color.toLowerCase())
+        );
+      });
+      console.log(`📊 After exterior color filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by interior color
+    if (filters.interiorColor && filters.interiorColor.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        // Access interior color from meta fields that were extracted during transformation
+        const vehicleInteriorColor = vehicle.interior_color || '';
+        return filters.interiorColor.some(color =>
+          vehicleInteriorColor.toLowerCase().includes(color.toLowerCase())
+        );
+      });
+      console.log(`📊 After interior color filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by city
+    if (filters.city && filters.city.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        return filters.city.some(city =>
+          vehicle.city_seller?.toLowerCase().includes(city.toLowerCase())
+        );
+      });
+      console.log(`📊 After city filter: ${filteredVehicles.length} vehicles`);
+    }
+
+    // Filter by state
+    if (filters.state && filters.state.length > 0) {
+      filteredVehicles = filteredVehicles.filter(vehicle => {
+        return filters.state.some(state =>
+          vehicle.state_seller?.toLowerCase().includes(state.toLowerCase())
+        );
+      });
+      console.log(`📊 After state filter: ${filteredVehicles.length} vehicles`);
+    }
+
     console.log(`✅ Final filtered results: ${filteredVehicles.length} vehicles`);
     return filteredVehicles;
   }
