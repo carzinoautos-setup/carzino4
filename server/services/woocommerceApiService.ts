@@ -625,16 +625,16 @@ export class WooCommerceApiService {
         baseUrl: this.baseUrl
       });
 
-      // PERFORMANCE: Dramatically reduced data fetching for filter analysis
-      // Only fetch minimal data needed for filter extraction
+      // PERFORMANCE: Fetch more products for better filter analysis while keeping payload small
+      // Use multiple smaller requests to build comprehensive filter data
       let allProducts: any[] = [];
-      const maxPages = 1; // Reduced from 2 to 1 page for performance
-      const productsNeeded = 50; // Reduced from 200 to 50 products
+      const maxPages = 3; // Increased to 3 pages for better filter coverage
+      const productsPerPage = 100; // Increased to 100 per page for better filter data
 
       for (let page = 1; page <= maxPages; page++) {
         const params = new URLSearchParams({
           page: page.toString(),
-          per_page: productsNeeded.toString(), // Reduced from 100 to 50
+          per_page: productsPerPage.toString(),
           status: 'publish',
           stock_status: 'instock',
           catalog_visibility: 'visible',
@@ -642,17 +642,25 @@ export class WooCommerceApiService {
         });
 
         try {
-          const products = await this.makeRequest('products', params);
+          const response = await this.makeRequest('products', params);
+          const products = response.data;
 
           if (Array.isArray(products) && products.length > 0) {
             allProducts.push(...products);
             console.log(`📦 Analyzed ${products.length} products from page ${page}, total: ${allProducts.length} (optimized payload)`);
 
-            if (products.length < productsNeeded) {
-              console.log(`✅ Reached end of products at page ${page}`);
+            // Use WooCommerce pagination headers to know when to stop
+            if (page >= response.pagination.totalPages) {
+              console.log(`✅ Reached end of products at page ${page} of ${response.pagination.totalPages}`);
+              break;
+            }
+
+            if (products.length < productsPerPage) {
+              console.log(`✅ Received fewer products than requested, reached end at page ${page}`);
               break;
             }
           } else {
+            console.log(`📦 No products found on page ${page}`);
             break;
           }
         } catch (error) {
