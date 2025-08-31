@@ -729,7 +729,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
     };
 
-    fetchVehicleTypes();
+    fetchFilterOptions();
   }, []);
 
   // Helper functions for price formatting
