@@ -835,8 +835,9 @@ export class WooCommerceApiService {
     try {
       console.log("🏢 Extracting real dealers from WooCommerce products...");
 
-      // Fetch all products to analyze dealer data
-      const products = await this.getAllProducts(100); // Get first 100 products to analyze
+      // Fetch products to analyze dealer data
+      const response = await this.fetchProducts(1, 100); // Get first 100 products to analyze
+      const products = response.products;
 
       const dealerCounts = new Map<string, number>();
 
