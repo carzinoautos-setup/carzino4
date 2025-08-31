@@ -178,16 +178,63 @@ export const getSimpleVehicleById: RequestHandler = async (req, res) => {
 
 /**
  * GET /api/simple-vehicles/filters
- * Get available filter options
+ * Get available filter options (conditionally filtered based on current selections)
  */
 export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
   try {
-    console.log("🔍 ROUTE: getSimpleFilterOptions called");
-    const result = await vehicleService.getFilterOptions();
+    console.log("🔍 ROUTE: getSimpleFilterOptions called with query:", req.query);
 
-    console.log("🔍 ROUTE: Sending filter options response:", {
+    // Parse filters from query parameters (same logic as main vehicles endpoint)
+    const filters: SimpleVehicleFilters = {};
+
+    // Handle array filters
+    if (req.query.make) {
+      filters.make = (req.query.make as string).split(",");
+    }
+    if (req.query.model) {
+      filters.model = (req.query.model as string).split(",");
+    }
+    if (req.query.trim) {
+      filters.trim = (req.query.trim as string).split(",");
+    }
+    if (req.query.condition) {
+      filters.condition = (req.query.condition as string).split(",");
+    }
+    if (req.query.vehicleType || req.query.body_type) {
+      filters.vehicleType = ((req.query.vehicleType || req.query.body_type) as string).split(",");
+    }
+    if (req.query.driveType) {
+      filters.driveType = (req.query.driveType as string).split(",");
+    }
+    if (req.query.transmission) {
+      filters.transmission = (req.query.transmission as string).split(",");
+    }
+    if (req.query.exteriorColor) {
+      filters.exteriorColor = (req.query.exteriorColor as string).split(",");
+    }
+    if (req.query.sellerType) {
+      filters.sellerType = (req.query.sellerType as string).split(",");
+    }
+    if (req.query.dealer) {
+      filters.dealer = (req.query.dealer as string).split(",");
+    }
+
+    // Handle single value filters
+    if (req.query.search) filters.search = req.query.search as string;
+    if (req.query.mileage) filters.mileage = req.query.mileage as string;
+    if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
+    if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
+
+    console.log("🔍 ROUTE: Parsed applied filters for conditional filtering:", filters);
+
+    const result = await vehicleService.getFilterOptions(filters);
+
+    console.log("🔍 ROUTE: Sending conditional filter options response:", {
       success: result.success,
       makesCount: result.data?.makes?.length,
+      modelsCount: result.data?.models?.length,
+      trimsCount: result.data?.trims?.length,
+      appliedFilters: filters,
       statusCode: 200
     });
 
@@ -199,6 +246,8 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
       message: "Internal server error",
       data: {
         makes: [],
+        models: [],
+        trims: [],
         conditions: [],
         driveTypes: [],
         sellerTypes: [],
