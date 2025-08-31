@@ -366,11 +366,22 @@ export default function MySQLVehiclesOriginalStyle() {
 
       const data: VehiclesApiResponse = await response.json();
 
+      console.log("🔍 Raw API Response:", {
+        success: data.success,
+        dataLength: data.data?.length,
+        meta: data.meta,
+        hasData: !!data.data,
+        isArray: Array.isArray(data.data)
+      });
+
       if (data.success) {
-        setVehicles(data.data);
+        console.log("🚗 Setting vehicles:", data.data?.length, "vehicles");
+        console.log("📊 Meta data:", data.meta);
+        setVehicles(data.data || []);
         setApiResponse(data);
-        console.log("✅ Successfully loaded", data.data.length, "vehicles");
+        console.log("✅ Successfully loaded", data.data?.length || 0, "vehicles");
       } else {
+        console.error("❌ API returned error:", data.message);
         throw new Error(data.message || "API returned error");
       }
     } catch (err) {
@@ -1092,7 +1103,7 @@ export default function MySQLVehiclesOriginalStyle() {
 
         const coords = zipCoordinates[zip];
         if (coords) {
-          console.warn(`🆘 Using fallback coordinates for ZIP: ${zip}`);
+          console.warn(`��� Using fallback coordinates for ZIP: ${zip}`);
           return coords;
         }
 
