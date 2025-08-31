@@ -167,12 +167,9 @@ export const getSimpleVehicleById: RequestHandler = async (req, res) => {
  */
 export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
   try {
-    const options = await vehicleService.getFilterOptions();
+    const result = await vehicleService.getFilterOptions();
 
-    res.status(200).json({
-      success: true,
-      data: options,
-    });
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error in getSimpleFilterOptions route:", error);
     res.status(500).json({
@@ -194,12 +191,9 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
  */
 export const getDealers: RequestHandler = async (req, res) => {
   try {
-    const dealers = await vehicleService.getDealers();
+    const result = await vehicleService.getDealers();
 
-    res.status(200).json({
-      success: true,
-      data: dealers,
-    });
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error in getDealers route:", error);
     res.status(500).json({
