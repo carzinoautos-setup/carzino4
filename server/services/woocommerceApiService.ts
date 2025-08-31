@@ -819,6 +819,23 @@ export class WooCommerceApiService {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10); // Limit to top 10 colors
 
+      const interiorColors = Object.entries(interiorColorCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10); // Limit to top 10 colors
+
+      const cities = Object.entries(cityCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 15); // Limit to top 15 cities
+
+      const states = Object.entries(stateCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+
       const sellerTypes = Object.entries(sellerTypeCounts)
         .filter(([name, count]) => name.length > 0 && count > 0)
         .map(([name, count]) => ({ name, count }))
