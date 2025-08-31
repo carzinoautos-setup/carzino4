@@ -211,29 +211,33 @@ export class WooCommerceApiService {
     }
 
     try {
-      const [rows] = await this.db.execute(
+      // Add timeout to database query to prevent hanging
+      const queryPromise = this.db.execute(
         'SELECT city, state, zip FROM sellers WHERE account_number = ? LIMIT 1',
         [sellerAccountNumber]
       );
 
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Database query timeout')), 5000); // 5 second timeout
+      });
+
+      const [rows] = await Promise.race([queryPromise, timeoutPromise]) as any;
       const sellerRows = rows as any[];
+
       if (sellerRows.length > 0) {
         const seller = sellerRows[0];
-        console.log(`✅ Found seller data for account ${sellerAccountNumber}:`, {
-          city: seller.city,
-          state: seller.state,
-          zip: seller.zip
-        });
         return {
           city_seller: seller.city || undefined,
           state_seller: seller.state || undefined,
           zip_seller: seller.zip || undefined
         };
-      } else {
-        console.log(`⚠️ No seller data found for account ${sellerAccountNumber}`);
       }
     } catch (error) {
-      console.error(`❌ Error fetching seller data for account ${sellerAccountNumber}:`, error);
+      if (error.message === 'Database query timeout') {
+        console.warn(`⏰ Seller data query timeout for account ${sellerAccountNumber}`);
+      } else {
+        console.error(`❌ Error fetching seller data for account ${sellerAccountNumber}:`, error);
+      }
     }
 
     return {};
