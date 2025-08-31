@@ -261,20 +261,17 @@ export const simpleHealthCheck: RequestHandler = async (req, res) => {
 };
 
 /**
- * Debug endpoint to check WordPress database contents
+ * Test WooCommerce API connection
  */
-export const checkWordPressData: RequestHandler = async (req, res) => {
+export const testWooCommerceApi: RequestHandler = async (req, res) => {
   try {
-    const result = await (vehicleService as any).checkDatabaseContents();
-    res.status(200).json({
-      success: true,
-      data: result
-    });
+    const result = await (vehicleService as any).testConnection();
+    res.status(200).json(result);
   } catch (error) {
-    console.error("Error checking WordPress data:", error);
+    console.error("Error testing WooCommerce API:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to check database",
+      message: "Failed to test WooCommerce API",
       error: error.message
     });
   }
