@@ -505,6 +505,11 @@ export class WooCommerceApiService {
           }
         } catch (error) {
           console.error(`❌ Error fetching page ${page} for filter analysis:`, error);
+          console.error(`❌ Error details:`, {
+            name: error.name,
+            message: error.message,
+            stack: error.stack?.substring(0, 200)
+          });
           if (page === 1) {
             // If first page fails, return empty but successful result
             console.log("⚠️ Using fallback filter data");
