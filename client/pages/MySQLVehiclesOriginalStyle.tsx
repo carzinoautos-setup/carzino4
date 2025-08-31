@@ -1199,7 +1199,9 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const clearAllFilters = useCallback(() => {
-    console.log("🧹 Clearing all filters and resetting state");
+    if (import.meta.env.DEV) {
+      console.log("🧹 Clearing all filters and resetting state");
+    }
 
     // Reset all filter-related state
     setSearchTerm("");
