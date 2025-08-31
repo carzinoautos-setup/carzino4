@@ -1073,6 +1073,12 @@ export default function MySQLVehiclesOriginalStyle() {
 
       return null;
     } catch (error) {
+      // Handle AbortError gracefully
+      if (error.name === "AbortError") {
+        console.log("🚫 Geocoding request aborted (timeout)");
+        return null;
+      }
+
       console.error("❌ Geocoding network error:", error);
 
       // Always use fallback for any network error
