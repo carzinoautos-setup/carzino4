@@ -1805,8 +1805,10 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       // Handle AbortError gracefully
-      if (error.name === "AbortError") {
-        console.log("🚫 Geocoding request aborted (timeout or navigation)");
+      if (error instanceof Error && error.name === "AbortError") {
+        if (import.meta.env.DEV) {
+          console.log("🚫 Geocoding request aborted (expected behavior)");
+        }
         return null;
       }
 
