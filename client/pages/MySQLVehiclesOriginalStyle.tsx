@@ -270,6 +270,8 @@ function MySQLVehiclesOriginalStyleInner() {
     filterOptions: {
       makesCount: filterOptions.makes?.length,
       sampleMakes: filterOptions.makes?.slice(0, 3)?.map(m => m.name),
+      modelsCount: filterOptions.models?.length,
+      trimsCount: filterOptions.trims?.length,
       conditionsCount: filterOptions.conditions?.length,
       isEmpty: Object.keys(filterOptions).every(key => !filterOptions[key]?.length)
     }
