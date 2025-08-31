@@ -13,7 +13,8 @@ export class WooCommerceApiService {
   private baseUrl: string;
   private consumerKey: string;
   private consumerSecret: string;
-  private db = getDatabase();
+  // Temporarily disable database connection due to connection issues
+  // private db = getDatabase();
 
   constructor() {
     this.baseUrl = process.env.VITE_WP_URL || "https://env-uploadbackup62225-czdev.kinsta.cloud";
