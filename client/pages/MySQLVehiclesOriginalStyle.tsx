@@ -2806,7 +2806,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("dealer")}
             >
               <div className="space-y-1">
-                {availableDealers.map((dealer, index) => (
+                {(filterOptions.dealers.length > 0 ? filterOptions.dealers : availableDealers).map((dealer, index) => (
                   <label
                     key={index}
                     className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -2838,7 +2838,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     </span>
                   </label>
                 ))}
-                {availableDealers.length === 0 && (
+                {filterOptions.dealers.length === 0 && availableDealers.length === 0 && (
                   <div className="text-gray-500 text-sm p-2">
                     Loading dealers...
                   </div>
