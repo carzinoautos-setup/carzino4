@@ -139,9 +139,23 @@ export function MySQLVehicleCard({
           <div className="flex flex-col">
             <span>{vehicle.seller_type}</span>
             {/* Add city, state, zip if available */}
-            {(vehicle.seller_city || vehicle.seller_state || vehicle.seller_zip) && (
+            {(vehicle.city_seller || vehicle.state_seller || vehicle.zip_seller) && (
               <span className="text-xs text-gray-500">
-                {[vehicle.seller_city, vehicle.seller_state, vehicle.seller_zip].filter(Boolean).join(", ")}
+                {(() => {
+                  const city = vehicle.city_seller;
+                  const state = vehicle.state_seller;
+                  const zip = vehicle.zip_seller;
+
+                  if (city && state && zip) {
+                    return `${city}, ${state} ${zip}`;
+                  } else if (city && state) {
+                    return `${city}, ${state}`;
+                  } else if (city && zip) {
+                    return `${city} ${zip}`;
+                  } else {
+                    return [city, state, zip].filter(Boolean).join(" ");
+                  }
+                })()}
               </span>
             )}
           </div>
