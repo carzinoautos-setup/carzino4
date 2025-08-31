@@ -3155,43 +3155,70 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("dealer")}
             >
               <div className="space-y-1">
-                {(filterOptions.dealers.length > 0 ? filterOptions.dealers : availableDealers)
-                  .filter(dealer => dealer.count > 0) // Only show dealers with vehicles
-                  .map((dealer, index) => (
-                  <label
-                    key={index}
-                    className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.dealer.includes(dealer.name)}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        if (e.target.checked) {
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            dealer: [...prev.dealer, dealer.name],
-                          }));
-                        } else {
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            dealer: prev.dealer.filter(
-                              (item) => item !== dealer.name,
-                            ),
-                          }));
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{dealer.name}</span>
-                    <span className="carzino-filter-count ml-1">
-                      ({dealer.count})
-                    </span>
-                  </label>
-                ))}
+                {(() => {
+                  // Prefer filterOptions.dealers if available and has data, otherwise use availableDealers
+                  const dealersToShow = filterOptions.dealers && filterOptions.dealers.length > 0
+                    ? filterOptions.dealers
+                    : availableDealers;
+
+                  console.log("💼 Dealer filter rendering:", {
+                    filterOptionsDealers: filterOptions.dealers?.length || 0,
+                    availableDealers: availableDealers?.length || 0,
+                    dealersToShow: dealersToShow?.length || 0,
+                    sampleDealers: dealersToShow?.slice(0, 3)
+                  });
+
+                  // Show dealers even if count is 0 for now, to debug the issue
+                  const filteredDealers = dealersToShow.filter(dealer =>
+                    dealer && dealer.name && dealer.name.trim() !== ''
+                  );
+
+                  return filteredDealers.map((dealer, index) => (
+                    <label
+                      key={`dealer-${dealer.name}-${index}`}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.dealer.includes(dealer.name)}
+                        onChange={(e) => {
+                          console.log("💼 Dealer filter clicked:", dealer.name, "checked:", e.target.checked);
+                          e.stopPropagation();
+                          try {
+                            if (e.target.checked) {
+                              setAppliedFilters((prev) => ({
+                                ...prev,
+                                dealer: [...prev.dealer, dealer.name],
+                              }));
+                            } else {
+                              setAppliedFilters((prev) => ({
+                                ...prev,
+                                dealer: prev.dealer.filter(
+                                  (item) => item !== dealer.name,
+                                ),
+                              }));
+                            }
+                          } catch (error) {
+                            console.error("❌ Error in dealer filter handler:", error);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{dealer.name}</span>
+                      <span className="carzino-filter-count ml-1">
+                        ({dealer.count || 0})
+                      </span>
+                    </label>
+                  ));
+                })()}
                 {filterOptions.dealers.length === 0 && availableDealers.length === 0 && (
                   <div className="text-gray-500 text-sm p-2">
                     Loading dealers...
+                  </div>
+                )}
+                {filterOptions.dealers.length === 0 && availableDealers.length > 0 && (
+                  <div className="text-yellow-600 text-sm p-2 italic">
+                    Note: Using fallback dealer data. Counts may be inaccurate.
                   </div>
                 )}
               </div>
