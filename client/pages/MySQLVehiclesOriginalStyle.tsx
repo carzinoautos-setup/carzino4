@@ -753,11 +753,15 @@ function MySQLVehiclesOriginalStyleInner() {
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err instanceof Error && err.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("🚫 Request aborted (filter change, timeout, or navigation)");
+          console.log("🚫 Request aborted (expected behavior)");
         }
         // Clear controller reference if this was the active request
         if (abortControllerRef.current === requestController) {
           abortControllerRef.current = null;
+        }
+        // Clear loading state if this was the active request
+        if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+          setLoading(false);
         }
         return; // Don't set error state for aborted requests
       }
