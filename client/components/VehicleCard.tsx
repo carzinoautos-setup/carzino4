@@ -266,10 +266,21 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               style={{ fontSize: "12px" }}
             >
               {/* Format: Tacoma, WA 98466 */}
-              {[vehicle.city_seller, vehicle.state_seller, vehicle.zip_seller]
-                .filter(Boolean)
-                .join(vehicle.city_seller && vehicle.state_seller ? ", " : " ")
-                .replace(/,\s*([A-Z]{2})\s*/, ", $1 ") || vehicle.location}
+              {(() => {
+                const city = vehicle.city_seller;
+                const state = vehicle.state_seller;
+                const zip = vehicle.zip_seller;
+
+                if (city && state && zip) {
+                  return `${city}, ${state} ${zip}`;
+                } else if (city && state) {
+                  return `${city}, ${state}`;
+                } else if (city && zip) {
+                  return `${city} ${zip}`;
+                } else {
+                  return [city, state, zip].filter(Boolean).join(" ") || vehicle.location;
+                }
+              })()}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
