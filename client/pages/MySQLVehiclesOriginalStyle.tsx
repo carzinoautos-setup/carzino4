@@ -974,8 +974,8 @@ function MySQLVehiclesOriginalStyleInner() {
         const data = await response.json();
 
         if (data.success && data.data) {
-          // Cache successful filter response (5 minute TTL)
-          apiCache.set(filterCacheKey, data, 5 * 60 * 1000);
+          // Cache successful filter response (2 minute TTL for fresher data)
+          apiCache.set(filterCacheKey, data, 2 * 60 * 1000);
 
           setFilterOptions(data.data);
           setVehicleTypes(data.data.vehicleTypes || []);
