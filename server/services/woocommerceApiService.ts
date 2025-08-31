@@ -564,7 +564,7 @@ export class WooCommerceApiService {
           });
           if (page === 1) {
             // If first page fails, return empty but successful result
-            console.log("⚠️ Using fallback filter data");
+            console.log("⚠�� Using fallback filter data");
             return {
               success: true,
               data: {
@@ -917,6 +917,9 @@ export class WooCommerceApiService {
             { name: "CVT", count: 0 }
           ],
           exteriorColors: [],
+          interiorColors: [],
+          cities: [],
+          states: [],
           sellerTypes: [
             { name: "Dealer", count: 0 }
           ],
