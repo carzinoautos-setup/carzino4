@@ -289,12 +289,20 @@ export class WooCommerceApiService {
     // Get medium-sized product images (450x300) for better performance
     const images = product.images && product.images.length > 0
       ? product.images.map((img: any) => {
-          // Use medium size if available, otherwise modify the src URL to request medium size
+          // Use medium size if available in the API response
           if (img.sizes && img.sizes.medium) {
             return img.sizes.medium;
           } else if (img.src) {
-            // Modify URL to request medium size (450x300) if WooCommerce doesn't provide sizes
-            return img.src.replace(/\.(jpg|jpeg|png|webp)$/i, '-450x300.$1');
+            // Generate WordPress medium size URL (standard WordPress approach)
+            // WordPress typically generates images like: image-450x300.jpg
+            const url = img.src;
+            const urlParts = url.split('.');
+            if (urlParts.length >= 2) {
+              const extension = urlParts.pop();
+              const baseName = urlParts.join('.');
+              // Try medium size URL first, fallback to original if it doesn't exist
+              return `${baseName}-450x300.${extension}`;
+            }
           }
           return img.src;
         }).filter(Boolean)
