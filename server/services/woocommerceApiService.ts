@@ -1036,6 +1036,14 @@ export class WooCommerceApiService {
    */
   async getDealers() {
     try {
+      // PERFORMANCE: Add caching for dealers (10 minute cache since dealers change less frequently)
+      const dealerCacheKey = 'dealers_list';
+      const cachedDealers = this.getCachedData(dealerCacheKey, 10 * 60 * 1000);
+      if (cachedDealers) {
+        console.log("⚡ Using cached dealers data");
+        return cachedDealers;
+      }
+
       console.log("🏢 Extracting real dealers from WooCommerce products...");
 
       // PERFORMANCE: Fetch minimal data needed for dealer extraction
