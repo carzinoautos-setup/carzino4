@@ -273,23 +273,28 @@ export class WooCommerceApiService {
     const price = parseFloat(product.price || product.regular_price || 0);
     const estimatedPayment = price > 0 ? Math.round(price / 60) : 0; // Rough 60-month estimate
 
-    // Fetch seller data using seller_account_number (check multiple possible field names)
+    // Extract seller data directly from WooCommerce API meta data (no database needed)
     const sellerAccountNumber = getMeta('seller_account_number') ||
                                 getMeta('_vehicle_seller_account') ||
                                 getMeta('account_number_seller') ||
                                 getMeta('_account_number_seller');
 
-    // Temporarily disable seller data fetching due to database connection issues
-    let sellerData = {};
-    // TODO: Re-enable seller data fetching when database connection is stable
-    // if (sellerAccountNumber) {
-    //   try {
-    //     sellerData = await this.fetchSellerData(sellerAccountNumber);
-    //   } catch (error) {
-    //     console.warn(`⚠️ Skipping seller data for product ${product.id}:`, error.message);
-    //     sellerData = {};
-    //   }
-    // }
+    // Extract seller location data directly from product meta data
+    const sellerData = {
+      city_seller: getMeta('city_seller'),
+      state_seller: getMeta('state_seller'),
+      zip_seller: getMeta('zip_seller'),
+      phone_number_seller: getMeta('phone_number_seller'),
+      email_seller: getMeta('email_seller'),
+      address_seller: getMeta('address_seller'),
+      account_type_seller: getMeta('account_type_seller'),
+      business_name_seller: getMeta('business_name_seller') || getMeta('account_name_seller') || getMeta('acount_name_seller')
+    };
+
+    // Debug seller data extraction for first few products
+    if (index < 2) {
+      console.log(`🏢 Seller data extracted for product ${product.id}:`, sellerData);
+    }
 
     return {
       id: product.id,
