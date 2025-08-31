@@ -829,22 +829,71 @@ export class WooCommerceApiService {
   }
 
   /**
-   * Get dealers (could be based on product vendors or custom implementation)
+   * Get dealers from actual WooCommerce product data
    */
   async getDealers() {
     try {
-      // For now, return a default dealer - could be enhanced with vendors/stores
+      console.log("🏢 Extracting real dealers from WooCommerce products...");
+
+      // Fetch all products to analyze dealer data
+      const products = await this.getAllProducts(100); // Get first 100 products to analyze
+
+      const dealerCounts = new Map<string, number>();
+
+      // Analyze products to extract dealers
+      products.forEach((product, index) => {
+        const getMeta = (key: string): string => {
+          if (!product.meta_data || !Array.isArray(product.meta_data)) return '';
+          const meta = product.meta_data.find((item: any) => item.key === key);
+          return meta?.value ? String(meta.value).trim() : '';
+        };
+
+        // Extract dealer name from meta data
+        const dealerName = getMeta('dealer_name') ||
+                          getMeta('business_name_seller') ||
+                          getMeta('account_name_seller') ||
+                          getMeta('acount_name_seller') ||
+                          "Carzino Autos";
+
+        if (dealerName && dealerName.length > 0) {
+          dealerCounts.set(dealerName, (dealerCounts.get(dealerName) || 0) + 1);
+        }
+
+        // Debug first few products
+        if (index < 3) {
+          console.log(`🔍 Product ${index + 1} dealer analysis:`, {
+            productName: product.name,
+            dealerMeta: {
+              dealer_name: getMeta('dealer_name'),
+              business_name_seller: getMeta('business_name_seller'),
+              account_name_seller: getMeta('account_name_seller'),
+              acount_name_seller: getMeta('acount_name_seller'),
+            },
+            finalDealer: dealerName
+          });
+        }
+      });
+
+      // Convert to array format
+      const dealers = Array.from(dealerCounts.entries()).map(([name, count]) => ({
+        name,
+        count
+      })).sort((a, b) => b.count - a.count); // Sort by count descending
+
+      console.log(`✅ Extracted ${dealers.length} unique dealers:`, dealers);
+
       return {
         success: true,
-        data: [
-          { name: "Carzino Autos", count: 10 }
-        ]
+        data: dealers
       };
     } catch (error) {
       console.error("❌ Error fetching dealers:", error);
+      // Fallback to default dealer
       return {
         success: true,
-        data: []
+        data: [
+          { name: "Carzino Autos", count: 0 }
+        ]
       };
     }
   }
