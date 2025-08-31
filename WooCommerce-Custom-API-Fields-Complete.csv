@@ -1,0 +1,155 @@
+CATEGORY,FIELD_NAME,WOOCOMMERCE_META_KEY,DATA_TYPE,API_ENDPOINT,PHP_FUNCTION,REQUIRED,DESCRIPTION,EXAMPLE_VALUE,FILTER_TYPE,DISPLAY_LOCATION,ENVIRONMENT_VARIABLE
+BASIC CONFIGURATION,Base URL,N/A,string,wp-json/wc/v3/,N/A,Yes,WooCommerce REST API base URL,https://site.com/wp-json/wc/v3/,none,API Configuration,VITE_WP_URL
+BASIC CONFIGURATION,Consumer Key,N/A,string,Authentication,Basic Auth,Yes,WooCommerce API consumer key,ck_xxxxxxxxxxxxx,none,API Configuration,WC_CONSUMER_KEY
+BASIC CONFIGURATION,Consumer Secret,N/A,string,Authentication,Basic Auth,Yes,WooCommerce API consumer secret,cs_xxxxxxxxxxxxx,none,API Configuration,WC_CONSUMER_SECRET
+VEHICLE IDENTITY,Product ID,_product_id,number,products/{id},get_the_ID(),Yes,Unique WooCommerce product identifier,12345,none,Vehicle Card,N/A
+VEHICLE IDENTITY,SKU,sku,string,products,product.sku,No,Product SKU identifier,VEH001,none,Vehicle Card,N/A
+VEHICLE IDENTITY,Title,post_title,string,products,get_the_title(),Yes,Vehicle display title,2023 BMW X5,none,Vehicle Card,N/A
+VEHICLE IDENTITY,Vehicle Year,year,number,products,get_field('year'),Yes,Manufacturing year,2023,dropdown,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Year Alt,vehicle_year,number,products,get_field('vehicle_year'),Yes,Alternative year field,2023,dropdown,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Make,make,string,products,get_field('make'),Yes,Vehicle manufacturer,BMW,checkbox,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Make Alt,vehicle_make,string,products,get_field('vehicle_make'),Yes,Alternative make field,BMW,checkbox,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Model,model,string,products,get_field('model'),Yes,Vehicle model name,X5,checkbox,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Model Alt,vehicle_model,string,products,get_field('vehicle_model'),Yes,Alternative model field,X5,checkbox,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Trim,trim,string,products,get_field('trim'),No,Trim level/package,xDrive40i,checkbox,Vehicle Card + Filters,N/A
+VEHICLE IDENTITY,Vehicle Trim Alt,vehicle_trim,string,products,get_field('vehicle_trim'),No,Alternative trim field,xDrive40i,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Mileage,mileage,number,products,get_field('mileage'),Yes,Current odometer reading,25000,range,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Mileage Alt,vehicle_mileage,number,products,get_field('vehicle_mileage'),Yes,Alternative mileage field,25000,range,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Transmission,transmission,string,products,get_field('transmission'),Yes,Transmission type,Automatic,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Transmission Alt,vehicle_transmission,string,products,get_field('vehicle_transmission'),Yes,Alternative transmission field,Automatic,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Transmission Speed,transmission_speed,string,products,get_field('transmission_speed'),No,Transmission speed count,8-Speed,none,Vehicle Card,N/A
+TECHNICAL SPECS,Transmission Speed Alt,vehicle_transmission_speed,string,products,get_field('vehicle_transmission_speed'),No,Alternative transmission speed,8-Speed,none,Vehicle Card,N/A
+TECHNICAL SPECS,Doors,doors,number,products,get_field('doors'),Yes,Number of doors,4,none,Vehicle Card,N/A
+TECHNICAL SPECS,Doors Alt,vehicle_doors,number,products,get_field('vehicle_doors'),Yes,Alternative doors field,4,none,Vehicle Card,N/A
+TECHNICAL SPECS,Engine Cylinders,engine_cylinders,number,products,get_field('engine_cylinders'),No,Engine cylinder count,6,checkbox,Filters,N/A
+TECHNICAL SPECS,Engine Cylinders Alt,vehicle_engine_cylinders,number,products,get_field('vehicle_engine_cylinders'),No,Alternative cylinders field,6,checkbox,Filters,N/A
+TECHNICAL SPECS,Fuel Type,fuel_type,string,products,get_field('fuel_type'),No,Fuel type,Gasoline,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Fuel Type Alt,vehicle_fuel_type,string,products,get_field('vehicle_fuel_type'),No,Alternative fuel type,Gasoline,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Drivetrain,drivetrain,string,products,get_field('drivetrain'),No,Drive type,AWD,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Drivetrain Alt,drive_type,string,products,get_field('drive_type'),No,Alternative drivetrain field,AWD,checkbox,Vehicle Card + Filters,N/A
+TECHNICAL SPECS,Body Style,body_style,string,products,get_field('body_style'),No,Body style,SUV,checkbox,Filters,N/A
+TECHNICAL SPECS,Body Style Alt,vehicle_body_style,string,products,get_field('vehicle_body_style'),No,Alternative body style,SUV,checkbox,Filters,N/A
+TECHNICAL SPECS,Highway MPG,highway_mpg,number,products,get_field('highway_mpg'),No,Highway miles per gallon,28,none,Individual Product Page,N/A
+TECHNICAL SPECS,Highway MPG Alt,vehicle_highway_mpg,number,products,get_field('vehicle_highway_mpg'),No,Alternative highway MPG,28,none,Individual Product Page,N/A
+TECHNICAL SPECS,Engine,engine,string,products,get_field('engine'),No,Engine specification,3.0L V6,none,Individual Product Page,N/A
+TECHNICAL SPECS,Engine Alt,vehicle_engine,string,products,get_field('vehicle_engine'),No,Alternative engine field,3.0L V6,none,Individual Product Page,N/A
+VISUAL & MEDIA,Product Images,_product_image_gallery,array,products,get_field('_product_image_gallery'),Yes,Array of vehicle image URLs,image-450x300.jpg,none,Vehicle Card,N/A
+VISUAL & MEDIA,Featured Image,featured_image,string,products,get_the_post_thumbnail_url(),Yes,Main vehicle photo URL,image.jpg,none,Vehicle Card,N/A
+VISUAL & MEDIA,Vehicle Gallery,vehicle_gallery,array,products,get_field('vehicle_gallery'),Yes,Alternative gallery field,[img1.jpg],none,Vehicle Card,N/A
+VISUAL & MEDIA,Exterior Color,exterior_color,string,products,get_field('exterior_color'),No,Exterior color,Black,checkbox,Filters,N/A
+VISUAL & MEDIA,Exterior Color Alt,vehicle_exterior_color,string,products,get_field('vehicle_exterior_color'),No,Alternative exterior color,Black,checkbox,Filters,N/A
+VISUAL & MEDIA,Exterior Color Generic,exterior_color_generic,string,products,get_field('exterior_color_generic'),No,Generic exterior color,Black,checkbox,Filters,N/A
+VISUAL & MEDIA,Interior Color,interior_color,string,products,get_field('interior_color'),No,Interior color,Leather,checkbox,Individual Product Page,N/A
+VISUAL & MEDIA,Interior Color Alt,vehicle_interior_color,string,products,get_field('vehicle_interior_color'),No,Alternative interior color,Leather,checkbox,Individual Product Page,N/A
+VISUAL & MEDIA,Interior Color Generic,interior_color_generic,string,products,get_field('interior_color_generic'),No,Generic interior color,Leather,checkbox,Individual Product Page,N/A
+VISUAL & MEDIA,Mileage Icon,_vehicle_mileage_icon,string,products,get_field('_vehicle_mileage_icon'),No,Custom mileage icon URL,icon.svg,none,Vehicle Card,N/A
+VISUAL & MEDIA,Transmission Icon,_vehicle_transmission_icon,string,products,get_field('_vehicle_transmission_icon'),No,Custom transmission icon URL,icon.svg,none,Vehicle Card,N/A
+VISUAL & MEDIA,Door Icon,_vehicle_door_icon,string,products,get_field('_vehicle_door_icon'),No,Custom door icon URL,icon.svg,none,Vehicle Card,N/A
+STATUS & CONDITION,Condition,condition,string,products,get_field('condition'),Yes,Vehicle condition,Used,checkbox,Vehicle Card + Filters,N/A
+STATUS & CONDITION,Condition Alt,vehicle_condition,string,products,get_field('vehicle_condition'),Yes,Alternative condition field,Used,checkbox,Vehicle Card + Filters,N/A
+STATUS & CONDITION,Certified,certified,boolean,products,get_field('certified'),No,Certified pre-owned status,yes,checkbox,Filters,N/A
+STATUS & CONDITION,Certified Alt,vehicle_certified,boolean,products,get_field('vehicle_certified'),No,Alternative certified field,yes,checkbox,Filters,N/A
+STATUS & CONDITION,Title Status,title_status,string,products,get_field('title_status'),No,Title status,Clean,checkbox,Individual Product Page,N/A
+STATUS & CONDITION,Title Status Alt,vehicle_title_status,string,products,get_field('vehicle_title_status'),No,Alternative title status,Clean,checkbox,Individual Product Page,N/A
+STATUS & CONDITION,Featured Product,featured,boolean,products,product.featured,No,WooCommerce featured flag,true,none,Vehicle Card,N/A
+STATUS & CONDITION,Is Featured,is_featured,string,products,get_field('is_featured'),No,Custom featured field,yes,none,Vehicle Card,N/A
+STATUS & CONDITION,Stock Status,stock_status,string,products,product.stock_status,Yes,WooCommerce stock status,instock,none,Vehicle Card,N/A
+STATUS & CONDITION,Stock Quantity,stock_quantity,number,products,product.stock_quantity,No,WooCommerce stock quantity,1,none,Individual Product Page,N/A
+STATUS & CONDITION,Viewed,_user_viewed,boolean,products,get_user_meta(),No,User viewed status,false,none,Vehicle Card,N/A
+STATUS & CONDITION,Badges,_vehicle_badges,array,products,get_field('_vehicle_badges'),No,Array of promotional badges,[Featured],none,Vehicle Card,N/A
+PRICING & FINANCING,Price,_price,number,products,get_field('_price'),Yes,WooCommerce sale price,45000,range,Vehicle Card + Filters,N/A
+PRICING & FINANCING,Regular Price,_regular_price,number,products,get_field('_regular_price'),No,WooCommerce regular price,50000,none,Vehicle Card,N/A
+PRICING & FINANCING,Sale Price,_sale_price,string,products,get_field('_sale_price'),Yes,Formatted sale price display,$45000,none,Vehicle Card,N/A
+PRICING & FINANCING,Price Alt,price,number,products,get_field('price'),Yes,Alternative price field,45000,range,Vehicle Card + Filters,N/A
+PRICING & FINANCING,Payment,payment,number,products,get_field('payment'),No,Monthly payment amount,750,range,Vehicle Card + Filters,N/A
+PRICING & FINANCING,Payment Alt,_vehicle_payment,number,products,get_field('_vehicle_payment'),No,Alternative payment field,750,range,Vehicle Card + Filters,N/A
+PRICING & FINANCING,Calculated Payment,payments,number,products,calculated,No,Calculated payment amount,750,none,Vehicle Card,N/A
+PRICING & FINANCING,Calculated Payment Alt,_vehicle_calculated_payment,number,products,calculated,No,Alternative calculated payment,750,none,Vehicle Card,N/A
+PRICING & FINANCING,Interest Rate,interest_rate,number,products,get_field('interest_rate'),No,Financing interest rate,10.0,none,Individual Product Page,N/A
+PRICING & FINANCING,Interest Rate Alt,_vehicle_interest_rate,number,products,get_field('_vehicle_interest_rate'),No,Alternative interest rate,10.0,none,Individual Product Page,N/A
+PRICING & FINANCING,Down Payment,down_payment,number,products,get_field('down_payment'),No,Required down payment,5000,none,Individual Product Page,N/A
+PRICING & FINANCING,Down Payment Alt,_vehicle_down_payment,number,products,get_field('_vehicle_down_payment'),No,Alternative down payment,5000,none,Individual Product Page,N/A
+PRICING & FINANCING,Loan Term,loan_term,number,products,get_field('loan_term'),No,Loan term in months,72,none,Individual Product Page,N/A
+PRICING & FINANCING,Loan Term Alt,_vehicle_loan_term,number,products,get_field('_vehicle_loan_term'),No,Alternative loan term,72,none,Individual Product Page,N/A
+SELLER INFORMATION,Dealer Name,dealer_name,string,products,get_field('dealer_name'),Yes,Dealer/seller name,Smith Motors,none,Vehicle Card,N/A
+SELLER INFORMATION,Dealer Alt,dealer,string,products,get_field('dealer'),Yes,Alternative dealer field,Smith Motors,none,Vehicle Card,N/A
+SELLER INFORMATION,Vehicle Dealer,_vehicle_dealer,string,products,get_field('_vehicle_dealer'),Yes,Alternative dealer field,Smith Motors,none,Vehicle Card,N/A
+SELLER INFORMATION,Seller Type,seller_type,string,products,get_field('seller_type'),Yes,Seller type,Dealer,checkbox,Vehicle Card + Filters,N/A
+SELLER INFORMATION,Seller Type Alt,_vehicle_seller_type,string,products,get_field('_vehicle_seller_type'),Yes,Alternative seller type,Dealer,checkbox,Vehicle Card + Filters,N/A
+SELLER INFORMATION,Account Type Seller,account_type_seller,string,products,get_field('account_type_seller'),Yes,Seller account type,Dealer,checkbox,Vehicle Card + Filters,N/A
+SELLER INFORMATION,Seller Account Number,seller_account_number,string,products,get_field('seller_account_number'),No,Seller account ID,ACCT1234,none,Individual Product Page,N/A
+SELLER INFORMATION,Vehicle Seller Account,_vehicle_seller_account,string,products,get_field('_vehicle_seller_account'),No,Alternative seller account,ACCT1234,none,Individual Product Page,N/A
+SELLER INFORMATION,Account Number Seller,account_number_seller,string,products,get_field('account_number_seller'),No,Alternative account number,ACCT1234,none,Individual Product Page,N/A
+SELLER INFORMATION,Business Name Seller,business_name_seller,string,products,get_field('business_name_seller'),No,Business name,Smith Motors LLC,none,Vehicle Card,N/A
+SELLER INFORMATION,Account Name Seller,account_name_seller,string,products,get_field('account_name_seller'),No,Account name,Smith Motors,none,Vehicle Card,N/A
+SELLER INFORMATION,Account Name Typo,acount_name_seller,string,products,get_field('acount_name_seller'),No,Account name (typo field),Smith Motors,none,Vehicle Card,N/A
+SELLER INFORMATION,Location,location,string,products,get_field('location'),Yes,Vehicle/seller location,Seattle WA,none,Vehicle Card,N/A
+SELLER INFORMATION,Vehicle Location,_vehicle_location,string,products,get_field('_vehicle_location'),Yes,Alternative location field,Seattle WA,none,Vehicle Card,N/A
+SELLER INFORMATION,City Seller,city_seller,string,products,get_field('city_seller'),No,Seller city,Seattle,none,Vehicle Card,N/A
+SELLER INFORMATION,State Seller,state_seller,string,products,get_field('state_seller'),No,Seller state,WA,none,Vehicle Card,N/A
+SELLER INFORMATION,Zip Seller,zip_seller,string,products,get_field('zip_seller'),No,Seller ZIP code,98101,none,Individual Product Page,N/A
+SELLER INFORMATION,Phone,phone,string,products,get_field('phone'),No,Contact phone number,(555) 123-4567,none,Individual Product Page,N/A
+SELLER INFORMATION,Vehicle Phone,_vehicle_phone,string,products,get_field('_vehicle_phone'),No,Alternative phone field,(555) 123-4567,none,Individual Product Page,N/A
+SELLER INFORMATION,Dealer Phone,dealer_phone,string,products,get_field('dealer_phone'),No,Dealer phone number,(555) 123-4567,none,Individual Product Page,N/A
+SELLER INFORMATION,Phone Number Seller,phone_number_seller,string,products,get_field('phone_number_seller'),No,Seller phone number,(555) 123-4567,none,Individual Product Page,N/A
+SELLER INFORMATION,Email Seller,email_seller,string,products,get_field('email_seller'),No,Seller email address,dealer@example.com,none,Individual Product Page,N/A
+SELLER INFORMATION,Address Seller,address_seller,string,products,get_field('address_seller'),No,Seller address,123 Main St,none,Individual Product Page,N/A
+LOCATION DATA,Car Location Latitude,car_location_latitude,number,products,get_field('car_location_latitude'),No,Vehicle latitude,47.6062,none,Geolocation API,N/A
+LOCATION DATA,Car Location Longitude,car_location_longitude,number,products,get_field('car_location_longitude'),No,Vehicle longitude,-122.3321,none,Geolocation API,N/A
+ADDITIONAL FILTERS,Distance Filter,_vehicle_distance,number,filters,calculated,No,Location distance search,50,range,Filters Only,N/A
+ADDITIONAL FILTERS,Min Price Filter,_min_price,number,filters,filter_param,No,Minimum price filter,10000,range,Filters Only,N/A
+ADDITIONAL FILTERS,Max Price Filter,_max_price,number,filters,filter_param,No,Maximum price filter,100000,range,Filters Only,N/A
+ADDITIONAL FILTERS,Max Mileage Filter,_max_mileage,number,filters,filter_param,No,Maximum mileage filter,50000,range,Filters Only,N/A
+API ENDPOINTS,Products List,products,array,wp-json/wc/v3/products,WP_REST_Response,Yes,Get all WooCommerce products,200 OK,pagination,API,N/A
+API ENDPOINTS,Single Product,products/{id},object,wp-json/wc/v3/products/{id},WP_REST_Response,Yes,Get single WooCommerce product,200 OK,none,API,N/A
+API ENDPOINTS,Product Categories,products/categories,array,wp-json/wc/v3/products/categories,WP_REST_Response,No,Get product categories,200 OK,none,API,N/A
+API ENDPOINTS,System Status,system_status,object,wp-json/wc/v3/system_status,WP_REST_Response,No,Get WooCommerce system status,200 OK,none,API,N/A
+API ENDPOINTS,Custom Vehicles,carzino/v1/vehicles,array,wp-json/carzino/v1/vehicles,carzino_get_vehicles_for_react,Yes,Custom vehicle endpoint,200 OK,pagination,API,N/A
+API ENDPOINTS,Custom Settings,carzino/v1/settings,object,wp-json/carzino/v1/settings,carzino_get_global_settings,Yes,Custom settings endpoint,200 OK,none,API,N/A
+API ENDPOINTS,Single Vehicle,carzino/v1/vehicles/{id},object,wp-json/carzino/v1/vehicles/{id},carzino_get_single_vehicle,Yes,Custom single vehicle endpoint,200 OK,none,API,N/A
+API ENDPOINTS,Affordable Vehicles,carzino/v1/vehicles/affordable,array,wp-json/carzino/v1/vehicles/affordable,carzino_get_affordable_vehicles,No,Payment-based vehicle search,200 OK,none,API,N/A
+API PARAMETERS,Page,page,number,URL parameter,query param,Yes,Pagination page number,1,none,API Parameters,N/A
+API PARAMETERS,Per Page,per_page,number,URL parameter,query param,Yes,Items per page,20,none,API Parameters,N/A
+API PARAMETERS,Status,status,string,URL parameter,query param,Yes,Post status filter,publish,none,API Parameters,N/A
+API PARAMETERS,Stock Status,stock_status,string,URL parameter,query param,Yes,Stock status filter,instock,none,API Parameters,N/A
+API PARAMETERS,Catalog Visibility,catalog_visibility,string,URL parameter,query param,No,Catalog visibility filter,visible,none,API Parameters,N/A
+API PARAMETERS,Search,search,string,URL parameter,query param,No,Search query,BMW X5,none,API Parameters,N/A
+API PARAMETERS,Order By,orderby,string,URL parameter,query param,No,Sort field,price,none,API Parameters,N/A
+API PARAMETERS,Order,order,string,URL parameter,query param,No,Sort direction,asc,none,API Parameters,N/A
+API PARAMETERS,Fields,_fields,string,URL parameter,query param,No,Limit returned fields,id name price,none,API Parameters,N/A
+GLOBAL SETTINGS,Default APR,interest_rate,number,options,get_field('interest_rate' 'option'),No,Default interest rate,10.0,none,Global Options,N/A
+GLOBAL SETTINGS,Default Sales Tax,default_sales_tax,number,options,get_field('default_sales_tax' 'option'),No,Default sales tax rate,8.5,none,Global Options,N/A
+GLOBAL SETTINGS,Default Term,default_term,number,options,get_field('default_term' 'option'),No,Default loan term,72,none,Global Options,N/A
+GLOBAL SETTINGS,Default Down Percentage,default_down_pct,number,options,get_field('default_down_pct' 'option'),No,Default down payment percentage,20.0,none,Global Options,N/A
+AUTHENTICATION,Authorization Header,N/A,string,HTTP Header,Basic Auth,Yes,Base64 encoded credentials,Basic base64(key:secret),none,HTTP Headers,N/A
+AUTHENTICATION,Content Type,N/A,string,HTTP Header,application/json,Yes,Content type header,application/json,none,HTTP Headers,N/A
+AUTHENTICATION,User Agent,N/A,string,HTTP Header,User agent string,No,Custom user agent,Builder.io-Vehicle-Integration/1.0,none,HTTP Headers,N/A
+RESPONSE HEADERS,Total Items,X-WP-Total,number,Response Header,WP response,Yes,Total number of items,150,none,Response Headers,N/A
+RESPONSE HEADERS,Total Pages,X-WP-TotalPages,number,Response Header,WP response,Yes,Total number of pages,8,none,Response Headers,N/A
+RESPONSE HEADERS,Current Page,page,number,Response Meta,pagination info,Yes,Current page number,1,none,Response Headers,N/A
+RESPONSE HEADERS,Per Page,per_page,number,Response Meta,pagination info,Yes,Items per page,20,none,Response Headers,N/A
+ERROR HANDLING,Error Name,error.name,string,Error Object,JS Error,Yes,Error type name,AbortError,none,Error Handling,N/A
+ERROR HANDLING,Error Message,error.message,string,Error Object,JS Error,Yes,Error description,Request timeout,none,Error Handling,N/A
+ERROR HANDLING,HTTP Status,response.status,number,HTTP Response,fetch response,Yes,HTTP status code,404,none,Error Handling,N/A
+ERROR HANDLING,Status Text,response.statusText,string,HTTP Response,fetch response,Yes,HTTP status text,Not Found,none,Error Handling,N/A
+PERFORMANCE,Cache Key,cache_key,string,Cache System,Map key,Yes,Cache identifier,filter_options_xxx,none,Performance,N/A
+PERFORMANCE,Cache Timestamp,cache.timestamp,number,Cache System,Date.now(),Yes,Cache creation time,1699123456789,none,Performance,N/A
+PERFORMANCE,Cache Max Age,maxAgeMs,number,Cache System,milliseconds,Yes,Cache expiration time,300000,none,Performance,N/A
+PERFORMANCE,Timeout Duration,timeout,number,AbortController,milliseconds,Yes,Request timeout,30000,none,Performance,N/A
+VEHICLE FEATURES,VIN,vin,string,products,get_field('vin'),No,Vehicle identification number,1HGCM82633A123456,none,Individual Product Page,N/A
+VEHICLE FEATURES,VIN Alt,vehicle_vin,string,products,get_field('vehicle_vin'),No,Alternative VIN field,1HGCM82633A123456,none,Individual Product Page,N/A
+VEHICLE FEATURES,Features,features,array,products,get_field('features'),No,Vehicle features list,[Bluetooth GPS],none,Individual Product Page,N/A
+VEHICLE FEATURES,Vehicle Features,vehicle_features,array,products,get_field('vehicle_features'),No,Alternative features field,[Bluetooth GPS],none,Individual Product Page,N/A
+WP CORE FIELDS,Post Type,post_type,string,wp_posts,get_post_type(),Yes,WordPress post type,product,none,WordPress Core,N/A
+WP CORE FIELDS,Post Status,post_status,string,wp_posts,get_post_status(),Yes,WordPress post status,publish,none,WordPress Core,N/A
+WP CORE FIELDS,Post Title,post_title,string,wp_posts,get_the_title(),Yes,WordPress post title,2023 BMW X5,none,WordPress Core,N/A
+WP CORE FIELDS,Post Date,post_date,datetime,wp_posts,get_the_date(),Yes,WordPress post date,2023-01-01 12:00:00,none,WordPress Core,N/A
+WP CORE FIELDS,Post ID,ID,number,wp_posts,get_the_ID(),Yes,WordPress post ID,12345,none,WordPress Core,N/A
+WP CORE FIELDS,Description,post_content,text,wp_posts,get_the_content(),No,Product description,Full vehicle description,none,Individual Product Page,N/A
+WP CORE FIELDS,Short Description,post_excerpt,text,wp_posts,get_the_excerpt(),No,Product short description,Brief description,none,Vehicle Card,N/A
+DATABASE TABLES,WordPress Posts,wp_posts,table,MySQL,WordPress Core,Yes,Core WordPress posts table,N/A,none,Database,N/A
+DATABASE TABLES,WordPress Postmeta,wp_postmeta,table,MySQL,WordPress Core,Yes,WordPress metadata table,N/A,none,Database,N/A
+DATABASE TABLES,WooCommerce Orders,wp_wc_orders,table,MySQL,WooCommerce,No,WooCommerce orders table,N/A,none,Database,N/A
+DATABASE TABLES,WooCommerce Order Items,wp_woocommerce_order_items,table,MySQL,WooCommerce,No,WooCommerce order items table,N/A,none,Database,N/A
+DATABASE TABLES,Sellers Custom,sellers,table,MySQL,Custom,No,Custom sellers table,N/A,none,Database,N/A
+DATABASE TABLES,Vehicles Custom,vehicles,table,MySQL,Custom,No,Custom vehicles table,N/A,none,Database,N/A
