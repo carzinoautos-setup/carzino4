@@ -85,10 +85,10 @@ export class WordPressVehicleService {
       let orderBy = "p.post_date DESC"; // Default ordering
       switch (sortBy) {
         case "price-low":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_price' LIMIT 1) AS DECIMAL(10,2)) ASC";
+          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) AS DECIMAL(10,2)) ASC";
           break;
         case "price-high":
-          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = '_price' LIMIT 1) AS DECIMAL(10,2)) DESC";
+          orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'price' LIMIT 1) AS DECIMAL(10,2)) DESC";
           break;
         case "miles-low":
           orderBy = "CAST((SELECT meta_value FROM wp_postmeta WHERE post_id = p.ID AND meta_key = 'mileage' LIMIT 1) AS UNSIGNED) ASC";
