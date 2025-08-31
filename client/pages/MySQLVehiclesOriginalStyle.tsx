@@ -260,7 +260,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const [downPayment, setDownPayment] = useState("2000");
 
   // Debug logging for rendering - moved after all state declarations
-  console.log("�� Render State:", {
+  console.log("📊 Render State:", {
     vehiclesCount: vehicles.length,
     totalResults,
     totalPages,
@@ -885,6 +885,19 @@ function MySQLVehiclesOriginalStyleInner() {
   useEffect(() => {
     fetchFilterOptions();
   }, []);
+
+  // Re-fetch filter options when applied filters change (for conditional filtering)
+  useEffect(() => {
+    // Only re-fetch if we have some filters applied (avoid infinite loop)
+    const hasFilters = Object.values(appliedFilters).some(filter =>
+      Array.isArray(filter) ? filter.length > 0 : Boolean(filter)
+    );
+
+    if (hasFilters) {
+      console.log("🔄 Filters changed, re-fetching conditional filter options...");
+      fetchFilterOptions(appliedFilters);
+    }
+  }, [appliedFilters, fetchFilterOptions]);
 
   // Helper functions for price formatting
   const formatPrice = (value: string): string => {
