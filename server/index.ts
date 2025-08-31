@@ -43,15 +43,25 @@ const syncStatus = {
   lastError: null as string | null,
 };
 
+const dbConfigured = !!(
+  process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER
+);
+
 export function createServer() {
   const app = express();
 
-  // Initialize database connection
-  try {
-    createDatabaseConnection();
-    console.log("🔌 Database connection pool initialized");
-  } catch (error) {
-    console.error("❌ Failed to initialize database:", error);
+  // Initialize database connection if configured
+  if (dbConfigured) {
+    try {
+      createDatabaseConnection();
+      console.log("🔌 Database connection pool initialized");
+    } catch (error) {
+      console.error("❌ Failed to initialize database:", error);
+    }
+  } else {
+    console.log(
+      "ℹ️ Skipping database initialization (DB_HOST/DB_NAME/DB_USER not set)"
+    );
   }
 
   // Middleware
@@ -109,12 +119,17 @@ export function createServer() {
   // Example API routes (keep for backward compatibility)
   app.get("/api/demo", handleDemo);
 
-  // Test database connection on startup
-  testDatabaseConnection().catch((error) => {
-    console.error("⚠️  Database connection test failed during startup:", error);
-  });
+  // Test database connection on startup (when configured)
+  if (dbConfigured) {
+    testDatabaseConnection().catch((error) => {
+      console.error(
+        "⚠️  Database connection test failed during startup:",
+        error,
+      );
+    });
+  }
 
-  // Initialize WordPress sync system
+  // Initialize WordPress sync system (when DB configured)
   setupWordPressSync();
 
   return app;
@@ -126,6 +141,13 @@ export function createServer() {
  */
 async function setupWordPressSync() {
   try {
+    if (!dbConfigured) {
+      console.log(
+        "ℹ️ Skipping WordPress sync initialization (database not configured)",
+      );
+      return;
+    }
+
     console.log("🔄 Initializing WordPress sync system...");
 
     const sync = new WordPressSync();
