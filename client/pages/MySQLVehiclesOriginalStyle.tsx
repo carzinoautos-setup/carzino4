@@ -700,10 +700,10 @@ function MySQLVehiclesOriginalStyleInner() {
     // Use high-quality vehicle type images from Unsplash
     const vehicleImageMap = {
       // Cars and Sedans
-      "Car": "🚗",
-      "Cars": "🚗",
-      "Sedan": "🚗",
-      "Sedans": "🚗",
+      "Car": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
+      "Cars": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
+      "Sedan": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
+      "Sedans": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
 
       // SUVs and Crossovers
       "SUV": "🚙",
@@ -850,7 +850,7 @@ function MySQLVehiclesOriginalStyleInner() {
         } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
           console.warn("⚠️ Unable to connect to dealers API - using fallback data");
         } else {
-          console.error("❌ Error fetching dealers:", error);
+          console.error("��� Error fetching dealers:", error);
         }
 
         // Use empty array instead of demo dealers
