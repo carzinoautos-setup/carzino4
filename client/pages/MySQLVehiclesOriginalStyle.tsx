@@ -2635,6 +2635,7 @@ function MySQLVehiclesOriginalStyleInner() {
                 {filterOptions.makes.length > 0 ? (
                   filterOptions.makes
                     .filter(makeOption => makeOption.count > 0) // Only show makes with vehicles
+                    .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically
                     .map((makeOption) => (
                     <label
                       key={makeOption.name}
@@ -2689,6 +2690,7 @@ function MySQLVehiclesOriginalStyleInner() {
                 {filterOptions.models.length > 0 ? (
                   filterOptions.models
                     .filter(modelOption => modelOption.count > 0) // Only show models with vehicles
+                    .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically
                     .map((modelOption) => (
                     <label
                       key={modelOption.name}
@@ -3353,6 +3355,7 @@ function MySQLVehiclesOriginalStyleInner() {
                 {filterOptions.interiorColors && filterOptions.interiorColors.length > 0 ? (
                   filterOptions.interiorColors
                     .filter(colorOption => colorOption.count > 0)
+                    .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically
                     .map((colorOption) => (
                     <label
                       key={colorOption.name}
