@@ -487,6 +487,23 @@ export class WooCommerceApiService {
                   { name: "New", count: 0 }
                 ],
                 vehicleTypes: [],
+                driveTypes: [
+                  { name: "AWD/4WD", count: 0 },
+                  { name: "FWD", count: 0 },
+                  { name: "RWD", count: 0 }
+                ],
+                transmissions: [
+                  { name: "Auto", count: 0 },
+                  { name: "Manual", count: 0 },
+                  { name: "CVT", count: 0 }
+                ],
+                exteriorColors: [],
+                sellerTypes: [
+                  { name: "Dealer", count: 0 }
+                ],
+                dealers: [
+                  { name: "Carzino Autos", count: 0 }
+                ],
                 totalVehicles: 0
               }
             };
