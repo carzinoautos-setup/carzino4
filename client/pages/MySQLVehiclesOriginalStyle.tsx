@@ -285,9 +285,9 @@ function MySQLVehiclesOriginalStyleInner() {
   const isMountedRef = useRef(true);
   const apiClient = useRef(new OptimizedApiClient());
 
-  // Performance: Debounce search term and filters (reduced debounce for better responsiveness)
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
-  const debouncedAppliedFilters = useDebounce(appliedFilters, 300);
+  // Performance: Debounce search term and filters (minimal debounce for immediate response)
+  const debouncedSearchTerm = useDebounce(searchTerm, 100);
+  const debouncedAppliedFilters = useDebounce(appliedFilters, 150);
 
   // Get the API base URL - handle different environments
   const getApiBaseUrl = () => {
