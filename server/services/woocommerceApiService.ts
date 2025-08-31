@@ -610,9 +610,9 @@ export class WooCommerceApiService {
 
           if (Array.isArray(products) && products.length > 0) {
             allProducts.push(...products);
-            console.log(`📦 Analyzed ${products.length} products from page ${page}, total: ${allProducts.length}`);
+            console.log(`📦 Analyzed ${products.length} products from page ${page}, total: ${allProducts.length} (optimized payload)`);
 
-            if (products.length < 100) {
+            if (products.length < productsNeeded) {
               console.log(`✅ Reached end of products at page ${page}`);
               break;
             }
