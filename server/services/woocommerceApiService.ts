@@ -589,17 +589,20 @@ export class WooCommerceApiService {
         baseUrl: this.baseUrl
       });
 
-      // Fetch only first 2 pages for speed (200 products max)
+      // PERFORMANCE: Dramatically reduced data fetching for filter analysis
+      // Only fetch minimal data needed for filter extraction
       let allProducts: any[] = [];
-      const maxPages = 2; // Reduced for performance
+      const maxPages = 1; // Reduced from 2 to 1 page for performance
+      const productsNeeded = 50; // Reduced from 200 to 50 products
 
       for (let page = 1; page <= maxPages; page++) {
         const params = new URLSearchParams({
           page: page.toString(),
-          per_page: '100',
-          status: 'publish',           // Only published products
-          stock_status: 'instock',     // Only in-stock products
-          catalog_visibility: 'visible' // Only catalog-visible products
+          per_page: productsNeeded.toString(), // Reduced from 100 to 50
+          status: 'publish',
+          stock_status: 'instock',
+          catalog_visibility: 'visible',
+          _fields: 'id,name,categories,meta_data,featured' // PERFORMANCE: Only fetch essential fields for filters
         });
 
         try {
