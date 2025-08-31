@@ -1053,7 +1053,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // RVs and Large Vehicles
       "RV": "🚐",
-      "RVs": "��",
+      "RVs": "🚐",
       "Motorhome": "🚐",
       "Recreational Vehicle": "🚐"
     };
@@ -2865,26 +2865,32 @@ function MySQLVehiclesOriginalStyleInner() {
                           className="mr-2"
                           checked={appliedFilters.make.includes(makeOption.name)}
                           onChange={(e) => {
-                            console.log("🔧 Make filter clicked:", makeOption.name, "checked:", e.target.checked);
-                            console.log("🔧 Current applied makes:", appliedFilters.make);
-                            e.stopPropagation();
-                            try {
-                              if (e.target.checked) {
-                                const newFilters = {
-                                  ...appliedFilters,
-                                  make: [...appliedFilters.make, makeOption.name],
-                                };
-                                console.log("🔧 Adding make filter. New makes array:", newFilters.make);
-                                setAppliedFilters(newFilters);
-                                updateURLFromFilters(newFilters);
-                              } else {
-                                console.log("🔧 Removing make filter:", makeOption.name, "from:", appliedFilters.make);
-                                removeAppliedFilter("make", makeOption.name);
-                              }
-                            } catch (error) {
-                              console.error("❌ Error in make filter handler:", error);
+                          console.log("�� Make filter clicked:", makeOption.name, "checked:", e.target.checked);
+                          console.log("🔧 Current applied makes:", appliedFilters.make);
+                          e.stopPropagation();
+                          try {
+                            if (e.target.checked) {
+                              const newFilters = {
+                                ...appliedFilters,
+                                make: [...appliedFilters.make, makeOption.name],
+                              };
+                              console.log("🔧 Adding make filter. New makes array:", newFilters.make);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+
+                              // Force immediate data refresh after filter change
+                              setCurrentPage(1); // Reset to page 1 when filtering
+                            } else {
+                              console.log("🔧 Removing make filter:", makeOption.name, "from:", appliedFilters.make);
+                              removeAppliedFilter("make", makeOption.name);
+
+                              // Force immediate data refresh after filter change
+                              setCurrentPage(1); // Reset to page 1 when filtering
                             }
-                          }}
+                          } catch (error) {
+                            console.error("❌ Error in make filter handler:", error);
+                          }
+                        }}
                         />
                         <span className="carzino-filter-option">{makeOption.name}</span>
                         <span className="carzino-filter-count ml-1">
