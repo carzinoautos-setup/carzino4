@@ -287,6 +287,7 @@ export default function MySQLVehiclesOriginalStyle() {
       // Abort any previous request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
 
       setLoading(true);
@@ -413,6 +414,12 @@ export default function MySQLVehiclesOriginalStyle() {
         throw new Error(data.message || "API returned error");
       }
     } catch (err) {
+      // Handle AbortError gracefully - don't log as error since it's intentional
+      if (err.name === "AbortError") {
+        console.log("🚫 Request aborted (filter change or timeout)");
+        return; // Don't set error state for aborted requests
+      }
+
       console.error("❌ Vehicle fetch error:", err);
 
       // Provide specific error messages based on error type
@@ -420,10 +427,6 @@ export default function MySQLVehiclesOriginalStyle() {
         setError(
           "Unable to connect to vehicle database. Please refresh the page or try again later.",
         );
-      } else if (err.name === "AbortError") {
-        // Don't show error for aborted requests (user likely changed filters)
-        console.log("🚫 Request aborted (filter change or timeout)");
-        return; // Don't set error state for aborted requests
       } else if (
         err instanceof Error &&
         err.message.includes("API error: 404")
@@ -459,10 +462,6 @@ export default function MySQLVehiclesOriginalStyle() {
       });
     } finally {
       setLoading(false);
-      // Clear controller reference on cleanup
-      if (abortControllerRef.current) {
-        abortControllerRef.current = null;
-      }
     }
   }, [
     currentPage,
