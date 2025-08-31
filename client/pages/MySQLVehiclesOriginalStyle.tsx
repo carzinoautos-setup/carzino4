@@ -694,13 +694,14 @@ function MySQLVehiclesOriginalStyleInner() {
   // Load real filter options with counts
   useEffect(() => {
     const fetchFilterOptions = async () => {
+      const controller = new AbortController();
+
       try {
         const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters`;
         console.log("🔍 Fetching filter options from:", apiUrl);
 
-        // Add timeout and abort controller
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        // Set timeout for this request
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
         const response = await fetch(apiUrl, {
           method: "GET",
