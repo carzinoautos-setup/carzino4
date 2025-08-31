@@ -1201,8 +1201,9 @@ export class WooCommerceApiService {
       console.log("��� Testing WooCommerce API connection...");
       
       // Test basic API access
-      const systemStatus = await this.makeRequest('system_status');
-      
+      const systemStatusResponse = await this.makeRequest('system_status');
+      const systemStatus = systemStatusResponse.data;
+
       // Test products endpoint
       const response = await this.makeRequest('products', new URLSearchParams({
         per_page: '1'
