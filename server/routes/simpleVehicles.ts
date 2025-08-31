@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { WooCommerceApiService } from "../services/woocommerceApiService.js";
+import { WordpressVehicleService } from "../services/wordpressVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Use WooCommerce REST API for live inventory
-console.log("🛍️ Using WooCommerce REST API for live product inventory");
-const vehicleService = new WooCommerceApiService();
+// Use optimized WordPress SQL service for much faster performance
+console.log("⚡ Using optimized WordPress SQL service for high-performance inventory");
+const vehicleService = new WordpressVehicleService();
 
 /**
  * GET /api/simple-vehicles
