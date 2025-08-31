@@ -2383,7 +2383,9 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.conditions.length > 0 ? (
-                  filterOptions.conditions.map((conditionOption) => (
+                  filterOptions.conditions
+                    .filter(conditionOption => conditionOption.count > 0) // Only show conditions with vehicles
+                    .map((conditionOption) => (
                     <label
                       key={conditionOption.name}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -2493,7 +2495,9 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.driveTypes.length > 0 ? (
-                  filterOptions.driveTypes.map((driveTypeOption) => (
+                  filterOptions.driveTypes
+                    .filter(driveTypeOption => driveTypeOption.count > 0) // Only show drive types with vehicles
+                    .map((driveTypeOption) => (
                     <label
                       key={driveTypeOption.name}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -2534,7 +2538,9 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.transmissions.length > 0 ? (
-                  filterOptions.transmissions.map((transmissionOption) => (
+                  filterOptions.transmissions
+                    .filter(transmissionOption => transmissionOption.count > 0) // Only show transmissions with vehicles
+                    .map((transmissionOption) => (
                     <label
                       key={transmissionOption.name}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -2624,7 +2630,9 @@ function MySQLVehiclesOriginalStyleInner() {
             >
               <div className="space-y-1">
                 {filterOptions.sellerTypes.length > 0 ? (
-                  filterOptions.sellerTypes.map((sellerTypeOption) => (
+                  filterOptions.sellerTypes
+                    .filter(sellerTypeOption => sellerTypeOption.count > 0) // Only show seller types with vehicles
+                    .map((sellerTypeOption) => (
                     <label
                       key={sellerTypeOption.name}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -2664,7 +2672,9 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("dealer")}
             >
               <div className="space-y-1">
-                {(filterOptions.dealers.length > 0 ? filterOptions.dealers : availableDealers).map((dealer, index) => (
+                {(filterOptions.dealers.length > 0 ? filterOptions.dealers : availableDealers)
+                  .filter(dealer => dealer.count > 0) // Only show dealers with vehicles
+                  .map((dealer, index) => (
                   <label
                     key={index}
                     className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
