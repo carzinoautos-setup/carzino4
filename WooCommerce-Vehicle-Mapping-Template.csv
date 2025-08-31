@@ -1,0 +1,44 @@
+CATEGORY,FIELD NAME,DESCRIPTION,DATA TYPE,👉 YOUR WOOCOMMERCE META KEY 👈,FILTER TYPE,DISPLAY LOCATION,REQUIRED,EXAMPLE META KEY
+BASIC INFORMATION,id,Unique vehicle identifier,number,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_product_id
+BASIC INFORMATION,title,Vehicle display title/name,text,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_vehicle_title
+BASIC INFORMATION,year,Manufacturing year,number,PUT YOUR META KEY HERE,dropdown,Vehicle Card + Filters,Yes,_vehicle_year
+BASIC INFORMATION,make,Vehicle manufacturer,text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,Yes,_vehicle_make
+BASIC INFORMATION,model,Vehicle model name,text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,Yes,_vehicle_model
+BASIC INFORMATION,trim,Trim level/package,text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,No,_vehicle_trim
+TECHNICAL SPECS,mileage,Current odometer reading,number,PUT YOUR META KEY HERE,range,Vehicle Card + Filters,Yes,_vehicle_mileage
+TECHNICAL SPECS,transmission,Transmission type,text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,Yes,_vehicle_transmission
+TECHNICAL SPECS,transmission_speed,Transmission speed (6-Speed etc),text,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_transmission_speed
+TECHNICAL SPECS,doors,Number of doors,number,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_vehicle_doors
+TECHNICAL SPECS,engine_cylinders,Engine cylinder count,number,PUT YOUR META KEY HERE,checkbox,Filters,No,_vehicle_engine_cylinders
+TECHNICAL SPECS,fuel_type,Fuel type (Gas/Hybrid/Electric),text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,No,_vehicle_fuel_type
+TECHNICAL SPECS,drivetrain,Drive type (FWD/RWD/AWD/4WD),text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,No,_vehicle_drivetrain
+TECHNICAL SPECS,body_style,Body style (Sedan/SUV/Truck),text,PUT YOUR META KEY HERE,checkbox,Filters,No,_vehicle_body_style
+TECHNICAL SPECS,highway_mpg,Highway miles per gallon,number,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_highway_mpg
+VISUAL & MEDIA,images,Array of vehicle image URLs,array,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_product_image_gallery
+VISUAL & MEDIA,exterior_color_generic,Exterior color,text,PUT YOUR META KEY HERE,checkbox,Filters,No,_vehicle_exterior_color
+VISUAL & MEDIA,interior_color_generic,Interior color,text,PUT YOUR META KEY HERE,checkbox,Individual Product Page,No,_vehicle_interior_color
+VISUAL & MEDIA,mileageIcon,Custom mileage icon URL,text,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_mileage_icon
+VISUAL & MEDIA,transmissionIcon,Custom transmission icon URL,text,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_transmission_icon
+VISUAL & MEDIA,doorIcon,Custom door icon URL,text,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_door_icon
+STATUS & CONDITION,condition,Vehicle condition (New/Used/Certified),text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,Yes,_vehicle_condition
+STATUS & CONDITION,certified,Certified pre-owned status,boolean,PUT YOUR META KEY HERE,checkbox,Filters,No,_vehicle_certified
+STATUS & CONDITION,title_status,Title status (Clean/Salvage),text,PUT YOUR META KEY HERE,checkbox,Individual Product Page,No,_vehicle_title_status
+STATUS & CONDITION,featured,Featured listing status,boolean,PUT YOUR META KEY HERE,none,Vehicle Card,No,_featured
+STATUS & CONDITION,viewed,User viewed status,boolean,PUT YOUR META KEY HERE,none,Vehicle Card,No,_user_viewed
+STATUS & CONDITION,badges,Array of promotional badges,array,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_badges
+PRICING & FINANCING,price,Sale price,number,PUT YOUR META KEY HERE,range,Vehicle Card + Filters,Yes,_price
+PRICING & FINANCING,salePrice,Formatted sale price display,text,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_sale_price
+PRICING & FINANCING,payment,Monthly payment amount,number,PUT YOUR META KEY HERE,range,Vehicle Card + Filters,No,_vehicle_payment
+PRICING & FINANCING,payments,Calculated payment amount,number,PUT YOUR META KEY HERE,none,Vehicle Card,No,_vehicle_calculated_payment
+PRICING & FINANCING,interest_rate,Financing interest rate,number,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_interest_rate
+PRICING & FINANCING,down_payment,Required down payment,number,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_down_payment
+PRICING & FINANCING,loan_term,Loan term in months,number,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_loan_term
+SELLER INFORMATION,dealer,Dealer/seller name,text,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_vehicle_dealer
+SELLER INFORMATION,seller_type,Seller type (Dealer/Private),text,PUT YOUR META KEY HERE,checkbox,Vehicle Card + Filters,Yes,_vehicle_seller_type
+SELLER INFORMATION,seller_account_number,Seller account ID,text,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_seller_account
+SELLER INFORMATION,location,Vehicle/seller location,text,PUT YOUR META KEY HERE,none,Vehicle Card,Yes,_vehicle_location
+SELLER INFORMATION,phone,Contact phone number,text,PUT YOUR META KEY HERE,none,Individual Product Page,No,_vehicle_phone
+ADDITIONAL FILTERS,distance,Location distance search,text,PUT YOUR META KEY HERE,range,Filters Only,No,_vehicle_distance
+ADDITIONAL FILTERS,minPrice,Minimum price filter,number,PUT YOUR META KEY HERE,range,Filters Only,No,_min_price
+ADDITIONAL FILTERS,maxPrice,Maximum price filter,number,PUT YOUR META KEY HERE,range,Filters Only,No,_max_price
+ADDITIONAL FILTERS,maxMileage,Maximum mileage filter,number,PUT YOUR META KEY HERE,range,Filters Only,No,_max_mileage

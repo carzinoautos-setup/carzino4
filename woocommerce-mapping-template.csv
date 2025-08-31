@@ -1,0 +1,44 @@
+Category,Field Name,Description,Data Type,Your WooCommerce Meta Key,Filter Type,Display Location,Required
+Basic Information,id,Unique vehicle identifier,number,_product_id,,Vehicle Card,Yes
+Basic Information,title,Vehicle display title/name,text,_vehicle_title,,Vehicle Card,Yes
+Basic Information,year,Manufacturing year,number,_vehicle_year,dropdown,Vehicle Card + Filters,Yes
+Basic Information,make,Vehicle manufacturer,text,_vehicle_make,checkbox,Vehicle Card + Filters,Yes
+Basic Information,model,Vehicle model name,text,_vehicle_model,checkbox,Vehicle Card + Filters,Yes
+Basic Information,trim,Trim level/package,text,_vehicle_trim,checkbox,Vehicle Card + Filters,No
+Technical Specs,mileage,Current odometer reading,number,_vehicle_mileage,range,Vehicle Card + Filters,Yes
+Technical Specs,transmission,Transmission type,text,_vehicle_transmission,checkbox,Vehicle Card + Filters,Yes
+Technical Specs,transmission_speed,Transmission speed (6-Speed etc),text,_vehicle_transmission_speed,,Vehicle Card,No
+Technical Specs,doors,Number of doors,number,_vehicle_doors,,Vehicle Card,Yes
+Technical Specs,engine_cylinders,Engine cylinder count,number,_vehicle_engine_cylinders,checkbox,Filters,No
+Technical Specs,fuel_type,Fuel type (Gas/Hybrid/Electric),text,_vehicle_fuel_type,checkbox,Vehicle Card + Filters,No
+Technical Specs,drivetrain,Drive type (FWD/RWD/AWD/4WD),text,_vehicle_drivetrain,checkbox,Vehicle Card + Filters,No
+Technical Specs,body_style,Body style (Sedan/SUV/Truck),text,_vehicle_body_style,checkbox,Filters,No
+Technical Specs,highway_mpg,Highway miles per gallon,number,_vehicle_highway_mpg,,Individual Product Page,No
+Visual & Media,images,Array of vehicle image URLs,array,_product_image_gallery,,Vehicle Card,Yes
+Visual & Media,exterior_color_generic,Exterior color,text,_vehicle_exterior_color,checkbox,Filters,No
+Visual & Media,interior_color_generic,Interior color,text,_vehicle_interior_color,checkbox,Individual Product Page,No
+Visual & Media,mileageIcon,Custom mileage icon URL,text,_vehicle_mileage_icon,,Vehicle Card,No
+Visual & Media,transmissionIcon,Custom transmission icon URL,text,_vehicle_transmission_icon,,Vehicle Card,No
+Visual & Media,doorIcon,Custom door icon URL,text,_vehicle_door_icon,,Vehicle Card,No
+Status & Condition,condition,Vehicle condition (New/Used/Certified),text,_vehicle_condition,checkbox,Vehicle Card + Filters,Yes
+Status & Condition,certified,Certified pre-owned status,boolean,_vehicle_certified,checkbox,Filters,No
+Status & Condition,title_status,Title status (Clean/Salvage),text,_vehicle_title_status,checkbox,Individual Product Page,No
+Status & Condition,featured,Featured listing status,boolean,_featured,,Vehicle Card,No
+Status & Condition,viewed,User viewed status,boolean,_user_viewed,,Vehicle Card,No
+Status & Condition,badges,Array of promotional badges,array,_vehicle_badges,,Vehicle Card,No
+Pricing & Financing,price,Sale price,number,_price,,Vehicle Card + Filters,Yes
+Pricing & Financing,salePrice,Formatted sale price display,text,_sale_price,,Vehicle Card,Yes
+Pricing & Financing,payment,Monthly payment amount,number,_vehicle_payment,,Vehicle Card + Filters,No
+Pricing & Financing,payments,Calculated payment amount,number,_vehicle_calculated_payment,,Vehicle Card,No
+Pricing & Financing,interest_rate,Financing interest rate,number,_vehicle_interest_rate,,Individual Product Page,No
+Pricing & Financing,down_payment,Required down payment,number,_vehicle_down_payment,,Individual Product Page,No
+Pricing & Financing,loan_term,Loan term in months,number,_vehicle_loan_term,,Individual Product Page,No
+Seller Information,dealer,Dealer/seller name,text,_vehicle_dealer,,Vehicle Card,Yes
+Seller Information,seller_type,Seller type (Dealer/Private),text,_vehicle_seller_type,checkbox,Vehicle Card + Filters,Yes
+Seller Information,seller_account_number,Seller account ID,text,_vehicle_seller_account,,Individual Product Page,No
+Seller Information,location,Vehicle/seller location,text,_vehicle_location,,Vehicle Card,Yes
+Seller Information,phone,Contact phone number,text,_vehicle_phone,,Individual Product Page,No
+Additional Filters,distance,Location distance search,text,_vehicle_distance,range,Filters Only,No
+Additional Filters,minPrice,Minimum price filter,number,_min_price,range,Filters Only,No
+Additional Filters,maxPrice,Maximum price filter,number,_max_price,range,Filters Only,No
+Additional Filters,maxMileage,Maximum mileage filter,number,_max_mileage,range,Filters Only,No

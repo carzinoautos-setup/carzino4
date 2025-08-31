@@ -1,0 +1,49 @@
+🚗 WooCommerce Vehicle Meta Key Mapping Instructions
+==================================================
+
+📁 File: WooCommerce-Vehicle-Mapping-Template.csv
+
+📋 STEP-BY-STEP INSTRUCTIONS:
+
+1. 📥 DOWNLOAD the CSV file above
+2. 📊 OPEN in Microsoft Excel (it will format perfectly)
+3. 👀 LOOK FOR the column with arrows: "👉 YOUR WOOCOMMERCE META KEY 👈"
+4. ✏️  REPLACE "PUT YOUR META KEY HERE" with your actual meta keys
+
+🎯 EXAMPLE - Replace this:
+   PUT YOUR META KEY HERE
+
+📝 With your actual meta key like:
+   _vehicle_make
+   _vehicle_year  
+   _price
+   _product_image_gallery
+
+✅ WHAT YOUR FILLED ENTRIES SHOULD LOOK LIKE:
+
+Row for "make":
+- FIELD NAME: make
+- 👉 YOUR WOOCOMMERCE META KEY 👈: _vehicle_make
+- FILTER TYPE: checkbox
+
+Row for "price":  
+- FIELD NAME: price
+- 👉 YOUR WOOCOMMERCE META KEY 👈: _price
+- FILTER TYPE: range
+
+Row for "images":
+- FIELD NAME: images  
+- 👉 YOUR WOOCOMMERCE META KEY 👈: _vehicle_gallery
+- FILTER TYPE: none
+
+🚨 IMPORTANT NOTES:
+
+✓ Keep the underscore (_) at the start of meta keys
+✓ Use exact meta key names from your WooCommerce
+✓ If you don't have a field, leave it blank or write "NOT USED"
+✓ The "EXAMPLE META KEY" column shows typical formats
+✓ Save the file when done and send it back
+
+💡 PRO TIP: 
+Open your WooCommerce product edit page and check the "Custom Fields" 
+section to see your exact meta key names!
