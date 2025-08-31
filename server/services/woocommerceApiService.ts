@@ -42,15 +42,21 @@ export class WooCommerceApiService {
    */
   private async makeRequest(endpoint: string, params: URLSearchParams = new URLSearchParams()) {
     const url = `${this.baseUrl}/wp-json/wc/v3/${endpoint}?${params.toString()}`;
-    
+
     console.log(`🔍 WooCommerce API Request: ${endpoint}`);
-    
+
     try {
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
       const response = await fetch(url, {
         method: 'GET',
         headers: this.getAuthHeaders(),
-        timeout: 30000 // 30 second timeout
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`WooCommerce API Error: ${response.status} ${response.statusText}`);
@@ -516,7 +522,7 @@ export class WooCommerceApiService {
    */
   async testConnection() {
     try {
-      console.log("🔍 Testing WooCommerce API connection...");
+      console.log("��� Testing WooCommerce API connection...");
       
       // Test basic API access
       const systemStatus = await this.makeRequest('system_status');
