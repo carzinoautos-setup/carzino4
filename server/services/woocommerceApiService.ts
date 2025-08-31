@@ -446,8 +446,9 @@ export class WooCommerceApiService {
         const params = new URLSearchParams({
           page: page.toString(),
           per_page: '100',
-          status: 'publish',
-          stock_status: 'instock'
+          status: 'publish',           // Only published products
+          stock_status: 'instock',     // Only in-stock products
+          catalog_visibility: 'visible' // Only catalog-visible products
         });
 
         try {
