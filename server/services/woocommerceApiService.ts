@@ -1064,13 +1064,14 @@ export class WooCommerceApiService {
       // PERFORMANCE: Fetch minimal data needed for dealer extraction
       const params = new URLSearchParams({
         page: '1',
-        per_page: '30', // Reduced from 100 - dealers repeat across products
+        per_page: '100', // Increased to 100 for better dealer coverage
         status: 'publish',
         stock_status: 'instock',
         _fields: 'id,name,meta_data' // PERFORMANCE: Only fetch meta_data for dealer extraction
       });
 
-      const products = await this.makeRequest('products', params);
+      const response = await this.makeRequest('products', params);
+      const products = response.data;
 
       const dealerCounts = new Map<string, number>();
 
