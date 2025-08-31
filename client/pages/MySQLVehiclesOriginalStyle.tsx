@@ -1253,12 +1253,16 @@ function MySQLVehiclesOriginalStyleInner() {
     }
 
     // Immediately refresh filter options with empty filters to show all available options
-    console.log("🔄 Refreshing filter options after clearing filters...");
+    if (import.meta.env.DEV) {
+      console.log("🔄 Refreshing filter options after clearing filters...");
+    }
     if (isMountedRef.current) {
       fetchFilterOptions(emptyFilters);
     }
 
-    console.log("✅ All filters cleared successfully");
+    if (import.meta.env.DEV) {
+      console.log("✅ All filters cleared successfully");
+    }
   }, [location.pathname, navigate, fetchFilterOptions]);
 
   const displayedVehicles = getDisplayedVehicles();
