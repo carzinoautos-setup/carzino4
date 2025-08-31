@@ -18,6 +18,7 @@ import { FilterSection } from "@/components/FilterSection";
 import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
+import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
 
 // Vehicle interface for live WooCommerce data
 interface Vehicle {
