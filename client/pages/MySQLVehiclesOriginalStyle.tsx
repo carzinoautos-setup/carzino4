@@ -270,14 +270,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Get the API base URL - handle different environments
   const getApiBaseUrl = () => {
-    // In development, use relative URLs
-    if (
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1"
-    ) {
-      return "";
-    }
-    // In production, try to use the same origin first
+    // Always use relative URLs - let the browser handle the base URL
     return "";
   };
 
@@ -306,14 +299,17 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Fetch vehicles from API
   const fetchVehicles = useCallback(async () => {
+    // Create new controller for this request
+    const requestController = new AbortController();
+
     try {
       // Abort any previous request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-        // Small delay to ensure abort is processed
-        await new Promise(resolve => setTimeout(resolve, 10));
       }
+
+      // Set the new controller as active
+      abortControllerRef.current = requestController;
 
       setLoading(true);
       setError(null);
@@ -391,11 +387,10 @@ function MySQLVehiclesOriginalStyleInner() {
       const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles?${params}`;
       console.log("🔍 Fetching vehicles from:", apiUrl);
 
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
+      // Set timeout for this specific request
       const timeoutId = setTimeout(() => {
-        if (abortControllerRef.current === controller) {
-          controller.abort();
+        if (abortControllerRef.current === requestController) {
+          requestController.abort();
         }
       }, 30000); // 30 second timeout
 
@@ -404,15 +399,19 @@ function MySQLVehiclesOriginalStyleInner() {
         headers: {
           "Content-Type": "application/json",
         },
-        signal: controller.signal,
+        signal: requestController.signal,
       });
 
       clearTimeout(timeoutId);
 
-      // Clear the controller reference if this is still the active request
-      if (abortControllerRef.current === controller) {
-        abortControllerRef.current = null;
+      // Check if this request is still active (not aborted by a newer request)
+      if (abortControllerRef.current !== requestController) {
+        console.log("🚫 Request superseded by newer request");
+        return;
       }
+
+      // Clear the controller reference since request completed
+      abortControllerRef.current = null;
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -439,6 +438,12 @@ function MySQLVehiclesOriginalStyleInner() {
         throw new Error(data.message || "API returned error");
       }
     } catch (err) {
+      // Only handle errors for the current active request
+      if (abortControllerRef.current !== requestController) {
+        console.log("🚫 Ignoring error from superseded request");
+        return;
+      }
+
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err.name === "AbortError") {
         console.log("🚫 Request aborted (filter change or timeout)");
@@ -447,10 +452,15 @@ function MySQLVehiclesOriginalStyleInner() {
 
       console.error("❌ Vehicle fetch error:", err);
 
+      // Clear the controller reference on error
+      if (abortControllerRef.current === requestController) {
+        abortControllerRef.current = null;
+      }
+
       // Provide specific error messages based on error type
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
         setError(
-          "Unable to connect to vehicle database. Please refresh the page or try again later.",
+          "Unable to connect to vehicle database. Check your internet connection and try refreshing the page.",
         );
       } else if (
         err instanceof Error &&
@@ -478,15 +488,20 @@ function MySQLVehiclesOriginalStyleInner() {
         success: false,
         data: [],
         message: "No vehicles available",
-        pagination: {
-          page: 1,
-          pageSize: resultsPerPage,
-          total: 0,
+        meta: {
+          totalRecords: 0,
           totalPages: 0,
+          currentPage: 1,
+          pageSize: resultsPerPage,
+          hasNextPage: false,
+          hasPreviousPage: false,
         },
       });
     } finally {
-      setLoading(false);
+      // Only update loading state if this is still the active request
+      if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+        setLoading(false);
+      }
     }
   }, [
     currentPage,
