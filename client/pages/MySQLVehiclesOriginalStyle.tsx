@@ -260,7 +260,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const [downPayment, setDownPayment] = useState("2000");
 
   // Debug logging for rendering - moved after all state declarations
-  console.log("📊 Render State:", {
+  console.log("�� Render State:", {
     vehiclesCount: vehicles.length,
     totalResults,
     totalPages,
@@ -688,128 +688,117 @@ function MySQLVehiclesOriginalStyleInner() {
     fetchDealers();
   }, []);
 
-  // Load real filter options with counts
-  useEffect(() => {
-    const fetchFilterOptions = async () => {
-      const controller = new AbortController();
+  // Function to fetch filter options with conditional filtering
+  const fetchFilterOptions = useCallback(async (currentFilters = appliedFilters) => {
+    const controller = new AbortController();
 
-      try {
-        const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters`;
-        console.log("🔍 Fetching filter options from:", apiUrl);
+    try {
+      // Build query parameters from current filters for conditional filtering
+      const params = new URLSearchParams();
 
-        // Set timeout for this request
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      // Add current filter selections to get conditional options
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        params.append("make", currentFilters.make.join(","));
+      }
+      if (currentFilters.model && currentFilters.model.length > 0) {
+        params.append("model", currentFilters.model.join(","));
+      }
+      if (currentFilters.trim && currentFilters.trim.length > 0) {
+        params.append("trim", currentFilters.trim.join(","));
+      }
+      if (currentFilters.condition && currentFilters.condition.length > 0) {
+        params.append("condition", currentFilters.condition.join(","));
+      }
+      if (currentFilters.vehicleType && currentFilters.vehicleType.length > 0) {
+        params.append("vehicleType", currentFilters.vehicleType.join(","));
+      }
+      if (currentFilters.driveType && currentFilters.driveType.length > 0) {
+        params.append("driveType", currentFilters.driveType.join(","));
+      }
+      if (currentFilters.transmission && currentFilters.transmission.length > 0) {
+        params.append("transmission", currentFilters.transmission.join(","));
+      }
+      if (currentFilters.exteriorColor && currentFilters.exteriorColor.length > 0) {
+        params.append("exteriorColor", currentFilters.exteriorColor.join(","));
+      }
+      if (currentFilters.sellerType && currentFilters.sellerType.length > 0) {
+        params.append("sellerType", currentFilters.sellerType.join(","));
+      }
+      if (currentFilters.dealer && currentFilters.dealer.length > 0) {
+        params.append("dealer", currentFilters.dealer.join(","));
+      }
+      if (currentFilters.priceMin) {
+        params.append("priceMin", currentFilters.priceMin);
+      }
+      if (currentFilters.priceMax) {
+        params.append("priceMax", currentFilters.priceMax);
+      }
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
+      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters${params.toString() ? `?${params.toString()}` : ''}`;
+      console.log("🔍 Fetching conditional filter options from:", apiUrl);
+      console.log("🔍 Applied filters for conditional filtering:", currentFilters);
+
+      // Set timeout for this request
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("🔍 FRONTEND: Conditional filter options API response:", {
+          success: data.success,
+          hasData: !!data.data,
+          makesCount: data.data?.makes?.length,
+          modelsCount: data.data?.models?.length,
+          trimsCount: data.data?.trims?.length,
+          sampleMakes: data.data?.makes?.slice(0, 3),
+          appliedFilters: currentFilters
         });
-
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("🔍 FRONTEND: Filter options API response:", {
-            success: data.success,
-            hasData: !!data.data,
-            makesCount: data.data?.makes?.length,
-            sampleMakes: data.data?.makes?.slice(0, 3),
-            fullResponse: JSON.stringify(data).substring(0, 500)
-          });
-          if (data.success && data.data) {
-            setFilterOptions(data.data);
-            // Also update vehicleTypes for backwards compatibility
-            setVehicleTypes(data.data.vehicleTypes || []);
-            console.log(
-              "✅ Successfully loaded filter options:",
-              data.data.makes?.length || 0, "makes,",
-              data.data.conditions?.length || 0, "conditions,",
-              data.data.driveTypes?.length || 0, "drive types,",
-              data.data.transmissions?.length || 0, "transmissions,",
-              data.data.exteriorColors?.length || 0, "colors,",
-              data.data.sellerTypes?.length || 0, "seller types,",
-              data.data.dealers?.length || 0, "dealers,",
-              data.data.vehicleTypes?.length || 0, "vehicle types"
-            );
-          } else {
-            console.error("🔍 FRONTEND: Filter options API returned unsuccessful response:", data);
-          }
+        if (data.success && data.data) {
+          setFilterOptions(data.data);
+          // Also update vehicleTypes for backwards compatibility
+          setVehicleTypes(data.data.vehicleTypes || []);
+          console.log(
+            "✅ Successfully loaded conditional filter options:",
+            data.data.makes?.length || 0, "makes,",
+            data.data.models?.length || 0, "models,",
+            data.data.trims?.length || 0, "trims,",
+            data.data.conditions?.length || 0, "conditions,",
+            data.data.driveTypes?.length || 0, "drive types,",
+            data.data.transmissions?.length || 0, "transmissions,",
+            data.data.exteriorColors?.length || 0, "colors,",
+            data.data.sellerTypes?.length || 0, "seller types,",
+            data.data.dealers?.length || 0, "dealers,",
+            data.data.vehicleTypes?.length || 0, "vehicle types"
+          );
         } else {
-          console.warn("⚠️ Failed to fetch filter options:", response.status);
-          // Set fallback data for now
-          setFilterOptions({
-            makes: [],
-            models: [],
-            trims: [],
-            conditions: [],
-            vehicleTypes: [
-              { name: "Sedan", count: 0 },
-              { name: "Crossover/SUV", count: 0 },
-              { name: "Coupe", count: 0 },
-              { name: "Convertible", count: 0 },
-              { name: "Hatchback", count: 0 },
-              { name: "Van / Minivan", count: 0 },
-              { name: "Wagon", count: 0 },
-              { name: "Trucks", count: 0 },
-            ],
-            driveTypes: [
-              { name: "AWD/4WD", count: 0 },
-              { name: "FWD", count: 0 },
-              { name: "RWD", count: 0 }
-            ],
-            transmissions: [
-              { name: "Auto", count: 0 },
-              { name: "Manual", count: 0 },
-              { name: "CVT", count: 0 }
-            ],
-            exteriorColors: [],
-            sellerTypes: [
-              { name: "Dealer", count: 0 },
-              { name: "Private Seller", count: 0 }
-            ],
-            dealers: [],
-            totalVehicles: 0
-          });
-          setVehicleTypes([]);
+          console.error("🔍 FRONTEND: Filter options API returned unsuccessful response:", data);
         }
-      } catch (error) {
-        // Handle different types of errors gracefully
-        if (error.name === "AbortError") {
-          console.log("🚫 Filter options request timed out after 30 seconds");
-          console.log("⚠️ This is likely due to WooCommerce API processing time - using fallback data");
-        } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-          console.warn("⚠️ Unable to connect to filter options API - using fallback data");
-        } else {
-          console.error("❌ Error fetching filter options:", error);
-        }
-
-        // Set fallback data with common makes for basic functionality
-        const fallbackFilterOptions = {
-          makes: [
-            { name: "Ford", count: 0 },
-            { name: "Chevrolet", count: 0 },
-            { name: "Toyota", count: 0 },
-            { name: "Honda", count: 0 },
-            { name: "BMW", count: 0 },
-            { name: "Audi", count: 0 },
-            { name: "Mercedes-Benz", count: 0 },
-            { name: "Nissan", count: 0 }
-          ],
+      } else {
+        console.warn("⚠️ Failed to fetch filter options:", response.status);
+        // Set fallback data for now
+        setFilterOptions({
+          makes: [],
           models: [],
           trims: [],
-          conditions: [
-            { name: "Used", count: 0 },
-            { name: "New", count: 0 },
-            { name: "Certified", count: 0 }
-          ],
+          conditions: [],
           vehicleTypes: [
             { name: "Sedan", count: 0 },
-            { name: "SUV", count: 0 },
-            { name: "Truck", count: 0 },
-            { name: "Coupe", count: 0 }
+            { name: "Crossover/SUV", count: 0 },
+            { name: "Coupe", count: 0 },
+            { name: "Convertible", count: 0 },
+            { name: "Hatchback", count: 0 },
+            { name: "Van / Minivan", count: 0 },
+            { name: "Wagon", count: 0 },
+            { name: "Trucks", count: 0 },
           ],
           driveTypes: [
             { name: "AWD/4WD", count: 0 },
@@ -828,14 +817,72 @@ function MySQLVehiclesOriginalStyleInner() {
           ],
           dealers: [],
           totalVehicles: 0
-        };
-
-        setFilterOptions(fallbackFilterOptions);
-        setVehicleTypes(fallbackFilterOptions.vehicleTypes);
-        console.log("📝 Using fallback filter data - filters will work but counts may be inaccurate");
+        });
+        setVehicleTypes([]);
       }
-    };
+    } catch (error) {
+      // Handle different types of errors gracefully
+      if (error.name === "AbortError") {
+        console.log("🚫 Filter options request timed out after 30 seconds");
+        console.log("⚠️ This is likely due to WooCommerce API processing time - using fallback data");
+      } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+        console.warn("⚠️ Unable to connect to filter options API - using fallback data");
+      } else {
+        console.error("❌ Error fetching filter options:", error);
+      }
 
+      // Set fallback data with common makes for basic functionality
+      const fallbackFilterOptions = {
+        makes: [
+          { name: "Ford", count: 0 },
+          { name: "Chevrolet", count: 0 },
+          { name: "Toyota", count: 0 },
+          { name: "Honda", count: 0 },
+          { name: "BMW", count: 0 },
+          { name: "Audi", count: 0 },
+          { name: "Mercedes-Benz", count: 0 },
+          { name: "Nissan", count: 0 }
+        ],
+        models: [],
+        trims: [],
+        conditions: [
+          { name: "Used", count: 0 },
+          { name: "New", count: 0 },
+          { name: "Certified", count: 0 }
+        ],
+        vehicleTypes: [
+          { name: "Sedan", count: 0 },
+          { name: "SUV", count: 0 },
+          { name: "Truck", count: 0 },
+          { name: "Coupe", count: 0 }
+        ],
+        driveTypes: [
+          { name: "AWD/4WD", count: 0 },
+          { name: "FWD", count: 0 },
+          { name: "RWD", count: 0 }
+        ],
+        transmissions: [
+          { name: "Auto", count: 0 },
+          { name: "Manual", count: 0 },
+          { name: "CVT", count: 0 }
+        ],
+        exteriorColors: [],
+        sellerTypes: [
+          { name: "Dealer", count: 0 },
+          { name: "Private Seller", count: 0 }
+        ],
+        dealers: [],
+        totalVehicles: 0
+      };
+
+      setFilterOptions(fallbackFilterOptions);
+      setVehicleTypes(fallbackFilterOptions.vehicleTypes);
+      console.log("📝 Using fallback filter data - filters will work but counts may be inaccurate");
+    }
+  }, [appliedFilters]);
+
+  // Load initial filter options
+  useEffect(() => {
     fetchFilterOptions();
   }, []);
 
