@@ -217,6 +217,9 @@ function MySQLVehiclesOriginalStyleInner() {
   } | null>(null);
   const [appliedRadius, setAppliedRadius] = useState("200");
 
+  // Show More state for Make filter
+  const [showAllMakes, setShowAllMakes] = useState(false);
+
   const [appliedFilters, setAppliedFilters] = useState({
     condition: [] as string[],
     make: [] as string[],
