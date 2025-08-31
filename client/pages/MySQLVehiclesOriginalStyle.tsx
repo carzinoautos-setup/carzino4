@@ -288,6 +288,8 @@ export default function MySQLVehiclesOriginalStyle() {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
         abortControllerRef.current = null;
+        // Small delay to ensure abort is processed
+        await new Promise(resolve => setTimeout(resolve, 10));
       }
 
       setLoading(true);
@@ -631,7 +633,7 @@ export default function MySQLVehiclesOriginalStyle() {
             console.log("✅ Successfully loaded", data.data.length, "dealers");
           }
         } else {
-          console.warn("⚠️ Failed to fetch dealers:", response.status);
+          console.warn("���️ Failed to fetch dealers:", response.status);
           // Set fallback dealers for now
           setAvailableDealers([
             { name: "Bayside Auto Sales", count: 234 },
