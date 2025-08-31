@@ -680,6 +680,18 @@ export class WooCommerceApiService {
         .sort((a, b) => b.count - a.count)
         .slice(0, 20); // Limit to top 20 makes
 
+      const models = Object.entries(modelCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 30); // Limit to top 30 models
+
+      const trims = Object.entries(trimCounts)
+        .filter(([name, count]) => name.length > 0 && count > 0)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 25); // Limit to top 25 trims
+
       const conditions = Object.entries(conditionCounts)
         .filter(([name, count]) => name.length > 0 && count > 0)
         .map(([name, count]) => ({ name, count }))
