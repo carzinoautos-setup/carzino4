@@ -1252,12 +1252,13 @@ function MySQLVehiclesOriginalStyleInner() {
       navigate("/cars-for-sale/", { replace: true });
     }
 
-    // Immediately refresh filter options with empty filters to show all available options
+    // Clear cache and force refresh filter options with empty filters to show all available options
+    apiCache.clear(); // Clear cache to ensure fresh data
     if (import.meta.env.DEV) {
       console.log("🔄 Refreshing filter options after clearing filters...");
     }
     if (isMountedRef.current) {
-      fetchFilterOptions(emptyFilters);
+      fetchFilterOptions(emptyFilters, true); // Force refresh
     }
 
     if (import.meta.env.DEV) {
