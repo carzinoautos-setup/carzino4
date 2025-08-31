@@ -592,6 +592,9 @@ export class WooCommerceApiService {
                   { name: "CVT", count: 0 }
                 ],
                 exteriorColors: [],
+                interiorColors: [],
+                cities: [],
+                states: [],
                 sellerTypes: [
                   { name: "Dealer", count: 0 }
                 ],
