@@ -598,6 +598,18 @@ export class WooCommerceApiService {
           makesCounts[make] = (makesCounts[make] || 0) + 1;
         }
 
+        // Extract model using same logic as transformWooCommerceProduct
+        const model = getMeta('model') || getMeta('vehicle_model') || product.name.split(' ')[0] || "";
+        if (model && model.length > 1) {
+          modelCounts[model] = (modelCounts[model] || 0) + 1;
+        }
+
+        // Extract trim (often found in product name, description, or meta)
+        const trim = getMeta('trim') || getMeta('vehicle_trim') || "";
+        if (trim && trim.length > 1) {
+          trimCounts[trim] = (trimCounts[trim] || 0) + 1;
+        }
+
         // Extract condition using same logic as transformWooCommerceProduct
         const condition = getMeta('condition') || getMeta('vehicle_condition') ||
                          (product.featured ? "Certified" : "Used");
