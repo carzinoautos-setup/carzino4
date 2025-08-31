@@ -347,7 +347,238 @@ function MySQLVehiclesOriginalStyleInner() {
     return params.toString();
   }, [currentPage, debouncedSearchTerm, sortBy, appliedLocation, appliedRadius, debouncedAppliedFilters, resultsPerPage]);
 
-  // Fetch vehicles from API with retry logic and caching
+  // PERFORMANCE OPTIMIZATION: Combined API call that fetches vehicles + filters + dealers in one request
+  const fetchCombinedData = useCallback(async (retryCount = 0) => {
+    if (!isMountedRef.current) {
+      if (import.meta.env.DEV) {
+        console.log("🚫 Component unmounted, skipping combined fetch");
+      }
+      return;
+    }
+
+    if (import.meta.env.DEV) {
+      console.log("🚀 COMBINED FETCH: Starting with params:", apiParams);
+    }
+
+    try {
+      // Abort any previous request safely
+      if (abortControllerRef.current) {
+        try {
+          if (!abortControllerRef.current.signal.aborted) {
+            abortControllerRef.current.abort();
+          }
+        } catch (err) {
+          console.log("🔄 Previous combined request already handled");
+        }
+      }
+
+      const requestController = new AbortController();
+      abortControllerRef.current = requestController;
+
+      if (!isMountedRef.current) {
+        try {
+          requestController.abort();
+        } catch (err) {
+          // Ignore abort errors
+        }
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/combined?${apiParams}`;
+
+      PerformanceMonitor.startMeasure('fetchCombinedData');
+
+      // Check cache first
+      const cacheKey = `combined_${apiParams}`;
+      const cachedData = import.meta.env.DEV ? null : apiCache.get(cacheKey);
+      if (cachedData && retryCount === 0) {
+        if (import.meta.env.DEV) {
+          console.log("⚡ Using cached combined data");
+        }
+        setVehicles(cachedData.data.vehicles || []);
+        setApiResponse({
+          data: cachedData.data.vehicles,
+          meta: cachedData.data.meta,
+          success: true
+        });
+        setFilterOptions(cachedData.data.filters || {
+          makes: [], models: [], trims: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
+        });
+        setAvailableDealers(cachedData.data.dealers || []);
+        setVehicleTypes(cachedData.data.filters?.vehicleTypes || []);
+        setLoading(false);
+        PerformanceMonitor.endMeasure('fetchCombinedData');
+        return;
+      }
+
+      if (import.meta.env.DEV && retryCount === 0) {
+        console.log("🚀 COMBINED FETCH: Calling combined endpoint:", apiUrl);
+      }
+
+      // Set timeout for request
+      let timeoutId: NodeJS.Timeout | null = null;
+      const cleanup = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+      };
+
+      if (!requestController.signal.aborted && isMountedRef.current) {
+        timeoutId = setTimeout(() => {
+          if (abortControllerRef.current === requestController &&
+              !requestController.signal.aborted &&
+              isMountedRef.current) {
+            console.log("⏰ Combined request timeout after 30 seconds");
+            try {
+              requestController.abort();
+            } catch (err) {
+              console.log("⏰ Combined timeout abort completed");
+            }
+          }
+        }, 30000);
+      }
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: requestController.signal,
+      });
+
+      cleanup();
+
+      if (abortControllerRef.current !== requestController || !isMountedRef.current) {
+        console.log("🚫 Combined request superseded or component unmounted");
+        return;
+      }
+
+      if (abortControllerRef.current === requestController) {
+        abortControllerRef.current = null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Combined API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (import.meta.env.DEV) {
+        console.log("🚀 COMBINED API Response:", {
+          success: data.success,
+          vehiclesCount: data.data?.vehicles?.length,
+          filtersCount: Object.keys(data.data?.filters || {}).length,
+          dealersCount: data.data?.dealers?.length,
+          meta: data.data?.meta
+        });
+      }
+
+      if (data.success) {
+        // Cache combined response
+        const cacheTTL = import.meta.env.DEV ? 30 * 1000 : 1 * 60 * 1000;
+        apiCache.set(cacheKey, data, cacheTTL);
+
+        // Set all data from combined response
+        setVehicles(data.data.vehicles || []);
+        setApiResponse({
+          data: data.data.vehicles,
+          meta: data.data.meta,
+          success: true
+        });
+        setFilterOptions(data.data.filters || {
+          makes: [], models: [], trims: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
+        });
+        setAvailableDealers(data.data.dealers || []);
+        setVehicleTypes(data.data.filters?.vehicleTypes || []);
+
+        if (import.meta.env.DEV) {
+          console.log("✅ COMBINED: Successfully loaded all data in one call");
+        }
+      } else {
+        throw new Error(data.message || "Combined API returned error");
+      }
+
+      PerformanceMonitor.endMeasure('fetchCombinedData');
+    } catch (err) {
+      cleanup();
+
+      if (abortControllerRef.current !== requestController || !isMountedRef.current) {
+        console.log("🚫 Ignoring combined error from superseded request");
+        return;
+      }
+
+      if (err instanceof Error && err.name === "AbortError") {
+        if (import.meta.env.DEV) {
+          console.log("🚫 Combined request aborted");
+        }
+        if (abortControllerRef.current === requestController) {
+          abortControllerRef.current = null;
+        }
+        return;
+      }
+
+      if (import.meta.env.DEV) {
+        console.error("❌ Combined fetch error:", err);
+      }
+
+      if (abortControllerRef.current === requestController) {
+        abortControllerRef.current = null;
+      }
+
+      // Retry logic for network failures
+      if (err instanceof TypeError && err.message.includes("Failed to fetch") && retryCount < 2) {
+        if (import.meta.env.DEV) {
+          console.log(`🔄 Retrying combined request (attempt ${retryCount + 1}/3)...`);
+        }
+        const delay = Math.pow(2, retryCount) * 1000;
+        setTimeout(() => {
+          if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+            fetchCombinedData(retryCount + 1);
+          }
+        }, delay);
+        return;
+      }
+
+      // Set error state
+      if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
+        setError("Unable to connect to vehicle database. Check your internet connection and try refreshing the page.");
+      } else {
+        setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data.");
+      }
+
+      // Set empty state
+      setVehicles([]);
+      setApiResponse({
+        success: false,
+        data: [],
+        message: "No data available",
+        meta: {
+          totalRecords: 0,
+          totalPages: 0,
+          currentPage: 1,
+          pageSize: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      });
+    } finally {
+      if ((abortControllerRef.current === requestController || abortControllerRef.current === null) && isMountedRef.current) {
+        setLoading(false);
+      }
+    }
+  }, [apiParams]);
+
+  // LEGACY: Keep original fetchVehicles for compatibility (now calls combined)
   const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
