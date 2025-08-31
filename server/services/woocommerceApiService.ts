@@ -1073,6 +1073,19 @@ export class WooCommerceApiService {
       const response = await this.makeRequest('products', params);
       const products = response.data;
 
+      console.log(`🔍 getDealers: Response type check:`, {
+        hasResponse: !!response,
+        hasData: !!response?.data,
+        dataType: typeof response?.data,
+        isArray: Array.isArray(response?.data),
+        dataLength: Array.isArray(response?.data) ? response.data.length : 'N/A'
+      });
+
+      if (!Array.isArray(products)) {
+        console.error(`❌ getDealers: Expected array of products, got:`, typeof products);
+        throw new Error('Invalid response format from WooCommerce API for dealers');
+      }
+
       const dealerCounts = new Map<string, number>();
 
       // Analyze products to extract dealers
