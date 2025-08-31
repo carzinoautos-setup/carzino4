@@ -59,8 +59,19 @@ export const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({
       }`}
     >
       <div className="rounded-lg p-3 mb-2 h-14 flex items-center justify-center transition-colors bg-gray-100 group-hover:bg-gray-200">
-        <div className="text-2xl" role="img" aria-label={`${type} vehicle type`}>
-          {vehicleEmoji}
+        <img
+          src={vehicleImage}
+          alt={`${type} vehicle type`}
+          className="w-8 h-8 object-cover rounded"
+          onError={(e) => {
+            // Fallback to a generic car emoji if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
+        />
+        <div className="text-2xl hidden" role="img" aria-label={`${type} vehicle type`}>
+          🚗
         </div>
       </div>
       <div
