@@ -88,6 +88,7 @@ export function createServer() {
   // Simple Vehicle API routes (original demo format)
   app.get("/api/simple-vehicles", getSimpleVehicles);
   app.get("/api/simple-vehicles/filters", getSimpleFilterOptions);
+  app.get("/api/simple-vehicles/combined", getCombinedVehicleData); // PERFORMANCE: 3-in-1 endpoint
   app.get("/api/simple-vehicles/:id", getSimpleVehicleById);
   app.get("/api/dealers", getDealers);
   app.get("/api/vehicle-types", getVehicleTypes);
