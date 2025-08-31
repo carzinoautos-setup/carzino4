@@ -280,6 +280,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Keep track of active controller to abort previous requests
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
 
   // Get the API base URL - handle different environments
   const getApiBaseUrl = () => {
@@ -296,15 +297,38 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Fetch vehicles from API with retry logic
   const fetchVehicles = useCallback(async (retryCount = 0) => {
+    // Don't proceed if component is unmounted
+    if (!isMountedRef.current) {
+      console.log("🚫 Component unmounted, skipping fetch");
+      return;
+    }
+
     try {
       // Abort any previous request safely
-      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-        abortControllerRef.current.abort();
+      if (abortControllerRef.current) {
+        try {
+          if (!abortControllerRef.current.signal.aborted) {
+            abortControllerRef.current.abort();
+          }
+        } catch (err) {
+          // Ignore errors when aborting previous requests
+          console.log("🔄 Previous request already handled");
+        }
       }
 
       // Create new controller for this request
       const requestController = new AbortController();
       abortControllerRef.current = requestController;
+
+      // Double-check component is still mounted
+      if (!isMountedRef.current) {
+        try {
+          requestController.abort();
+        } catch (err) {
+          // Ignore abort errors
+        }
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -389,13 +413,25 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Set timeout for this specific request
       let timeoutId: NodeJS.Timeout | null = null;
+      const cleanup = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+      };
 
-      // Only set timeout if controller is not already aborted
-      if (!requestController.signal.aborted) {
+      // Only set timeout if controller is not already aborted and component is mounted
+      if (!requestController.signal.aborted && isMountedRef.current) {
         timeoutId = setTimeout(() => {
-          if (abortControllerRef.current === requestController && !requestController.signal.aborted) {
+          if (abortControllerRef.current === requestController &&
+              !requestController.signal.aborted &&
+              isMountedRef.current) {
             console.log("⏰ Request timeout after 30 seconds");
-            requestController.abort();
+            try {
+              requestController.abort();
+            } catch (err) {
+              console.log("⏰ Timeout abort completed");
+            }
           }
         }, 30000); // 30 second timeout
       }
@@ -409,19 +445,18 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       // Clear timeout on successful response
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      cleanup();
 
-      // Check if this request is still active (not aborted by a newer request)
-      if (abortControllerRef.current !== requestController) {
-        console.log("🚫 Request superseded by newer request");
+      // Check if this request is still active and component is still mounted
+      if (abortControllerRef.current !== requestController || !isMountedRef.current) {
+        console.log("🚫 Request superseded by newer request or component unmounted");
         return;
       }
 
       // Clear the controller reference since request completed
-      abortControllerRef.current = null;
+      if (abortControllerRef.current === requestController) {
+        abortControllerRef.current = null;
+      }
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -448,22 +483,29 @@ function MySQLVehiclesOriginalStyleInner() {
         throw new Error(data.message || "API returned error");
       }
     } catch (err) {
-      // Only handle errors for the current active request
-      if (abortControllerRef.current !== requestController) {
-        console.log("���� Ignoring error from superseded request");
+      // Ensure timeout is cleared on error
+      cleanup();
+
+      // Only handle errors for the current active request and if component is mounted
+      if (abortControllerRef.current !== requestController || !isMountedRef.current) {
+        console.log("🚫 Ignoring error from superseded request or unmounted component");
         return;
       }
 
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err instanceof Error && err.name === "AbortError") {
         console.log("🚫 Request aborted (filter change, timeout, or navigation)");
+        // Clear controller reference if this was the active request
+        if (abortControllerRef.current === requestController) {
+          abortControllerRef.current = null;
+        }
         return; // Don't set error state for aborted requests
       }
 
       console.error("❌ Vehicle fetch error:", err);
 
       // Clear the controller reference on error (but not on abort)
-      if (abortControllerRef.current === requestController && !(err instanceof Error && err.name === "AbortError")) {
+      if (abortControllerRef.current === requestController) {
         abortControllerRef.current = null;
       }
 
@@ -521,8 +563,8 @@ function MySQLVehiclesOriginalStyleInner() {
         },
       });
     } finally {
-      // Only update loading state if this is still the active request
-      if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+      // Only update loading state if this is still the active request and component is mounted
+      if ((abortControllerRef.current === requestController || abortControllerRef.current === null) && isMountedRef.current) {
         setLoading(false);
       }
     }
@@ -538,10 +580,22 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Cleanup effect to abort pending requests on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
-      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
-        console.log("🧹 Cleaning up pending request on unmount");
-        abortControllerRef.current.abort();
+      console.log("🧹 Component unmounting - cleaning up requests");
+      isMountedRef.current = false;
+
+      if (abortControllerRef.current) {
+        try {
+          if (!abortControllerRef.current.signal.aborted) {
+            console.log("🧹 Aborting pending request on unmount");
+            abortControllerRef.current.abort();
+          }
+        } catch (err) {
+          // Ignore errors during cleanup
+          console.log("🧹 Cleanup abort completed");
+        }
+        abortControllerRef.current = null;
       }
     };
   }, []);
@@ -618,8 +672,12 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Fetch vehicles when dependencies change with debouncing
   useEffect(() => {
+    if (!isMountedRef.current) return;
+
     const debounceTimer = setTimeout(() => {
-      fetchVehicles();
+      if (isMountedRef.current) {
+        fetchVehicles();
+      }
     }, 300); // 300ms debounce to prevent rapid firing
 
     return () => clearTimeout(debounceTimer);
