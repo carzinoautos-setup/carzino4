@@ -522,6 +522,8 @@ export class WooCommerceApiService {
                   { name: "Toyota", count: 0 },
                   { name: "Honda", count: 0 }
                 ],
+                models: [],
+                trims: [],
                 conditions: [
                   { name: "Used", count: 0 },
                   { name: "New", count: 0 }
