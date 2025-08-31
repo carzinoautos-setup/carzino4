@@ -34,7 +34,7 @@ import {
   getCacheStats,
   clearCache,
 } from "./routes/payments.js";
-import WordPressSync from "./scripts/syncWordPressUpdates.js";
+// Defer WordPress sync import to runtime to avoid DB init when not configured
 
 // Track WordPress sync status
 const syncStatus = {
@@ -150,6 +150,9 @@ async function setupWordPressSync() {
 
     console.log("🔄 Initializing WordPress sync system...");
 
+    const { default: WordPressSync } = await import(
+      "./scripts/syncWordPressUpdates.js"
+    );
     const sync = new WordPressSync();
 
     // Run initial sync check (only if needed)
