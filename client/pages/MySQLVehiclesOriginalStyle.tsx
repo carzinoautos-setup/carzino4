@@ -525,10 +525,14 @@ function MySQLVehiclesOriginalStyleInner() {
 
       if (err instanceof Error && err.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("🚫 Combined request aborted");
+          console.log("🚫 Combined request aborted (expected behavior)");
         }
         if (abortControllerRef.current === requestController) {
           abortControllerRef.current = null;
+        }
+        // Clear loading state if this was the active request
+        if (abortControllerRef.current === requestController || abortControllerRef.current === null) {
+          setLoading(false);
         }
         return;
       }
