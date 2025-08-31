@@ -736,7 +736,7 @@ export class WooCommerceApiService {
         .sort((a, b) => b.count - a.count)
         .slice(0, 15); // Limit to 15 vehicle types
 
-      console.log(`✅ Found ${makes.length} makes, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} colors, ${vehicleTypes.length} vehicle types from meta data analysis`);
+      console.log(`✅ Found ${makes.length} makes, ${models.length} models, ${trims.length} trims, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} colors, ${vehicleTypes.length} vehicle types from meta data analysis`);
 
       const result = {
         success: true,
