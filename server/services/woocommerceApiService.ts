@@ -437,12 +437,12 @@ export class WooCommerceApiService {
     sortBy: string = "relevance"
   ) {
     try {
-      console.log("🔍 Fetching products from WooCommerce REST API...");
+      console.log(`🔍 Fetching products from WooCommerce REST API - Page ${pagination.page}, Size ${pagination.pageSize}`);
 
       // Build optimized WooCommerce API parameters
       const params = new URLSearchParams({
         page: pagination.page.toString(),
-        per_page: Math.min(pagination.pageSize, 50).toString(), // Reduced from 100 to 50 for performance
+        per_page: Math.min(pagination.pageSize, 100).toString(), // Use requested page size up to 100
         status: 'publish',           // Only published products
         stock_status: 'instock',     // Only in-stock products
         catalog_visibility: 'visible', // Only catalog-visible products
@@ -478,11 +478,7 @@ export class WooCommerceApiService {
 
       // REMOVED: Duplicate stock_status parameter (already set above)
 
-      // PERFORMANCE: Reduced data fetching for better response times
-      // Only fetch what we need for current page + small buffer for filtering
-      const hasSpecificFilters = filters.make || filters.model || filters.condition || filters.priceMin || filters.priceMax;
-      const fetchSize = hasSpecificFilters ? Math.min(pagination.pageSize * 3, 50) : pagination.pageSize; // Reduced from 200+ to max 50
-      params.set('per_page', fetchSize.toString());
+      // Keep the requested page size - no need to multiply for filtering
 
       // Add sorting
       switch (sortBy) {
@@ -502,57 +498,32 @@ export class WooCommerceApiService {
           break;
       }
 
-      // PERFORMANCE: Reduced pagination fetching from 3 pages to 1-2 max
-      const maxPagesToFetch = hasSpecificFilters ? 2 : 1; // Maximum 2 pages instead of 3
+      // PROPER PAGINATION: Make single request to WooCommerce for the specific page
+      console.log(`📦 Requesting page ${pagination.page} with ${pagination.pageSize} items per page`);
 
-      let allProducts: any[] = [];
+      const response = await this.makeRequest('products', params);
+      const products = response.data;
+      const paginationInfo = response.pagination;
 
-      for (let page = 1; page <= maxPagesToFetch; page++) {
-        params.set('page', page.toString());
+      console.log(`📦 WooCommerce Response:`, {
+        productsReceived: Array.isArray(products) ? products.length : 0,
+        totalItems: paginationInfo.totalItems,
+        totalPages: paginationInfo.totalPages,
+        currentPage: paginationInfo.currentPage,
+        perPage: paginationInfo.perPage
+      });
 
-        try {
-          const products = await this.makeRequest('products', params);
-
-          if (Array.isArray(products) && products.length > 0) {
-            allProducts.push(...products);
-            console.log(`📦 Fetched ${products.length} products from page ${page}, total: ${allProducts.length}`);
-
-            // If we got less than the max per page, we've reached the end
-            if (products.length < 100) {
-              console.log(`✅ Reached end of products at page ${page}`);
-              break;
-            }
-
-            // PERFORMANCE: Break early with much smaller dataset
-            if (!hasSpecificFilters && allProducts.length >= 50) {
-              console.log(`⚡ Breaking early for performance (${allProducts.length} products)`);
-              break;
-            }
-          } else {
-            console.log(`📦 No more products found on page ${page}`);
-            break;
-          }
-        } catch (error) {
-          console.error(`❌ Error fetching page ${page}:`, error);
-          if (page === 1) {
-            // If first page fails, throw error
-            throw error;
-          }
-          // If subsequent pages fail, just break and use what we have
-          break;
-        }
+      if (!Array.isArray(products)) {
+        console.warn(`⚠️ Expected array of products, got:`, typeof products);
+        throw new Error('Invalid response format from WooCommerce API');
       }
 
-      // Get total count for pagination
-      const totalRecords = allProducts.length;
-      const totalPages = Math.ceil(totalRecords / pagination.pageSize);
-
-      // Transform products to vehicle format in smaller batches to prevent overwhelming DB
+      // Transform products to vehicle format in batches
       let transformedVehicles = [];
       const batchSize = 10; // Process 10 products at a time
 
-      for (let i = 0; i < allProducts.length; i += batchSize) {
-        const batch = allProducts.slice(i, i + batchSize);
+      for (let i = 0; i < products.length; i += batchSize) {
+        const batch = products.slice(i, i + batchSize);
         const batchResults = await Promise.all(
           batch.map((product, batchIndex) =>
             this.transformProductToVehicle(product, i + batchIndex)
@@ -561,30 +532,53 @@ export class WooCommerceApiService {
         transformedVehicles.push(...batchResults);
       }
 
-      // Apply client-side filtering for vehicle-specific attributes
-      transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
+      // Apply client-side filtering for vehicle-specific attributes that can't be done via WooCommerce API
+      const hasVehicleFilters = filters.condition || filters.exteriorColor || filters.interiorColor ||
+                               filters.city || filters.state || filters.priceMin || filters.priceMax;
 
-      // Calculate pagination based on filtered results
-      const filteredTotalRecords = transformedVehicles.length;
-      const filteredTotalPages = Math.ceil(filteredTotalRecords / pagination.pageSize);
+      if (hasVehicleFilters) {
+        console.log(`🔍 Applying additional vehicle-specific filters to ${transformedVehicles.length} products`);
+        transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
+        console.log(`📊 After filtering: ${transformedVehicles.length} vehicles remain`);
+      }
 
-      // Apply pagination to filtered results
-      const startIndex = (pagination.page - 1) * pagination.pageSize;
-      const endIndex = startIndex + pagination.pageSize;
-      const paginatedVehicles = transformedVehicles.slice(startIndex, endIndex);
+      // Use WooCommerce pagination headers for accurate totals when no vehicle-specific filtering
+      let totalRecords: number;
+      let totalPages: number;
+      let hasNextPage: boolean;
+      let hasPreviousPage: boolean;
 
-      console.log(`✅ Processed ${allProducts.length} total products, filtered to ${transformedVehicles.length} vehicles, showing ${paginatedVehicles.length} on page ${pagination.page}`);
+      if (hasVehicleFilters) {
+        // When we have vehicle-specific filters, we need to estimate totals
+        // This is a limitation since WooCommerce doesn't support our custom meta filtering
+        totalRecords = transformedVehicles.length;
+        totalPages = Math.ceil(totalRecords / pagination.pageSize);
+        hasNextPage = false; // We can't know for sure with filtered results
+        hasPreviousPage = pagination.page > 1;
+
+        console.log(`⚠️ Using estimated pagination due to vehicle-specific filters`);
+      } else {
+        // Use accurate WooCommerce pagination headers
+        totalRecords = paginationInfo.totalItems;
+        totalPages = paginationInfo.totalPages;
+        hasNextPage = pagination.page < totalPages;
+        hasPreviousPage = pagination.page > 1;
+
+        console.log(`✅ Using WooCommerce pagination headers for accurate totals`);
+      }
+
+      console.log(`✅ Processed ${products.length} products into ${transformedVehicles.length} vehicles on page ${pagination.page}`);
 
       return {
         success: true,
-        data: paginatedVehicles,
+        data: transformedVehicles,
         meta: {
-          totalRecords: filteredTotalRecords,
-          totalPages: filteredTotalPages,
+          totalRecords,
+          totalPages,
           currentPage: pagination.page,
           pageSize: pagination.pageSize,
-          hasNextPage: pagination.page < filteredTotalPages,
-          hasPreviousPage: pagination.page > 1
+          hasNextPage,
+          hasPreviousPage
         }
       };
 
