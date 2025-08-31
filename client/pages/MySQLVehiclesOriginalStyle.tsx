@@ -255,6 +255,22 @@ function MySQLVehiclesOriginalStyleInner() {
   const [interestRate, setInterestRate] = useState("5");
   const [downPayment, setDownPayment] = useState("2000");
 
+  // Debug logging for rendering - moved after all state declarations
+  console.log("📊 Render State:", {
+    vehiclesCount: vehicles.length,
+    totalResults,
+    totalPages,
+    loading,
+    error,
+    hasApiResponse: !!apiResponse,
+    filterOptions: {
+      makesCount: filterOptions.makes?.length,
+      sampleMakes: filterOptions.makes?.slice(0, 3)?.map(m => m.name),
+      conditionsCount: filterOptions.conditions?.length,
+      isEmpty: Object.keys(filterOptions).every(key => !filterOptions[key]?.length)
+    }
+  });
+
   // Keep track of active controller to abort previous requests
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -419,7 +435,7 @@ function MySQLVehiclesOriginalStyleInner() {
     } catch (err) {
       // Only handle errors for the current active request
       if (abortControllerRef.current !== requestController) {
-        console.log("🚫 Ignoring error from superseded request");
+        console.log("���� Ignoring error from superseded request");
         return;
       }
 
