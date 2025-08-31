@@ -22,9 +22,9 @@ export interface VehicleRecord {
   certified: boolean;
   seller_account_number: string;
   seller_type: string;
-  seller_city?: string;
-  seller_state?: string;
-  seller_zip?: string;
+  city_seller?: string;
+  state_seller?: string;
+  zip_seller?: string;
   acount_name_seller?: string;
   interest_rate: number;
   down_payment: number;
