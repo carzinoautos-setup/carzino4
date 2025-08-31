@@ -2765,48 +2765,37 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("sellerType")}
             >
               <div className="space-y-1">
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={appliedFilters.sellerType.includes("Dealer")}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (e.target.checked) {
-                        setAppliedFilters((prev) => ({
-                          ...prev,
-                          sellerType: [...prev.sellerType, "Dealer"],
-                        }));
-                      } else {
-                        removeAppliedFilter("sellerType", "Dealer");
-                      }
-                    }}
-                  />
-                  <span className="carzino-filter-option">Dealer</span>
-                  <span className="carzino-filter-count ml-1">(6,543)</span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={appliedFilters.sellerType.includes(
-                      "Private Seller",
-                    )}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (e.target.checked) {
-                        setAppliedFilters((prev) => ({
-                          ...prev,
-                          sellerType: [...prev.sellerType, "Private Seller"],
-                        }));
-                      } else {
-                        removeAppliedFilter("sellerType", "Private Seller");
-                      }
-                    }}
-                  />
-                  <span className="carzino-filter-option">Private Seller</span>
-                  <span className="carzino-filter-count ml-1">(1,984)</span>
-                </label>
+                {filterOptions.sellerTypes.length > 0 ? (
+                  filterOptions.sellerTypes.map((sellerTypeOption) => (
+                    <label
+                      key={sellerTypeOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.sellerType.includes(sellerTypeOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              sellerType: [...prev.sellerType, sellerTypeOption.name],
+                            }));
+                          } else {
+                            removeAppliedFilter("sellerType", sellerTypeOption.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{sellerTypeOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({sellerTypeOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading seller types...
+                  </div>
+                )}
               </div>
             </FilterSection>
 
