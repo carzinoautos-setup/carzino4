@@ -63,9 +63,9 @@ export class WordPressVehicleService {
 
       if (filters.priceMin) {
         whereConditions.push(`EXISTS (
-          SELECT 1 FROM wp_postmeta pm_price 
-          WHERE pm_price.post_id = p.ID 
-          AND pm_price.meta_key = '_price' 
+          SELECT 1 FROM wp_postmeta pm_price
+          WHERE pm_price.post_id = p.ID
+          AND pm_price.meta_key = 'price'
           AND CAST(pm_price.meta_value AS DECIMAL(10,2)) >= ?
         )`);
         params.push(parseFloat(filters.priceMin));
@@ -73,9 +73,9 @@ export class WordPressVehicleService {
 
       if (filters.priceMax) {
         whereConditions.push(`EXISTS (
-          SELECT 1 FROM wp_postmeta pm_price 
-          WHERE pm_price.post_id = p.ID 
-          AND pm_price.meta_key = '_price' 
+          SELECT 1 FROM wp_postmeta pm_price
+          WHERE pm_price.post_id = p.ID
+          AND pm_price.meta_key = 'price'
           AND CAST(pm_price.meta_value AS DECIMAL(10,2)) <= ?
         )`);
         params.push(parseFloat(filters.priceMax));
