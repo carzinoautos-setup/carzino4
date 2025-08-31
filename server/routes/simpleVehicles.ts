@@ -182,7 +182,14 @@ export const getSimpleVehicleById: RequestHandler = async (req, res) => {
  */
 export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
   try {
+    console.log("🔍 ROUTE: getSimpleFilterOptions called");
     const result = await vehicleService.getFilterOptions();
+
+    console.log("🔍 ROUTE: Sending filter options response:", {
+      success: result.success,
+      makesCount: result.data?.makes?.length,
+      statusCode: 200
+    });
 
     res.status(200).json(result);
   } catch (error) {
