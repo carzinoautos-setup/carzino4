@@ -89,13 +89,19 @@ export class WooCommerceApiService {
       console.log(`📊 After make filter: ${filteredVehicles.length} vehicles`);
     }
 
-    // Filter by model
+    // Filter by model (also check if it might be a trim level)
     if (filters.model && filters.model.length > 0) {
       filteredVehicles = filteredVehicles.filter(vehicle => {
         const vehicleModel = this.extractModelFromTitle(vehicle.title);
-        return filters.model.some(model =>
-          vehicleModel.toLowerCase().includes(model.toLowerCase())
-        );
+        const fullTitle = vehicle.title.toLowerCase();
+
+        return filters.model.some(model => {
+          const modelLower = model.toLowerCase();
+          // Check if it matches as model or appears anywhere in title (for trim levels)
+          return vehicleModel.toLowerCase().includes(modelLower) ||
+                 fullTitle.includes(modelLower) ||
+                 vehicle.badges?.some((badge: string) => badge.toLowerCase().includes(modelLower));
+        });
       });
       console.log(`📊 After model filter: ${filteredVehicles.length} vehicles`);
     }
