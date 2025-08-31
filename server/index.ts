@@ -12,6 +12,7 @@ import {
   getSimpleVehicles,
   getSimpleVehicleById,
   getSimpleFilterOptions,
+  getCombinedVehicleData,
   getDealers,
   getVehicleTypes,
   simpleHealthCheck,
