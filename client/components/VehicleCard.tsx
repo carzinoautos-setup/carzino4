@@ -21,6 +21,9 @@ interface Vehicle {
   phone: string;
   seller_type: string;
   seller_account_number: string;
+  city_seller?: string;
+  state_seller?: string;
+  zip_seller?: string;
 }
 
 interface VehicleCardProps {
@@ -262,7 +265,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               className="text-black font-medium truncate"
               style={{ fontSize: "12px" }}
             >
-              {vehicle.location}
+              {/* Format: Tacoma, WA 98466 */}
+              {[vehicle.city_seller, vehicle.state_seller, vehicle.zip_seller]
+                .filter(Boolean)
+                .join(vehicle.city_seller && vehicle.state_seller ? ", " : " ")
+                .replace(/,\s*([A-Z]{2})\s*/, ", $1 ") || vehicle.location}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
