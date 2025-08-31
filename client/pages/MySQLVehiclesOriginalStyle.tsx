@@ -982,8 +982,9 @@ function MySQLVehiclesOriginalStyleInner() {
             console.warn("⚠️ This indicates the API is returning fallback/demo data instead of real database data");
           }
 
-          // Cache successful filter response (2 minute TTL for fresher data)
-          apiCache.set(filterCacheKey, data, 2 * 60 * 1000);
+          // Cache successful filter response (30 seconds TTL for development)
+          const filterCacheTTL = import.meta.env.DEV ? 30 * 1000 : 2 * 60 * 1000;
+          apiCache.set(filterCacheKey, data, filterCacheTTL);
 
           setFilterOptions(data.data);
           setVehicleTypes(data.data.vehicleTypes || []);
