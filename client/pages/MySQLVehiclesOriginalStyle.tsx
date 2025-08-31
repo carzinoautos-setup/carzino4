@@ -726,6 +726,22 @@ function MySQLVehiclesOriginalStyleInner() {
               { name: "Wagon", count: 0 },
               { name: "Trucks", count: 0 },
             ],
+            driveTypes: [
+              { name: "AWD/4WD", count: 0 },
+              { name: "FWD", count: 0 },
+              { name: "RWD", count: 0 }
+            ],
+            transmissions: [
+              { name: "Auto", count: 0 },
+              { name: "Manual", count: 0 },
+              { name: "CVT", count: 0 }
+            ],
+            exteriorColors: [],
+            sellerTypes: [
+              { name: "Dealer", count: 0 },
+              { name: "Private Seller", count: 0 }
+            ],
+            dealers: [],
             totalVehicles: 0
           });
           setVehicleTypes([]);
