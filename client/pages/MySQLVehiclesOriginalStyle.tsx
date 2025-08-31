@@ -996,7 +996,9 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   };
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
+    console.log("🧹 Clearing all filters and resetting state");
+
     setSearchTerm("");
     setUnifiedSearch("");
     setZipCode(""); // Reset ZIP code
@@ -1026,13 +1028,23 @@ function MySQLVehiclesOriginalStyleInner() {
     setPriceMax("100000");
     setPaymentMin("100");
     setPaymentMax("2000");
+    setTermLength("60");
+    setInterestRate("5");
+    setDownPayment("2000");
     setCurrentPage(1);
 
     // Reset URL to base cars-for-sale path
     if (location.pathname.startsWith("/cars-for-sale")) {
       navigate("/cars-for-sale/", { replace: true });
     }
-  };
+
+    // Force refresh filter options with empty filters
+    setTimeout(() => {
+      fetchFilterOptions({});
+    }, 100);
+
+    console.log("✅ All filters cleared successfully");
+  }, [location.pathname, navigate, fetchFilterOptions]);
 
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
@@ -1044,7 +1056,7 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   // Apply payment filters handler
-  const applyPaymentFilters = () => {
+  const applyPaymentFilters = useCallback(() => {
     console.log("💰 Applying payment filters:", {
       paymentMin,
       paymentMax,
@@ -1061,7 +1073,7 @@ function MySQLVehiclesOriginalStyleInner() {
     setCurrentPage(1); // Reset to first page when applying filters
 
     console.log("✅ Payment filters applied - vehicles will re-fetch with payment range");
-  };
+  }, [paymentMin, paymentMax, termLength, interestRate, downPayment]);
 
   // Apply location filters handler
   const applyLocationFilters = () => {
