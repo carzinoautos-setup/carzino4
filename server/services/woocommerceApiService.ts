@@ -202,8 +202,30 @@ export class WooCommerceApiService {
     const metaData = product.meta_data || [];
     const getMeta = (key: string) => metaData.find((m: any) => m.key === key)?.value || "";
 
+    // Debug: Log first few products' transformation
+    if (index < 2) {
+      console.log(`🚗 Transforming Product ${index + 1}:`, {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        categories: product.categories?.map(c => c.name),
+        availableMetaKeys: metaData.map(m => m.key),
+        metaExtraction: {
+          year: getMeta('year') || getMeta('vehicle_year'),
+          make: getMeta('make') || getMeta('vehicle_make'),
+          model: getMeta('model') || getMeta('vehicle_model'),
+          condition: getMeta('condition') || getMeta('vehicle_condition'),
+          transmission: getMeta('transmission'),
+          drivetrain: getMeta('drivetrain') || getMeta('drive_type'),
+          mileage: getMeta('mileage'),
+          exterior_color: getMeta('exterior_color') || getMeta('color'),
+          dealer_name: getMeta('dealer_name')
+        }
+      });
+    }
+
     // Get main product image
-    const images = product.images && product.images.length > 0 
+    const images = product.images && product.images.length > 0
       ? product.images.map((img: any) => img.src)
       : [
           "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=450&h=300&fit=crop&auto=format",
