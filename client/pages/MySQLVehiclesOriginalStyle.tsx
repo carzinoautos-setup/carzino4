@@ -1015,7 +1015,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Coupes": "🏎️",
       "Sports Car": "🏎️",
       "Sports Cars": "🏎️",
-      "Convertible": "🏎️",
+      "Convertible": "����️",
       "Convertibles": "🏎️",
       "Roadster": "🏎️",
 
@@ -2622,7 +2622,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         onClick={() => removeAppliedFilter("driveType", item)}
                         className="ml-1 text-white hover:text-gray-300"
                       >
-                        ��
+                        ×
                       </button>
                     </span>
                   ))}
@@ -4243,11 +4243,35 @@ function MySQLVehiclesOriginalStyleInner() {
             <div className="p-4 bg-white min-h-screen">
               {loading ? (
                 <div className="text-center py-12">
+                  <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    {import.meta.env.DEV && `API: ${getApiBaseUrl()}/api/simple-vehicles/combined`}
+                  </div>
                 </div>
               ) : error ? (
                 <div className="text-center py-12">
-                  <div className="text-red-600">Error: {error}</div>
+                  <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                  <div className="text-red-600 mb-4">Error loading vehicles:</div>
+                  <div className="text-sm text-gray-600 mb-4">{error}</div>
+                  {import.meta.env.DEV && (
+                    <div className="text-xs text-gray-400 mt-4 p-4 bg-gray-50 rounded">
+                      <div>Debug Info:</div>
+                      <div>• Total vehicles: {vehicles.length}</div>
+                      <div>• Current page: {currentPage}</div>
+                      <div>• API URL: {getApiBaseUrl()}/api/simple-vehicles/combined</div>
+                      <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      setError(null);
+                      fetchCombinedData();
+                    }}
+                    className="bg-red-600 text-white px-4 py-2 rounded mt-4 hover:bg-red-700"
+                  >
+                    Try Again
+                  </button>
                 </div>
               ) : viewMode === "favorites" && favoritesCount === 0 ? (
                 <div className="text-center py-12 bg-white rounded-lg">
