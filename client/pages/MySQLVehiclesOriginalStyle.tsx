@@ -295,16 +295,14 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Fetch vehicles from API with retry logic
   const fetchVehicles = useCallback(async (retryCount = 0) => {
-    // Create new controller for this request
-    const requestController = new AbortController();
-
     try {
-      // Abort any previous request
-      if (abortControllerRef.current) {
+      // Abort any previous request safely
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
         abortControllerRef.current.abort();
       }
 
-      // Set the new controller as active
+      // Create new controller for this request
+      const requestController = new AbortController();
       abortControllerRef.current = requestController;
 
       setLoading(true);
@@ -389,11 +387,17 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       // Set timeout for this specific request
-      const timeoutId = setTimeout(() => {
-        if (abortControllerRef.current === requestController) {
-          requestController.abort();
-        }
-      }, 30000); // 30 second timeout
+      let timeoutId: NodeJS.Timeout | null = null;
+
+      // Only set timeout if controller is not already aborted
+      if (!requestController.signal.aborted) {
+        timeoutId = setTimeout(() => {
+          if (abortControllerRef.current === requestController && !requestController.signal.aborted) {
+            console.log("⏰ Request timeout after 30 seconds");
+            requestController.abort();
+          }
+        }, 30000); // 30 second timeout
+      }
 
       const response = await fetch(apiUrl, {
         method: "GET",
@@ -403,7 +407,11 @@ function MySQLVehiclesOriginalStyleInner() {
         signal: requestController.signal,
       });
 
-      clearTimeout(timeoutId);
+      // Clear timeout on successful response
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
 
       // Check if this request is still active (not aborted by a newer request)
       if (abortControllerRef.current !== requestController) {
@@ -446,15 +454,15 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       // Handle AbortError gracefully - don't log as error since it's intentional
-      if (err.name === "AbortError") {
-        console.log("🚫 Request aborted (filter change or timeout)");
+      if (err instanceof Error && err.name === "AbortError") {
+        console.log("🚫 Request aborted (filter change, timeout, or navigation)");
         return; // Don't set error state for aborted requests
       }
 
       console.error("❌ Vehicle fetch error:", err);
 
-      // Clear the controller reference on error
-      if (abortControllerRef.current === requestController) {
+      // Clear the controller reference on error (but not on abort)
+      if (abortControllerRef.current === requestController && !(err instanceof Error && err.name === "AbortError")) {
         abortControllerRef.current = null;
       }
 
