@@ -2617,66 +2617,37 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("driveType")}
             >
               <div className="space-y-1">
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={appliedFilters.driveType.includes("AWD/4WD")}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (e.target.checked) {
-                        setAppliedFilters((prev) => ({
-                          ...prev,
-                          driveType: [...prev.driveType, "AWD/4WD"],
-                        }));
-                      } else {
-                        removeAppliedFilter("driveType", "AWD/4WD");
-                      }
-                    }}
-                  />
-                  <span className="carzino-filter-option">AWD/4WD</span>
-                  <span className="carzino-filter-count ml-1">(25,309)</span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={appliedFilters.driveType.includes("FWD")}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (e.target.checked) {
-                        setAppliedFilters((prev) => ({
-                          ...prev,
-                          driveType: [...prev.driveType, "FWD"],
-                        }));
-                      } else {
-                        removeAppliedFilter("driveType", "FWD");
-                      }
-                    }}
-                  />
-                  <span className="carzino-filter-option">FWD</span>
-                  <span className="carzino-filter-count ml-1">(12,057)</span>
-                </label>
-                <label className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={appliedFilters.driveType.includes("RWD")}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (e.target.checked) {
-                        setAppliedFilters((prev) => ({
-                          ...prev,
-                          driveType: [...prev.driveType, "RWD"],
-                        }));
-                      } else {
-                        removeAppliedFilter("driveType", "RWD");
-                      }
-                    }}
-                  />
-                  <span className="carzino-filter-option">RWD</span>
-                  <span className="carzino-filter-count ml-1">(5,883)</span>
-                </label>
+                {filterOptions.driveTypes.length > 0 ? (
+                  filterOptions.driveTypes.map((driveTypeOption) => (
+                    <label
+                      key={driveTypeOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.driveType.includes(driveTypeOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            setAppliedFilters((prev) => ({
+                              ...prev,
+                              driveType: [...prev.driveType, driveTypeOption.name],
+                            }));
+                          } else {
+                            removeAppliedFilter("driveType", driveTypeOption.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{driveTypeOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({driveTypeOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading drive types...
+                  </div>
+                )}
               </div>
             </FilterSection>
 
