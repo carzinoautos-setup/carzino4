@@ -824,21 +824,26 @@ function MySQLVehiclesOriginalStyleInner() {
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
-      console.log("🧹 Component unmounting - cleaning up requests");
+      if (import.meta.env.DEV) {
+        console.log("🧹 Component unmounting - cleaning up requests");
+      }
       isMountedRef.current = false;
 
-      if (abortControllerRef.current) {
+      // Safe cleanup of abort controller
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
         try {
-          if (!abortControllerRef.current.signal.aborted) {
-            console.log("🧹 Aborting pending request on unmount");
-            abortControllerRef.current.abort();
+          abortControllerRef.current.abort();
+          if (import.meta.env.DEV) {
+            console.log("🧹 Pending request aborted on unmount");
           }
         } catch (err) {
-          // Ignore errors during cleanup
-          console.log("🧹 Cleanup abort completed");
+          // Ignore errors during cleanup - this is expected
+          if (import.meta.env.DEV) {
+            console.log("🧹 Cleanup abort handled:", err?.message);
+          }
         }
-        abortControllerRef.current = null;
       }
+      abortControllerRef.current = null;
     };
   }, []);
 
@@ -966,7 +971,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Trucks
       "Truck": "🚚",
       "Trucks": "🚚",
-      "Pickup": "🚚",
+      "Pickup": "����",
       "Pickup Truck": "🚚",
       "Crew Cab Truck": "🚚",
       "Regular Cab Truck": "��",
