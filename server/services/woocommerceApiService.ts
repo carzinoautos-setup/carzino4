@@ -219,11 +219,18 @@ export class WooCommerceApiService {
       const sellerRows = rows as any[];
       if (sellerRows.length > 0) {
         const seller = sellerRows[0];
+        console.log(`✅ Found seller data for account ${sellerAccountNumber}:`, {
+          city: seller.city,
+          state: seller.state,
+          zip: seller.zip
+        });
         return {
           city_seller: seller.city || undefined,
           state_seller: seller.state || undefined,
           zip_seller: seller.zip || undefined
         };
+      } else {
+        console.log(`⚠️ No seller data found for account ${sellerAccountNumber}`);
       }
     } catch (error) {
       console.error(`❌ Error fetching seller data for account ${sellerAccountNumber}:`, error);
@@ -242,7 +249,7 @@ export class WooCommerceApiService {
 
     // Debug: Log first few products' transformation
     if (index < 2) {
-      console.log(`�� Transforming Product ${index + 1}:`, {
+      console.log(`🚗 Transforming Product ${index + 1}:`, {
         id: product.id,
         name: product.name,
         price: product.price,
