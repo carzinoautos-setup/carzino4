@@ -535,6 +535,16 @@ function MySQLVehiclesOriginalStyleInner() {
     resultsPerPage,
   ]);
 
+  // Cleanup effect to abort pending requests on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+        console.log("🧹 Cleaning up pending request on unmount");
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   // Load favorites from localStorage
   useEffect(() => {
     const savedFavorites = JSON.parse(
