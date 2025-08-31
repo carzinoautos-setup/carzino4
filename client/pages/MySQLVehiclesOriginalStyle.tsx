@@ -649,11 +649,31 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // No automatic location initialization - users must enter their own ZIP code
 
-  // Vehicle type images - remove Builder.io demo images
-  // Vehicle types will be displayed without images to avoid demo content
+  // Vehicle type images - using emoji/icon-based approach for better UX
   useEffect(() => {
-    // Remove all Builder.io image references
-    setVehicleImages({});
+    // Use emoji icons for vehicle types instead of external images
+    setVehicleImages({
+      "Cars": "🚗",
+      "Sedan": "🚗",
+      "SUV": "🚙",
+      "Crossover": "🚙",
+      "Crossover/SUV": "🚙",
+      "SUV / Crossover": "🚙",
+      "Truck": "🚚",
+      "Trucks": "🚚",
+      "Crew Cab Truck": "🚚",
+      "Regular Cab Truck": "🚚",
+      "Extended Cab Truck": "🚚",
+      "Coupe": "🏎️",
+      "Convertible": "🏎️",
+      "Hatchback": "🚗",
+      "Van / Minivan": "🚐",
+      "Van": "🚐",
+      "Minivan": "🚐",
+      "Wagon": "🚗",
+      "Motorcycle": "🏍️",
+      "RV": "🚐"
+    });
   }, []);
 
   // Load available dealers

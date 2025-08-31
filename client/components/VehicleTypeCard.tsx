@@ -25,14 +25,11 @@ export const VehicleTypeCard: React.FC<VehicleTypeCardProps> = ({
   >
     <div className="rounded-lg p-3 mb-2 h-14 flex items-center justify-center transition-colors bg-gray-100 group-hover:bg-gray-200">
       {vehicleImages[type] ? (
-        <img
-          src={vehicleImages[type]}
-          alt={`${type} vehicle type`}
-          className="max-w-full max-h-full object-contain rounded-lg overflow-hidden"
-          style={{ width: "auto", height: "35px" }}
-        />
+        <div className="text-2xl" role="img" aria-label={`${type} vehicle type`}>
+          {vehicleImages[type]}
+        </div>
       ) : (
-        <div className="text-gray-400 text-xs">{type}</div>
+        <div className="text-gray-400 text-xs font-medium">{type}</div>
       )}
     </div>
     <div
