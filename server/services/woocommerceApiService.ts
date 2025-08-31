@@ -859,7 +859,7 @@ export class WooCommerceApiService {
         .sort((a, b) => b.count - a.count)
         .slice(0, 15); // Limit to 15 vehicle types
 
-      console.log(`✅ Found ${makes.length} makes, ${models.length} models, ${trims.length} trims, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} colors, ${vehicleTypes.length} vehicle types from meta data analysis`);
+      console.log(`✅ Found ${makes.length} makes, ${models.length} models, ${trims.length} trims, ${conditions.length} conditions, ${driveTypes.length} drive types, ${transmissions.length} transmissions, ${exteriorColors.length} exterior colors, ${interiorColors.length} interior colors, ${cities.length} cities, ${states.length} states, ${vehicleTypes.length} vehicle types from meta data analysis`);
 
       const result = {
         success: true,
@@ -872,6 +872,9 @@ export class WooCommerceApiService {
           driveTypes: driveTypes,
           transmissions: transmissions,
           exteriorColors: exteriorColors,
+          interiorColors: interiorColors,
+          cities: cities,
+          states: states,
           sellerTypes: sellerTypes,
           dealers: dealers,
           totalVehicles: filteredProducts.length
