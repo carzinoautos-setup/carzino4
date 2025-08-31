@@ -1015,7 +1015,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Coupes": "🏎️",
       "Sports Car": "🏎️",
       "Sports Cars": "🏎️",
-      "Convertible": "����️",
+      "Convertible": "🏎️",
       "Convertibles": "🏎️",
       "Roadster": "🏎️",
 
@@ -4289,6 +4289,32 @@ function MySQLVehiclesOriginalStyleInner() {
                   >
                     Browse Vehicles
                   </button>
+                </div>
+              ) : displayedVehicles.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-500 mb-4">
+                    <Search className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No vehicles found
+                    </h3>
+                    <p className="text-sm">
+                      Try adjusting your search filters or{" "}
+                      <button
+                        onClick={clearAllFilters}
+                        className="text-red-600 underline"
+                      >
+                        clear all filters
+                      </button>
+                    </p>
+                    {import.meta.env.DEV && (
+                      <div className="text-xs text-gray-400 mt-4 p-4 bg-gray-50 rounded">
+                        <div>Debug: {vehicles.length} total vehicles loaded</div>
+                        <div>Filters applied: {Object.keys(appliedFilters).filter(key =>
+                          Array.isArray(appliedFilters[key]) ? appliedFilters[key].length > 0 : appliedFilters[key]
+                        ).length}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div>
