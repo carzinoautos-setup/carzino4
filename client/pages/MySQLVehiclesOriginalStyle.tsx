@@ -386,6 +386,11 @@ function MySQLVehiclesOriginalStyleInner() {
 
       const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles?${params}`;
       console.log("🔍 Fetching vehicles from:", apiUrl);
+      console.log("🌐 Environment:", {
+        hostname: window.location.hostname,
+        origin: window.location.origin,
+        retryAttempt: retryCount
+      });
 
       // Set timeout for this specific request
       const timeoutId = setTimeout(() => {
