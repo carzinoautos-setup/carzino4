@@ -266,15 +266,31 @@ export class WooCommerceApiService {
         status: 'publish'
       });
 
-      // Add search if provided
+      // Build search terms from filters and explicit search
+      let searchTerms: string[] = [];
+
       if (filters.search) {
-        params.append('search', filters.search);
+        searchTerms.push(filters.search);
+      }
+
+      // Add make/model to search to improve product discovery
+      if (filters.make && filters.make.length > 0) {
+        searchTerms.push(...filters.make);
+      }
+
+      if (filters.model && filters.model.length > 0) {
+        searchTerms.push(...filters.model);
       }
 
       // Add category filter (using categories as vehicle types)
       if (filters.vehicleType && filters.vehicleType.length > 0) {
-        // Would need category IDs, for now use search
-        params.append('search', filters.vehicleType.join(' '));
+        searchTerms.push(...filters.vehicleType);
+      }
+
+      // Combine all search terms
+      if (searchTerms.length > 0) {
+        params.append('search', searchTerms.join(' '));
+        console.log(`🔍 Using search terms: "${searchTerms.join(' ')}"`);
       }
 
       // Add stock status filter
