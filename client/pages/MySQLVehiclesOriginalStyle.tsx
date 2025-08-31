@@ -461,8 +461,9 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       if (data.success) {
-        // Cache successful response (1 minute TTL for fresher data)
-        apiCache.set(cacheKey, data, 1 * 60 * 1000);
+        // Cache successful response (30 seconds TTL for development, fresher data)
+        const cacheTTL = import.meta.env.DEV ? 30 * 1000 : 1 * 60 * 1000;
+        apiCache.set(cacheKey, data, cacheTTL);
 
         setVehicles(data.data || []);
         setApiResponse(data);
