@@ -146,6 +146,16 @@ export default function MySQLVehiclesOriginalStyle() {
   const totalResults = apiResponse?.meta.totalRecords || 0;
   const resultsPerPage = 20;
 
+  // Debug logging for rendering
+  console.log("📊 Render State:", {
+    vehiclesCount: vehicles.length,
+    totalResults,
+    totalPages,
+    loading,
+    error,
+    hasApiResponse: !!apiResponse
+  });
+
   // Filter states - exactly like original
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -1103,7 +1113,7 @@ export default function MySQLVehiclesOriginalStyle() {
 
         const coords = zipCoordinates[zip];
         if (coords) {
-          console.warn(`��� Using fallback coordinates for ZIP: ${zip}`);
+          console.warn(`🆘 Using fallback coordinates for ZIP: ${zip}`);
           return coords;
         }
 
