@@ -310,19 +310,17 @@ export class WooCommerceApiService {
                                 getMeta('account_number_seller') ||
                                 getMeta('_account_number_seller');
 
-    // Make seller data fetch optional and non-blocking
+    // Temporarily disable seller data fetching due to database connection issues
     let sellerData = {};
-    try {
-      if (sellerAccountNumber) {
-        sellerData = await Promise.race([
-          this.fetchSellerData(sellerAccountNumber),
-          new Promise(resolve => setTimeout(() => resolve({}), 3000)) // 3 second fallback
-        ]);
-      }
-    } catch (error) {
-      console.warn(`⚠️ Skipping seller data for product ${product.id}:`, error.message);
-      sellerData = {};
-    }
+    // TODO: Re-enable seller data fetching when database connection is stable
+    // if (sellerAccountNumber) {
+    //   try {
+    //     sellerData = await this.fetchSellerData(sellerAccountNumber);
+    //   } catch (error) {
+    //     console.warn(`⚠️ Skipping seller data for product ${product.id}:`, error.message);
+    //     sellerData = {};
+    //   }
+    // }
 
     return {
       id: product.id,
