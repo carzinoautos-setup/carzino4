@@ -618,7 +618,7 @@ function MySQLVehiclesOriginalStyleInner() {
         } catch (err) {
           // Ignore abort errors - this is expected in some cases
           if (import.meta.env.DEV) {
-            console.log("🔄 Previous request abort handled:", err?.message);
+            console.log("���� Previous request abort handled:", err?.message);
           }
         }
       }
@@ -3782,16 +3782,18 @@ function MySQLVehiclesOriginalStyleInner() {
               </h1>
 
               {/* Search Bar */}
-              <div className="relative">
+              <form onSubmit={handleUnifiedSearchSubmit} className="relative">
                 <input
                   type="text"
                   placeholder="Search vehicles..."
+                  value={unifiedSearch}
+                  onChange={(e) => setUnifiedSearch(e.target.value)}
                   className="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
                 />
-                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 p-1">
+                <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 p-1">
                   <Search className="w-5 h-5" />
                 </button>
-              </div>
+              </form>
             </div>
 
             {/* Applied Filters Pills - Outside sticky container, always visible */}
