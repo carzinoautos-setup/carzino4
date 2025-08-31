@@ -56,6 +56,15 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     // Parse filter parameters
     const filters: SimpleVehicleFilters = {};
 
+    console.log("🔍 DEBUG: Raw query parameters received:", {
+      make: req.query.make,
+      condition: req.query.condition,
+      vehicleType: req.query.body_type,
+      driveType: req.query.driveType,
+      transmission: req.query.transmission,
+      allQueryParams: Object.keys(req.query)
+    });
+
     // Handle array filters (condition, make, driveType, sellerType)
     if (req.query.condition) {
       filters.condition = (req.query.condition as string).split(",");
