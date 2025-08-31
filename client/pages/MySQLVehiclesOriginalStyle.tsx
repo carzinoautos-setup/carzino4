@@ -3588,3 +3588,30 @@ function MySQLVehiclesOriginalStyleInner() {
     </div>
   );
 }
+
+// Error boundary wrapper to catch rendering errors
+export default function MySQLVehiclesOriginalStyle() {
+  try {
+    return <MySQLVehiclesOriginalStyleInner />;
+  } catch (error) {
+    console.error("❌ Component rendering error:", error);
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Something went wrong
+          </h2>
+          <p className="text-gray-600 mb-4">
+            There was an error loading the vehicle filters. Please refresh the page.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
