@@ -476,12 +476,19 @@ export class WooCommerceApiService {
       const totalRecords = allProducts.length;
       const totalPages = Math.ceil(totalRecords / pagination.pageSize);
 
-      // Transform products to vehicle format first (now async)
-      let transformedVehicles = await Promise.all(
-        allProducts.map((product, index) =>
-          this.transformProductToVehicle(product, index)
-        )
-      );
+      // Transform products to vehicle format in smaller batches to prevent overwhelming DB
+      let transformedVehicles = [];
+      const batchSize = 10; // Process 10 products at a time
+
+      for (let i = 0; i < allProducts.length; i += batchSize) {
+        const batch = allProducts.slice(i, i + batchSize);
+        const batchResults = await Promise.all(
+          batch.map((product, batchIndex) =>
+            this.transformProductToVehicle(product, i + batchIndex)
+          )
+        );
+        transformedVehicles.push(...batchResults);
+      }
 
       // Apply client-side filtering for vehicle-specific attributes
       transformedVehicles = this.applyVehicleFilters(transformedVehicles, filters);
