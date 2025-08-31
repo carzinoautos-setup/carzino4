@@ -299,7 +299,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const fetchVehicles = useCallback(async (retryCount = 0) => {
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
-      console.log("�� Component unmounted, skipping fetch");
+      console.log("🚫 Component unmounted, skipping fetch");
       return;
     }
 
@@ -864,7 +864,17 @@ function MySQLVehiclesOriginalStyleInner() {
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
+      // Clear timeout on response
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      // Check if component is still mounted
+      if (!isMountedRef.current) {
+        console.log("🚫 Component unmounted during filter options fetch");
+        return;
+      }
 
       if (response.ok) {
         const data = await response.json();
