@@ -623,9 +623,15 @@ function MySQLVehiclesOriginalStyleInner() {
         }
       }
 
-      // Create new controller for this request
-      const requestController = new AbortController();
-      abortControllerRef.current = requestController;
+      // Create new controller for this request safely
+      let requestController: AbortController;
+      try {
+        requestController = new AbortController();
+        abortControllerRef.current = requestController;
+      } catch (err) {
+        console.error("❌ Failed to create AbortController:", err);
+        return;
+      }
 
       // Double-check component is still mounted
       if (!isMountedRef.current) {
