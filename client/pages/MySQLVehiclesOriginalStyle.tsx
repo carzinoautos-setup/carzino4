@@ -2218,9 +2218,95 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Model - REMOVED: Demo data with random counts only */}
+            {/* Model Filter */}
+            <FilterSection
+              title="Model"
+              isCollapsed={collapsedFilters.model}
+              onToggle={() => toggleFilter("model")}
+            >
+              <div className="space-y-1">
+                {filterOptions.models.length > 0 ? (
+                  filterOptions.models
+                    .filter(modelOption => modelOption.count > 0) // Only show models with vehicles
+                    .map((modelOption) => (
+                    <label
+                      key={modelOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.model.includes(modelOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            const newFilters = {
+                              ...appliedFilters,
+                              model: [...appliedFilters.model, modelOption.name],
+                            };
+                            setAppliedFilters(newFilters);
+                            updateURLFromFilters(newFilters);
+                          } else {
+                            removeAppliedFilter("model", modelOption.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{modelOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({modelOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading models...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
 
-            {/* Trim - REMOVED: Demo data with hardcoded trims and random counts */}
+            {/* Trim Filter */}
+            <FilterSection
+              title="Trim"
+              isCollapsed={collapsedFilters.trim}
+              onToggle={() => toggleFilter("trim")}
+            >
+              <div className="space-y-1">
+                {filterOptions.trims.length > 0 ? (
+                  filterOptions.trims
+                    .filter(trimOption => trimOption.count > 0) // Only show trims with vehicles
+                    .map((trimOption) => (
+                    <label
+                      key={trimOption.name}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.trim.includes(trimOption.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (e.target.checked) {
+                            const newFilters = {
+                              ...appliedFilters,
+                              trim: [...appliedFilters.trim, trimOption.name],
+                            };
+                            setAppliedFilters(newFilters);
+                            updateURLFromFilters(newFilters);
+                          } else {
+                            removeAppliedFilter("trim", trimOption.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{trimOption.name}</span>
+                      <span className="carzino-filter-count ml-1">({trimOption.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm p-2">
+                    Loading trims...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
 
             {/* Year - REMOVED: Demo data with random counts only */}
 
