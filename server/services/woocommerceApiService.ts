@@ -366,6 +366,9 @@ export class WooCommerceApiService {
       email_seller: sellerData.email_seller,
       address_seller: sellerData.address_seller,
       business_name_seller: sellerData.business_name_seller,
+      // Vehicle color data
+      exterior_color: getMeta('exterior_color'),
+      interior_color: getMeta('interior_color'),
       // Additional WooCommerce data
       sku: product.sku,
       stock_status: product.stock_status,
