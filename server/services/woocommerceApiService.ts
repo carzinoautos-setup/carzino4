@@ -555,7 +555,29 @@ export class WooCommerceApiService {
         }
       }
 
-      // Analyze products using same logic as transformWooCommerceProduct
+      // Apply conditional filtering if filters are provided
+      let filteredProducts = allProducts;
+      if (Object.keys(appliedFilters).length > 0) {
+        console.log(`🔍 Applying conditional filtering to ${allProducts.length} products with filters:`, appliedFilters);
+
+        // Transform products to vehicles for filtering
+        const transformedVehicles = allProducts.map((product, index) =>
+          this.transformProductToVehicle(product, index)
+        );
+
+        // Apply the same filtering logic as in getVehicles
+        const filteredVehicles = this.applyVehicleFilters(transformedVehicles, appliedFilters);
+
+        // Get the filtered product IDs
+        const filteredProductIds = new Set(filteredVehicles.map(v => v.id));
+
+        // Filter original products to match
+        filteredProducts = allProducts.filter(product => filteredProductIds.has(product.id));
+
+        console.log(`🔍 Conditional filtering reduced products from ${allProducts.length} to ${filteredProducts.length}`);
+      }
+
+      // Analyze filtered products using same logic as transformWooCommerceProduct
       const makesCounts: { [key: string]: number } = {};
       const modelCounts: { [key: string]: number } = {};
       const trimCounts: { [key: string]: number } = {};
