@@ -531,11 +531,7 @@ export class WooCommerceApiService {
         });
 
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout per request
-
           const products = await this.makeRequest('products', params);
-          clearTimeout(timeoutId);
 
           if (Array.isArray(products) && products.length > 0) {
             allProducts.push(...products);
@@ -602,7 +598,7 @@ export class WooCommerceApiService {
       // Apply conditional filtering if filters are provided
       let filteredProducts = allProducts;
       if (Object.keys(appliedFilters).length > 0) {
-        console.log(`🔍 Applying conditional filtering to ${allProducts.length} products with filters:`, appliedFilters);
+        console.log(`�� Applying conditional filtering to ${allProducts.length} products with filters:`, appliedFilters);
 
         // Transform products to vehicles for filtering (now async)
         const transformedVehicles = await Promise.all(
