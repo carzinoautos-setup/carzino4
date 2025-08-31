@@ -673,12 +673,19 @@ function MySQLVehiclesOriginalStyleInner() {
         const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/filters`;
         console.log("🔍 Fetching filter options from:", apiUrl);
 
+        // Add timeout and abort controller
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
