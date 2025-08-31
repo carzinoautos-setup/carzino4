@@ -773,7 +773,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Handle AbortError gracefully - don't log as error since it's intentional
       if (err instanceof Error && err.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("🚫 Request aborted (expected behavior)");
+          console.log("��� Request aborted (expected behavior)");
         }
         // Clear controller reference if this was the active request
         if (abortControllerRef.current === requestController) {
@@ -4262,8 +4262,13 @@ function MySQLVehiclesOriginalStyleInner() {
               <span className="font-medium">
                 {viewMode === "favorites"
                   ? `${favoritesCount} Saved Vehicles`
-                  : `${appliedFilters.condition.join(", ")}${appliedFilters.condition.length > 0 && appliedFilters.make.length > 0 ? ", " : ""}${appliedFilters.make.join(", ")}${appliedFilters.condition.length > 0 || appliedFilters.make.length > 0 ? " for sale" : "All Vehicles"} - ${totalResults.toLocaleString()} Results`}
+                  : `${appliedFilters.condition.join(", ")}${appliedFilters.condition.length > 0 && appliedFilters.make.length > 0 ? ", " : ""}${appliedFilters.make.join(", ")}${appliedFilters.condition.length > 0 || appliedFilters.make.length > 0 ? " for sale" : "All Vehicles"} - ${Math.max(totalResults, displayedVehicles.length).toLocaleString()} Results`}
               </span>
+              {import.meta.env.DEV && (
+                <div className="text-xs text-gray-400 mt-1">
+                  Debug: API={totalResults}, Displayed={displayedVehicles.length}, Total={vehicles.length}
+                </div>
+              )}
             </div>
 
             {/* Mobile Product Grid */}
