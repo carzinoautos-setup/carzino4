@@ -347,8 +347,9 @@ export class SimpleMockVehicleService {
   }
 
   async getVehicles(
-    filters: SimpleVehicleFilters = {},
     pagination: SimplePaginationParams,
+    filters: SimpleVehicleFilters = {},
+    sortBy: string = "relevance"
   ): Promise<SimpleVehiclesApiResponse> {
     try {
       // Filter vehicles
