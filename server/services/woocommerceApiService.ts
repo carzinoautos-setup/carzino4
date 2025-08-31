@@ -78,6 +78,17 @@ export class WooCommerceApiService {
       priceMax: filters.priceMax
     });
 
+    // Check if "model" is actually a trim level
+    const commonTrimLevels = ['premium', 'premium plus', 'prestige', 's line', 'sport', 'luxury', 'base', 'se', 'ex', 'lx'];
+    if (filters.model && filters.model.length > 0) {
+      const possibleTrim = filters.model.find(model =>
+        commonTrimLevels.includes(model.toLowerCase())
+      );
+      if (possibleTrim) {
+        console.log(`💵 Detected "${possibleTrim}" as potential trim level, applying flexible matching`);
+      }
+    }
+
     // Filter by make
     if (filters.make && filters.make.length > 0) {
       filteredVehicles = filteredVehicles.filter(vehicle => {
