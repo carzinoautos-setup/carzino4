@@ -125,7 +125,7 @@ export class WooCommerceApiService {
                  vehicle.badges?.some((badge: string) => badge.toLowerCase().includes(modelLower));
         });
       });
-      console.log(`📊 After model filter: ${filteredVehicles.length} vehicles`);
+      console.log(`���� After model filter: ${filteredVehicles.length} vehicles`);
     }
 
     // Filter by condition
@@ -836,8 +836,14 @@ export class WooCommerceApiService {
       console.log("🏢 Extracting real dealers from WooCommerce products...");
 
       // Fetch products to analyze dealer data
-      const response = await this.fetchProducts(1, 100); // Get first 100 products to analyze
-      const products = response.products;
+      const params = new URLSearchParams({
+        page: '1',
+        per_page: '100',
+        status: 'publish',
+        stock_status: 'instock'
+      });
+
+      const products = await this.makeRequest('products', params);
 
       const dealerCounts = new Map<string, number>();
 
