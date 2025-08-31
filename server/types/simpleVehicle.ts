@@ -46,6 +46,9 @@ export interface SimpleVehicleFilters {
   transmission?: string[];
   mileage?: string;
   exteriorColor?: string[];
+  interiorColor?: string[];
+  city?: string[];
+  state?: string[];
   sellerType?: string[];
   dealer?: string[];
   priceMin?: string;
