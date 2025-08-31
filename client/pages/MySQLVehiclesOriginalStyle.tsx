@@ -974,6 +974,13 @@ function MySQLVehiclesOriginalStyleInner() {
         const data = await response.json();
 
         if (data.success && data.data) {
+          // Check for demo data issue
+          const hasLargeCounts = data.data.interiorColors?.some(color => color.count > 1000);
+          if (hasLargeCounts && import.meta.env.DEV) {
+            console.warn("⚠️ DEMO DATA DETECTED: Interior colors showing unusually high counts", data.data.interiorColors);
+            console.warn("⚠️ This indicates the API is returning fallback/demo data instead of real database data");
+          }
+
           // Cache successful filter response (2 minute TTL for fresher data)
           apiCache.set(filterCacheKey, data, 2 * 60 * 1000);
 
@@ -984,8 +991,18 @@ function MySQLVehiclesOriginalStyleInner() {
             console.log(
               "✅ Successfully loaded conditional filter options:",
               data.data.makes?.length || 0, "makes,",
-              data.data.models?.length || 0, "models"
+              data.data.models?.length || 0, "models,",
+              data.data.interiorColors?.length || 0, "interior colors,",
+              data.data.dealers?.length || 0, "dealers"
             );
+
+            // Log sample data to help debug demo data issue
+            if (data.data.interiorColors?.length > 0) {
+              console.log("🎨 Interior colors sample:", data.data.interiorColors.slice(0, 3));
+            }
+            if (data.data.dealers?.length > 0) {
+              console.log("🏪 Dealers sample:", data.data.dealers.slice(0, 3));
+            }
           }
         } else if (import.meta.env.DEV) {
           console.error("🔍 FRONTEND: Filter options API returned unsuccessful response:", data);
