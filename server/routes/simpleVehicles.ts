@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { SimpleMockVehicleService } from "../services/simpleMockVehicleService.js";
+import { WooCommerceApiService } from "../services/woocommerceApiService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Use mock data service while WooCommerce API is experiencing issues (502 Bad Gateway)
-console.log("🚀 Using SimpleMockVehicleService due to WooCommerce API downtime");
-const vehicleService = new SimpleMockVehicleService();
+// Testing WooCommerce API again - switching back from mock data
+console.log("🛍️ Testing WooCommerce REST API for live product inventory");
+const vehicleService = new WooCommerceApiService();
 
 /**
  * GET /api/simple-vehicles
