@@ -69,7 +69,20 @@ export class WooCommerceApiService {
       }
 
       const data = await response.json();
-      return data;
+
+      // Extract pagination headers from WooCommerce response
+      const paginationHeaders = {
+        totalItems: parseInt(response.headers.get('X-WP-Total') || '0'),
+        totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0'),
+        currentPage: parseInt(params.get('page') || '1'),
+        perPage: parseInt(params.get('per_page') || '20')
+      };
+
+      // Return both data and pagination info
+      return {
+        data,
+        pagination: paginationHeaders
+      };
     } catch (error) {
       if (error.name === 'AbortError') {
         const timeoutError = new Error(`Request timeout after 30 seconds for endpoint: ${endpoint}`);
