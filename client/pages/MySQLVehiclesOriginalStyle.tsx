@@ -1745,6 +1745,17 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   };
 
+  // Vehicle type toggle handler
+  const toggleVehicleType = (type: string) => {
+    setAppliedFilters(prev => ({
+      ...prev,
+      vehicleType: prev.vehicleType.includes(type)
+        ? prev.vehicleType.filter(t => t !== type)
+        : [...prev.vehicleType, type]
+    }));
+    setCurrentPage(1);
+  };
+
   // Color data for filters
   const exteriorColors = [
     { name: "Black", color: "#000000", count: 8234 },
