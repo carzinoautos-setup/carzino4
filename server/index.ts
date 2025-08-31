@@ -15,7 +15,7 @@ import {
   getDealers,
   getVehicleTypes,
   simpleHealthCheck,
-  checkWordPressData,
+  testWooCommerceApi,
 } from "./routes/simpleVehicles.js";
 import {
   geocodeZip,
@@ -91,7 +91,7 @@ export function createServer() {
   app.get("/api/dealers", getDealers);
   app.get("/api/vehicle-types", getVehicleTypes);
   app.get("/api/simple-health", simpleHealthCheck);
-  app.get("/api/debug/wordpress", checkWordPressData);
+  app.get("/api/test-woocommerce", testWooCommerceApi);
   app.get("/api/test-connection", testWordPressConnection);
 
   // Payment calculation routes
