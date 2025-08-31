@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { WordpressVehicleService } from "../services/wordpressVehicleService.js";
+import { WordPressVehicleService } from "../services/wordpressVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
@@ -7,7 +7,7 @@ import {
 
 // Use optimized WordPress SQL service for much faster performance
 console.log("⚡ Using optimized WordPress SQL service for high-performance inventory");
-const vehicleService = new WordpressVehicleService();
+const vehicleService = new WordPressVehicleService();
 
 /**
  * GET /api/simple-vehicles
