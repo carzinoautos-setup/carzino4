@@ -459,6 +459,10 @@ export default function MySQLVehiclesOriginalStyle() {
       });
     } finally {
       setLoading(false);
+      // Clear controller reference on cleanup
+      if (abortControllerRef.current) {
+        abortControllerRef.current = null;
+      }
     }
   }, [
     currentPage,
