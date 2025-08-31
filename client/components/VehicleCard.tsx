@@ -211,17 +211,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                   className="w-4 h-4 object-contain"
                 />
               ) : (
-                // Replace this SVG with your custom door icon
-                <svg
-                  className="w-4 h-4 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-label="Door icon"
-                >
-                  <rect x="4" y="3" width="16" height="18" rx="2" strokeWidth={2}/>
-                  <circle cx="16" cy="12" r="1" fill="currentColor"/>
-                </svg>
+                <img
+                  src="/icons/door-icon.svg"
+                  alt="Door icon"
+                  className="w-4 h-4"
+                />
               )}
             </div>
             <span className="text-black font-medium">
