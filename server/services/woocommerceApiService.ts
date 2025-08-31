@@ -13,6 +13,8 @@ export class WooCommerceApiService {
   private baseUrl: string;
   private consumerKey: string;
   private consumerSecret: string;
+  // PERFORMANCE: Add cache for filter options and dealers
+  private cache: Map<string, { data: any; timestamp: number }> = new Map();
   // Temporarily disable database connection due to connection issues
   // private db = getDatabase();
 
