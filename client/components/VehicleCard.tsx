@@ -193,7 +193,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               />
             ) : (
               <img
-                src="/icons/transmission-icon.svg"
+                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fc18355c2650647dcb03280d5b23e16b2"
                 alt="Transmission icon"
                 className="w-4 h-4"
               />
