@@ -3493,18 +3493,10 @@ export default function MySQLVehiclesOriginalStyle() {
                   Browse Vehicles
                 </button>
               </div>
-            ) : loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-200 animate-pulse rounded-lg h-80"
-                  ></div>
-                ))}
-              </div>
             ) : error ? (
-              <div className="text-center py-12">
-                <p className="text-red-600">{error}</p>
+              <div className="text-center py-12 bg-red-50 rounded-lg">
+                <p className="text-red-600">Error: {error}</p>
+                <p className="text-sm text-gray-500 mt-2">Vehicles loaded: {vehicles.length}</p>
               </div>
             ) : (
               <div>
