@@ -737,14 +737,31 @@ function MySQLVehiclesOriginalStyleInner() {
   // Load available dealers
   useEffect(() => {
     const fetchDealers = async () => {
+      // Don't proceed if component is unmounted
+      if (!isMountedRef.current) {
+        console.log("�� Component unmounted, skipping dealers fetch");
+        return;
+      }
+
       const controller = new AbortController();
+      let timeoutId: NodeJS.Timeout | null = null;
 
       try {
         const apiUrl = `${getApiBaseUrl()}/api/dealers`;
         console.log("🔍 Fetching dealers from:", apiUrl);
 
         // Set timeout for this request
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        if (isMountedRef.current) {
+          timeoutId = setTimeout(() => {
+            if (!controller.signal.aborted && isMountedRef.current) {
+              try {
+                controller.abort();
+              } catch (err) {
+                console.log("⏰ Dealers timeout abort completed");
+              }
+            }
+          }, 10000); // 10 second timeout
+        }
 
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -754,7 +771,16 @@ function MySQLVehiclesOriginalStyleInner() {
           signal: controller.signal,
         });
 
-        clearTimeout(timeoutId);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+
+        // Check if component is still mounted
+        if (!isMountedRef.current) {
+          console.log("🚫 Component unmounted during dealers fetch");
+          return;
+        }
 
         if (response.ok) {
           const data = await response.json();
@@ -768,9 +794,22 @@ function MySQLVehiclesOriginalStyleInner() {
           setAvailableDealers([]);
         }
       } catch (error) {
+        // Clear timeout on error
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+
+        // Check if component is still mounted
+        if (!isMountedRef.current) {
+          console.log("🚫 Ignoring dealers error from unmounted component");
+          return;
+        }
+
         // Handle different types of errors gracefully
         if (error.name === "AbortError") {
-          console.log("🚫 Dealers request timed out");
+          console.log("🚫 Dealers request aborted (timeout or navigation)");
+          return; // Don't set state for aborted requests
         } else if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
           console.warn("⚠️ Unable to connect to dealers API - using fallback data");
         } else {
@@ -778,11 +817,15 @@ function MySQLVehiclesOriginalStyleInner() {
         }
 
         // Use empty array instead of demo dealers
-        setAvailableDealers([]);
+        if (isMountedRef.current) {
+          setAvailableDealers([]);
+        }
       }
     };
 
-    fetchDealers();
+    if (isMountedRef.current) {
+      fetchDealers();
+    }
   }, []);
 
   // Function to fetch filter options with conditional filtering
