@@ -1101,10 +1101,15 @@ export class WooCommerceApiService {
 
       console.log(`✅ Extracted ${dealers.length} unique dealers:`, dealers);
 
-      return {
+      const result = {
         success: true,
         data: dealers
       };
+
+      // PERFORMANCE: Cache the dealers result for 10 minutes
+      this.setCachedData(dealerCacheKey, result);
+
+      return result;
     } catch (error) {
       console.error("❌ Error fetching dealers:", error);
       // Fallback to default dealer
