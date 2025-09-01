@@ -65,8 +65,21 @@ export default function WordPressVehicles() {
     model: [] as string[],
     trim: [] as string[],
     year: [] as string[],
+    bodyStyle: [] as string[],
+    vehicleType: [] as string[],
+    driveType: [] as string[],
+    transmission: [] as string[],
+    mileage: "",
+    exteriorColor: [] as string[],
+    interiorColor: [] as string[],
+    sellerType: [] as string[],
+    dealer: [] as string[],
+    state: [] as string[],
+    city: [] as string[],
     priceMin: "",
     priceMax: "",
+    paymentMin: "",
+    paymentMax: "",
   });
 
   // Location/Distance states - matching MySQL page
@@ -101,19 +114,72 @@ export default function WordPressVehicles() {
   const [downPayment, setDownPayment] = useState("2000");
 
   // Filter options from API
-  const [filterOptions, setFilterOptions] = useState({
-    makes: [] as Array<{ name: string; count: number }>,
-    models: [] as Array<{ name: string; count: number }>,
-    conditions: [] as Array<{ name: string; count: number }>,
+  const [filterOptions, setFilterOptions] = useState<{
+    makes: { name: string; count: number }[];
+    models: { name: string; count: number }[];
+    trims: { name: string; count: number }[];
+    conditions: { name: string; count: number }[];
+    vehicleTypes: { name: string; count: number }[];
+    driveTypes: { name: string; count: number }[];
+    transmissions: { name: string; count: number }[];
+    exteriorColors: { name: string; count: number }[];
+    interiorColors: { name: string; count: number }[];
+    sellerTypes: { name: string; count: number }[];
+    dealers: { name: string; count: number }[];
+    states: { name: string; count: number }[];
+    cities: { name: string; count: number }[];
+    totalVehicles: number;
+  }>({
+    makes: [],
+    models: [],
+    trims: [],
+    conditions: [],
+    vehicleTypes: [],
+    driveTypes: [],
+    transmissions: [],
+    exteriorColors: [],
+    interiorColors: [],
+    sellerTypes: [],
+    dealers: [],
+    states: [],
+    cities: [],
+    totalVehicles: 0
   });
+
+  // Vehicle types and dealer states
+  const [vehicleTypes, setVehicleTypes] = useState<{ name: string; count: number }[]>([]);
+  const [availableDealers, setAvailableDealers] = useState<{ name: string; count: number }[]>([]);
+
+  // Show More state for Make filter
+  const [showAllMakes, setShowAllMakes] = useState(false);
 
   // Collapsed filters state - matching MySQL page
   const [collapsedFilters, setCollapsedFilters] = useState({
+    vehicleType: false,
+    condition: true,
+    mileage: true,
     make: false,
     model: true,
     trim: true,
+    year: true,
     price: false,
+    payment: true,
+    driveType: true,
+    transmission: true,
+    transmissionSpeed: true,
+    exteriorColor: true,
+    interiorColor: true,
+    sellerType: true,
+    dealer: true,
+    state: true,
+    city: true,
   });
+
+  // Price and payment filter states
+  const [priceMin, setPriceMin] = useState("10000");
+  const [priceMax, setPriceMax] = useState("100000");
+  const [paymentMin, setPaymentMin] = useState("100");
+  const [paymentMax, setPaymentMax] = useState("2000");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -162,24 +228,91 @@ export default function WordPressVehicles() {
       };
 
       // Add search and filter parameters
+      if (searchTerm.trim()) {
+        filters.search = searchTerm.trim();
+      }
+
       if (appliedFilters.make.length > 0) {
-        filters.make = appliedFilters.make[0]; // WordPress API might need single value
+        filters.make = appliedFilters.make.join(',');
       }
-      
+
       if (appliedFilters.model.length > 0) {
-        filters.model = appliedFilters.model[0]; // WordPress API might need single value
+        filters.model = appliedFilters.model.join(',');
       }
-      
+
+      if (appliedFilters.trim.length > 0) {
+        filters.trim = appliedFilters.trim.join(',');
+      }
+
       if (appliedFilters.condition.length > 0) {
-        filters.condition = appliedFilters.condition[0]; // WordPress API might need single value
+        filters.condition = appliedFilters.condition.join(',');
+      }
+
+      if (appliedFilters.year.length > 0) {
+        filters.year = appliedFilters.year.join(',');
+      }
+
+      if (appliedFilters.vehicleType.length > 0) {
+        filters.body_type = appliedFilters.vehicleType.join(',');
+      }
+
+      if (appliedFilters.driveType.length > 0) {
+        filters.drive_type = appliedFilters.driveType.join(',');
+      }
+
+      if (appliedFilters.transmission.length > 0) {
+        filters.transmission = appliedFilters.transmission.join(',');
+      }
+
+      if (appliedFilters.exteriorColor.length > 0) {
+        filters.exterior_color = appliedFilters.exteriorColor.join(',');
+      }
+
+      if (appliedFilters.interiorColor.length > 0) {
+        filters.interior_color = appliedFilters.interiorColor.join(',');
+      }
+
+      if (appliedFilters.sellerType.length > 0) {
+        filters.seller_type = appliedFilters.sellerType.join(',');
+      }
+
+      if (appliedFilters.dealer.length > 0) {
+        filters.dealer = appliedFilters.dealer.join(',');
+      }
+
+      if (appliedFilters.state.length > 0) {
+        filters.state = appliedFilters.state.join(',');
+      }
+
+      if (appliedFilters.city.length > 0) {
+        filters.city = appliedFilters.city.join(',');
       }
 
       if (appliedFilters.priceMin) {
         filters.min_price = parseInt(appliedFilters.priceMin.replace(/[^\d]/g, ''));
       }
-      
+
       if (appliedFilters.priceMax) {
         filters.max_price = parseInt(appliedFilters.priceMax.replace(/[^\d]/g, ''));
+      }
+
+      if (appliedFilters.paymentMin) {
+        filters.min_payment = parseInt(appliedFilters.paymentMin.replace(/[^\d]/g, ''));
+      }
+
+      if (appliedFilters.paymentMax) {
+        filters.max_payment = parseInt(appliedFilters.paymentMax.replace(/[^\d]/g, ''));
+      }
+
+      if (appliedFilters.mileage) {
+        filters.max_mileage = parseInt(appliedFilters.mileage.replace(/[^\d]/g, ''));
+      }
+
+      // Add location filters
+      if (appliedLocation && appliedRadius !== "nationwide") {
+        filters.lat = appliedLocation.lat;
+        filters.lng = appliedLocation.lng;
+        filters.radius = parseInt(appliedRadius);
       }
 
       const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(page, pageSize, filters);
@@ -193,15 +326,51 @@ export default function WordPressVehicles() {
 
         // Extract filter options from response data
         const makes = Array.from(new Set(response.data.map(v => v.acf?.make).filter(Boolean)))
-          .map(make => ({ name: make, count: response.data.filter(v => v.acf?.make === make).length }));
-        
-        const models = Array.from(new Set(response.data.map(v => v.acf?.model).filter(Boolean)))
-          .map(model => ({ name: model, count: response.data.filter(v => v.acf?.model === model).length }));
-        
-        const conditions = Array.from(new Set(response.data.map(v => v.acf?.condition).filter(Boolean)))
-          .map(condition => ({ name: condition, count: response.data.filter(v => v.acf?.condition === condition).length }));
+          .map(make => ({ name: make!, count: response.data.filter(v => v.acf?.make === make).length }));
 
-        setFilterOptions({ makes, models, conditions });
+        const models = Array.from(new Set(response.data.map(v => v.acf?.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: response.data.filter(v => v.acf?.model === model).length }));
+
+        const trims = Array.from(new Set(response.data.map(v => v.acf?.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: response.data.filter(v => v.acf?.trim === trim).length }));
+
+        const conditions = Array.from(new Set(response.data.map(v => v.acf?.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: response.data.filter(v => v.acf?.condition === condition).length }));
+
+        const vehicleTypes = Array.from(new Set(response.data.map(v => v.acf?.body_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.body_type === type).length }));
+
+        const driveTypes = Array.from(new Set(response.data.map(v => v.acf?.drive_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.drive_type === type).length }));
+
+        const transmissions = Array.from(new Set(response.data.map(v => v.acf?.transmission).filter(Boolean)))
+          .map(trans => ({ name: trans!, count: response.data.filter(v => v.acf?.transmission === trans).length }));
+
+        const exteriorColors = Array.from(new Set(response.data.map(v => v.acf?.exterior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.exterior_color === color).length }));
+
+        const interiorColors = Array.from(new Set(response.data.map(v => v.acf?.interior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.interior_color === color).length }));
+
+        const sellerTypes = Array.from(new Set(response.data.map(v => v.acf?.account_type_seller).filter(Boolean)))
+          .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.account_type_seller === type).length }));
+
+        const dealers = Array.from(new Set(response.data.map(v => v.acf?.account_name_seller).filter(Boolean)))
+          .map(dealer => ({ name: dealer!, count: response.data.filter(v => v.acf?.account_name_seller === dealer).length }));
+
+        const states = Array.from(new Set(response.data.map(v => v.acf?.state_seller).filter(Boolean)))
+          .map(state => ({ name: state!, count: response.data.filter(v => v.acf?.state_seller === state).length }));
+
+        const cities = Array.from(new Set(response.data.map(v => v.acf?.city_seller).filter(Boolean)))
+          .map(city => ({ name: city!, count: response.data.filter(v => v.acf?.city_seller === city).length }));
+
+        setFilterOptions({
+          makes, models, trims, conditions, vehicleTypes, driveTypes,
+          transmissions, exteriorColors, interiorColors, sellerTypes,
+          dealers, states, cities, totalVehicles: response.data.length
+        });
+        setVehicleTypes(vehicleTypes);
+        setAvailableDealers(dealers);
 
         console.log(`✅ WordPress vehicles loaded: ${transformedVehicles.length} vehicles`);
       } else {
@@ -257,6 +426,41 @@ export default function WordPressVehicles() {
     fetchVehicles(1);
   };
 
+  // Handle filter update with refetch
+  const updateFilter = (filterType: string, value: string, checked: boolean) => {
+    setAppliedFilters(prev => {
+      const currentValues = prev[filterType as keyof typeof prev] as string[];
+      let newValues;
+
+      if (checked) {
+        newValues = [...currentValues, value];
+      } else {
+        newValues = currentValues.filter(item => item !== value);
+      }
+
+      const newFilters = { ...prev, [filterType]: newValues };
+
+      // Trigger refetch with new filters
+      setTimeout(() => {
+        setCurrentPage(1);
+        fetchVehicles(1);
+      }, 100);
+
+      return newFilters;
+    });
+  };
+
+  // Helper functions for price formatting
+  const formatPrice = (value: string): string => {
+    const numericValue = value.replace(/[^\d]/g, "");
+    if (!numericValue) return "";
+    return parseInt(numericValue).toLocaleString();
+  };
+
+  const unformatPrice = (value: string): string => {
+    return value.replace(/,/g, "");
+  };
+
   // Apply location filters
   const applyLocationFilters = () => {
     setAppliedLocation(userLocation);
@@ -267,17 +471,39 @@ export default function WordPressVehicles() {
 
   // Clear all filters
   const clearAllFilters = () => {
+    setSearchTerm("");
+    setUnifiedSearch("");
+    setZipCode("");
+    setRadius("200");
+    setAppliedLocation(null);
+    setAppliedRadius("200");
     setAppliedFilters({
       condition: [],
       make: [],
       model: [],
       trim: [],
       year: [],
+      bodyStyle: [],
+      vehicleType: [],
+      driveType: [],
+      transmission: [],
+      mileage: "",
+      exteriorColor: [],
+      interiorColor: [],
+      sellerType: [],
+      dealer: [],
+      state: [],
+      city: [],
       priceMin: "",
       priceMax: "",
+      paymentMin: "",
+      paymentMax: "",
     });
-    setAppliedLocation(null);
-    setAppliedRadius("200");
+    setShowAllMakes(false);
+    setPriceMin("10000");
+    setPriceMax("100000");
+    setPaymentMin("100");
+    setPaymentMax("2000");
     setCurrentPage(1);
     fetchVehicles(1);
   };
