@@ -107,6 +107,11 @@ export class CustomWordPressApiService {
         });
       }
 
+      // Also debug the raw API response for price filtering
+      if (filters.priceMin || filters.priceMax) {
+        console.log("💰 WordPress API URL being called:", url.toString());
+      }
+
       const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error(`API responded with status: ${response.status}`);
