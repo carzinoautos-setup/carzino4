@@ -1474,7 +1474,95 @@ function MySQLVehiclesOriginalStyleInner() {
     if (import.meta.env.DEV) {
       console.log("✅ All filters cleared successfully");
     }
-  }, [location.pathname, navigate, fetchFilterOptions]);
+  }, [location.pathname, navigate, fetchCombinedData, updateConditionalFilters]);
+
+  // FIXED: Enhanced filter handlers with immediate conditional updates
+  const handleMakeChange = useCallback((makeName: string, isChecked: boolean) => {
+    console.log(`🔄 MAKE CHANGE: ${makeName} ${isChecked ? 'selected' : 'deselected'}`);
+
+    setAppliedFilters((prev) => {
+      const newMakes = isChecked
+        ? [...prev.make, makeName]
+        : prev.make.filter((item) => item !== makeName);
+
+      const newFilters = {
+        ...prev,
+        make: newMakes,
+        model: [], // Clear dependent filters
+        trim: [],  // Clear dependent filters
+      };
+
+      console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
+
+      // Trigger conditional filter update immediately
+      setTimeout(() => updateConditionalFilters(newFilters), 0);
+
+      return newFilters;
+    });
+  }, [updateConditionalFilters]);
+
+  const handleModelChange = useCallback((modelName: string, isChecked: boolean) => {
+    console.log(`🔄 MODEL CHANGE: ${modelName} ${isChecked ? 'selected' : 'deselected'}`);
+
+    setAppliedFilters((prev) => {
+      const newModels = isChecked
+        ? [...prev.model, modelName]
+        : prev.model.filter((item) => item !== modelName);
+
+      const newFilters = {
+        ...prev,
+        model: newModels,
+        trim: [], // Clear dependent trims
+      };
+
+      console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
+
+      // Trigger conditional filter update immediately
+      setTimeout(() => updateConditionalFilters(newFilters), 0);
+
+      return newFilters;
+    });
+  }, [updateConditionalFilters]);
+
+  const handleTrimChange = useCallback((trimName: string, isChecked: boolean) => {
+    console.log(`🔄 TRIM CHANGE: ${trimName} ${isChecked ? 'selected' : 'deselected'}`);
+
+    setAppliedFilters((prev) => {
+      const newFilters = {
+        ...prev,
+        trim: isChecked
+          ? [...prev.trim, trimName]
+          : prev.trim.filter((item) => item !== trimName),
+      };
+
+      console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
+
+      // Trims don't affect other filters, but still update
+      setTimeout(() => updateConditionalFilters(newFilters), 0);
+
+      return newFilters;
+    });
+  }, [updateConditionalFilters]);
+
+  // FIXED: Location filter with proper inventory refresh
+  const applyLocationFilter = useCallback(() => {
+    console.log("🗺️ LOCATION FILTER: Applying location filter:", {
+      zipCode,
+      radius,
+      userLocation,
+    });
+
+    if (!userLocation) {
+      alert("Please enter a valid ZIP code first.");
+      return;
+    }
+
+    setAppliedLocation(userLocation);
+    setAppliedRadius(radius);
+
+    // Force inventory refresh with new location
+    setTimeout(() => fetchCombinedData(), 100);
+  }, [zipCode, radius, userLocation, fetchCombinedData]);
 
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
