@@ -1450,7 +1450,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Call our geocoding API with proper error handling
       const apiUrl = `${getApiBaseUrl()}/api/geocode/${zip}`;
-      console.log("��� Geocoding ZIP:", zip, "using:", apiUrl);
+      console.log("🔍 Geocoding ZIP:", zip, "using:", apiUrl);
 
       const controller = new AbortController();
 
@@ -4078,12 +4078,15 @@ function MySQLVehiclesOriginalStyleInner() {
                 <div>
                   <div className="vehicle-grid grid grid-cols-1 gap-4 mb-8">
                     {displayedVehicles.map((vehicle) => (
-                      <MySQLVehicleCard
+                      <VehicleCard
                         key={vehicle.id}
                         vehicle={vehicle}
-                        onFavoriteToggle={(vehicleId) => toggleFavorite(vehicle)}
-                        isFavorite={isFavorited(vehicle.id)}
-                        className="h-full"
+                        favorites={favorites}
+                        onToggleFavorite={toggleFavorite}
+                        keeperMessage={keeperMessage}
+                        termLength={termLength}
+                        interestRate={interestRate}
+                        downPayment={downPayment}
                       />
                     ))}
                   </div>
