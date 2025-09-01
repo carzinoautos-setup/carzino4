@@ -1146,7 +1146,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Van": "🚐",
       "Vans": "🚐",
       "Minivan": "🚐",
-      "Minivans": "��",
+      "Minivans": "🚐",
       "Van / Minivan": "🚐",
       "Cargo Van": "🚐",
       "Passenger Van": "🚐",
@@ -4414,7 +4414,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       <div>Debug Info:</div>
                       <div>• Total vehicles: {vehicles.length}</div>
                       <div>• Current page: {currentPage}</div>
-                      <div>• API URL: {getApiBaseUrl()}/api/simple-vehicles/combined</div>
+                      <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
                       <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
                     </div>
                   )}
