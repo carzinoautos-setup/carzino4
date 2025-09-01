@@ -1275,20 +1275,41 @@ function MySQLVehiclesOriginalStyleInner() {
                   />
                 </div>
 
-                {/* Apply Payment Filter Button */}
-                <button
-                  onClick={() => {
-                    setCurrentPage(1); // Reset to first page when filters change
-                    setAppliedFilters(prev => ({
-                      ...prev,
-                      paymentMin: paymentMin,
-                      paymentMax: paymentMax
-                    }));
-                  }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
-                >
-                  Apply Payment Filter
-                </button>
+                {/* Payment Filter Buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      // Reset all payment filter fields
+                      setPaymentMin("");
+                      setPaymentMax("");
+                      setTermLength("72");
+                      setInterestRate("8");
+                      setDownPayment("2000");
+                      setAppliedFilters(prev => ({
+                        ...prev,
+                        paymentMin: "",
+                        paymentMax: ""
+                      }));
+                      setCurrentPage(1);
+                    }}
+                    className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 text-sm"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrentPage(1); // Reset to first page when filters change
+                      setAppliedFilters(prev => ({
+                        ...prev,
+                        paymentMin: paymentMin,
+                        paymentMax: paymentMax
+                      }));
+                    }}
+                    className="flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                  >
+                    Apply
+                  </button>
+                </div>
               </div>
             </FilterSection>
 
