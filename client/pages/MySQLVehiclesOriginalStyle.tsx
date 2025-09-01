@@ -1792,6 +1792,51 @@ function MySQLVehiclesOriginalStyleInner() {
                       >
                         Price: Low to High
                       </button>
+                      <button
+                        onClick={() => {
+                          setSortBy("price-high");
+                          setSortDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "price-high" ? "bg-red-50 text-red-600" : ""}`}
+                      >
+                        Price: High to Low
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSortBy("miles-low");
+                          setSortDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "miles-low" ? "bg-red-50 text-red-600" : ""}`}
+                      >
+                        Mileage: Low to High
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSortBy("mileage-high");
+                          setSortDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "mileage-high" ? "bg-red-50 text-red-600" : ""}`}
+                      >
+                        Mileage: High to Low
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSortBy("year-newest");
+                          setSortDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "year-newest" ? "bg-red-50 text-red-600" : ""}`}
+                      >
+                        Year: Newest First
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSortBy("year-oldest");
+                          setSortDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "year-oldest" ? "bg-red-50 text-red-600" : ""}`}
+                      >
+                        Year: Oldest First
+                      </button>
                     </div>
                   )}
                 </div>
