@@ -1354,21 +1354,21 @@ function MySQLVehiclesOriginalStyleInner() {
   // FIXED: Simplified conditional filtering - let fetchCombinedData handle everything
   // Remove separate fetchFilterOptions calls to prevent race conditions
 
-  // FIXED: Critical inventory refresh with proper conditional filtering
+  // FIXED: Critical inventory refresh with enhanced conditional filtering
   useEffect(() => {
     if (isMountedRef.current) {
       if (import.meta.env.DEV) {
-        console.log("🚗 FIXED: Applied filters changed, refreshing vehicle inventory AND conditional filters...");
+        console.log("🚗 FIXED: Applied filters changed, refreshing vehicle inventory with conditional filtering...", {
+          makes: debouncedAppliedFilters.make,
+          models: debouncedAppliedFilters.model,
+          trims: debouncedAppliedFilters.trim
+        });
       }
-      // Force immediate refresh of both vehicles and conditional filters
-      fetchCombinedData().then(() => {
-        // After getting fresh vehicle data, update conditional filter options
-        if (isMountedRef.current) {
-          fetchFilterOptions(debouncedAppliedFilters, true);
-        }
-      });
+
+      // CRITICAL: Refresh vehicles AND update conditional filters in correct order
+      fetchCombinedData();
     }
-  }, [debouncedAppliedFilters, sortBy, currentPage, resultsPerPage]);
+  }, [debouncedAppliedFilters, sortBy, currentPage, resultsPerPage, fetchCombinedData]);
 
   // Helper functions for price formatting
   const formatPrice = (value: string): string => {
