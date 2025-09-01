@@ -423,6 +423,11 @@ export default function WordPressVehicles() {
     return () => clearTimeout(debounceTimer);
   }, [zipCode]);
 
+  // Initial load and refetch when filters change
+  useEffect(() => {
+    fetchVehicles(currentPage);
+  }, [appliedFilters, searchTerm, appliedLocation, appliedRadius, sortBy]);
+
   // Initial load
   useEffect(() => {
     fetchVehicles(1);
