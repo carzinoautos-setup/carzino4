@@ -1150,7 +1150,7 @@ function MySQLVehiclesOriginalStyleInner() {
     if (import.meta.env.DEV) {
       console.log("✅ All filters cleared successfully");
     }
-  }, [location.pathname, navigate, fetchCombinedData, updateConditionalFilters]);
+  }, [location.pathname, navigate, fetchCombinedData]);
 
   // FIXED: Enhanced filter handlers with immediate conditional updates
   const handleMakeChange = useCallback((makeName: string, isChecked: boolean) => {
