@@ -250,7 +250,9 @@ export class CustomWordPressApiService {
         console.log("💳 PAYMENT FILTER RESULTS:", {
           originalCount: priceFilteredCount,
           filteredCount: vehicles.length,
-          filteredOut: priceFilteredCount - vehicles.length
+          filteredOut: priceFilteredCount - vehicles.length,
+          sortBy: sortBy,
+          paymentRange: `${filters.paymentMin || 'min'} - ${filters.paymentMax || 'max'}`
         });
       }
 
