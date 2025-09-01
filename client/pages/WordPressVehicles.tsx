@@ -15,14 +15,37 @@ import {
 import { NavigationHeader } from "@/components/NavigationHeader";
 import { FilterSection } from "@/components/FilterSection";
 import { VehicleCard } from "@/components/VehicleCard";
+import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { 
-  wordpressCustomApi, 
-  WordPressVehicle, 
+import {
+  wordpressCustomApi,
+  WordPressVehicle,
   WordPressVehiclesResponse,
-  WordPressVehicleFilters 
+  WordPressVehicleFilters
 } from "../lib/wordpressCustomApi";
+import { apiCache } from "@/lib/performance";
+
+// Geocoding function for ZIP code lookup
+const geocodeZip = async (zipCode: string): Promise<{
+  lat: number;
+  lng: number;
+  city?: string;
+  state?: string;
+} | null> => {
+  try {
+    const response = await fetch(`/api/geocoding?zip=${zipCode}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.location) {
+        return data.location;
+      }
+    }
+  } catch (error) {
+    console.error('Geocoding error:', error);
+  }
+  return null;
+};
 
 // Vehicle interface to match MySQL page design
 interface Vehicle {
@@ -385,6 +408,20 @@ export default function WordPressVehicles() {
       setLoading(false);
     }
   }, [pageSize, appliedFilters, transformVehicle]);
+
+  // Geocode ZIP code when it changes (with debouncing)
+  useEffect(() => {
+    const debounceTimer = setTimeout(async () => {
+      if (zipCode && zipCode.length >= 5) {
+        setIsGeocodingLoading(true);
+        const location = await geocodeZip(zipCode);
+        setUserLocation(location);
+        setIsGeocodingLoading(false);
+      }
+    }, 1000); // 1 second debounce
+
+    return () => clearTimeout(debounceTimer);
+  }, [zipCode]);
 
   // Initial load
   useEffect(() => {
