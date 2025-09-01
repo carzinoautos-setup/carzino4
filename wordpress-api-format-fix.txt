@@ -1,0 +1,53 @@
+function get_vehicles_api($request) {
+    // Get pagination parameters
+    $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+    $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 20;
+    
+    // Query vehicles
+    $args = array(
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'paged' => $page,
+        'meta_query' => array()
+    );
+    
+    $query = new WP_Query($args);
+    $vehicles = array();
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+            
+            // Get ACF fields
+            $acf_fields = get_fields($post_id);
+            
+            $vehicles[] = array(
+                'id' => $post_id,
+                'name' => get_the_title(),
+                'slug' => get_post_field('post_name', $post_id),
+                'price' => get_post_meta($post_id, '_price', true),
+                'stock_status' => get_post_meta($post_id, '_stock_status', true),
+                'acf' => $acf_fields ?: array()
+            );
+        }
+        wp_reset_postdata();
+    }
+    
+    // Return in the format your React app expects
+    return new WP_REST_Response(array(
+        'success' => true,
+        'data' => $vehicles,
+        'pagination' => array(
+            'total' => $query->found_posts,
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_pages' => $query->max_num_pages
+        )
+    ), 200);
+}
+
+// INSTRUCTIONS:
+// Replace ONLY the get_vehicles_api function in your functions.php
+// Keep all the CORS code the same - it's working!
