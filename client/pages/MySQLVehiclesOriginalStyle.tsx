@@ -565,13 +565,7 @@ function MySQLVehiclesOriginalStyleInner() {
               }
             }
 
-            // TEMPORARY: Add mock prices for testing if no real price data
-            if (vehiclePrice === 0) {
-              vehiclePrice = 15000 + (wpVehicle.id % 10) * 5000; // Mock prices between $15k-$60k
-            }
-            if (vehiclePayment === 0) {
-              vehiclePayment = Math.round(vehiclePrice / 60); // Mock payment based on price
-            }
+            // Remove mock data - using real WordPress data now
 
             if (import.meta.env.DEV) {
               console.log('💰 Price conversion:', {
