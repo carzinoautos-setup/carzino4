@@ -97,6 +97,7 @@ export interface WordPressVehicleFilters {
   min_payment?: number;
   max_payment?: number;
   year?: number;
+  orderby?: string;
 }
 
 /**
