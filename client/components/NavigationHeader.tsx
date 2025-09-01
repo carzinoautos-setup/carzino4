@@ -67,6 +67,18 @@ export function NavigationHeader() {
               <TestTube className="w-4 h-4" />
               API Test
             </Link>
+
+            <Link
+              to="/wordpress-diagnostic"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive("/wordpress-diagnostic")
+                  ? "bg-red-100 text-red-700"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }`}
+            >
+              <Stethoscope className="w-4 h-4" />
+              API Diagnostic
+            </Link>
           </nav>
 
           {/* Stats/Info */}
