@@ -630,14 +630,14 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
 
         if (import.meta.env.DEV) {
-          console.log("✅ WORDPRESS: Successfully loaded all data from fast WordPress API", {
+          console.log("✅ EMERGENCY REVERT: Successfully loaded all data from server API", {
             vehiclesCount: data.data.vehicles?.length || 0,
             totalRecords: data.data.meta?.totalRecords || 0,
             filtersCount: Object.keys(data.data.filters || {}).length
           });
         }
       } else {
-        throw new Error(responseData.message || "WordPress API returned error");
+        throw new Error(responseData.message || "Server API returned error");
       }
 
       PerformanceMonitor.endMeasure('fetchCombinedData');
@@ -3477,7 +3477,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   // NOTE: Dealer names should come from Advanced Custom Fields 'acount_name_seller'
                   // Current implementation may be using demo data - check backend API
                   if (import.meta.env.DEV && dealersToShow?.length > 0) {
-                    console.warn("��� DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
+                    console.warn("���� DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
                     console.log("🏪 Current dealer data source:", dealersToShow?.slice(0, 2));
                   }
 
