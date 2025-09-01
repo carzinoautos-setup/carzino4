@@ -746,10 +746,12 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
 
         if (import.meta.env.DEV) {
-          console.log("✅ COMBINED: Successfully loaded all data in one call", {
+          const isMockData = response.message && response.message.includes('Mock data generated');
+          console.log(`✅ COMBINED: Successfully loaded ${isMockData ? 'mock' : 'live'} data`, {
             vehiclesCount: data.data.vehicles?.length || 0,
             totalRecords: data.data.meta?.totalRecords || 0,
-            filtersCount: Object.keys(data.data.filters || {}).length
+            filtersCount: Object.keys(data.data.filters || {}).length,
+            dataSource: isMockData ? 'Mock/Fallback' : 'WordPress API'
           });
         }
       } else {
@@ -801,9 +803,11 @@ function MySQLVehiclesOriginalStyleInner() {
         return;
       }
 
-      // Set error state
+      // Set error state with more helpful messages
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
-        setError("Unable to connect to vehicle database. Check your internet connection and try refreshing the page.");
+        setError("WordPress API temporarily unavailable. Using demo data for testing. Check connection and refresh to retry.");
+      } else if (err.message && err.message.includes('Network/CORS Error')) {
+        setError("WordPress site connection failed. Using demo data. Check WordPress site status and CORS configuration.");
       } else {
         setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data.");
       }
@@ -4246,10 +4250,15 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Connection Status & Results Count - NOT in sticky */}
             <div className="px-3 py-2 bg-gray-50 text-sm">
-              {error && error.includes("Unable to connect") && (
-                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded mb-2 text-xs flex items-center gap-1">
+              {(error || (vehicles.length > 0 && apiResponse?.message?.includes('Mock data'))) && (
+                <div className="bg-blue-100 border border-blue-400 text-blue-700 px-3 py-2 rounded mb-2 text-xs flex items-center gap-1">
                   <AlertTriangle className="w-4 h-4" />
-                  Connection issues detected. Some features may be limited.
+                  {error && (error.includes('WordPress API') || error.includes('demo data') || error.includes('Mock data'))
+                    ? 'WordPress API unavailable - showing demo data for testing'
+                    : apiResponse?.message?.includes('Mock data')
+                    ? 'WordPress API temporarily unavailable - using demo data'
+                    : 'Connection issues detected - using fallback data'
+                  }
                 </div>
               )}
               <span className="font-medium">
@@ -4271,7 +4280,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles)`}
+                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles) - Status: ${(error || apiResponse?.message?.includes('Mock data')) ? 'Offline (Using Demo Data)' : 'Online'}`}
                   </div>
                   {import.meta.env.DEV && (
                     <button
