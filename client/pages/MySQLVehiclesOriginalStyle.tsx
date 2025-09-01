@@ -402,7 +402,21 @@ function MySQLVehiclesOriginalStyleInner() {
     count: number;
   }) => (
     <label className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-      <input type="checkbox" className="mr-2" />
+      <input
+        type="checkbox"
+        className="mr-2"
+        checked={appliedFilters.exteriorColor.includes(name)}
+        onChange={(e) => {
+          if (e.target.checked) {
+            setAppliedFilters(prev => ({
+              ...prev,
+              exteriorColor: [...prev.exteriorColor, name]
+            }));
+          } else {
+            removeAppliedFilter("exteriorColor", name);
+          }
+        }}
+      />
       <div
         className="w-4 h-4 rounded border border-gray-300 mr-2"
         style={{ backgroundColor: color }}
