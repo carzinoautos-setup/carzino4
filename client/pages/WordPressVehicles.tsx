@@ -286,9 +286,17 @@ export default function WordPressVehicles() {
   const removeAppliedFilter = (filterType: string, value: string) => {
     setAppliedFilters(prev => ({
       ...prev,
-      [filterType]: Array.isArray(prev[filterType]) 
+      [filterType]: Array.isArray(prev[filterType])
         ? (prev[filterType] as string[]).filter(item => item !== value)
         : prev[filterType]
+    }));
+  };
+
+  // Toggle filter section
+  const toggleFilter = (filterName: string) => {
+    setCollapsedFilters(prev => ({
+      ...prev,
+      [filterName]: !prev[filterName]
     }));
   };
 
