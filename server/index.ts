@@ -96,6 +96,7 @@ export function createServer() {
   app.get("/api/simple-health", simpleHealthCheck);
   app.get("/api/test-woocommerce", testWooCommerceApi);
   app.get("/api/test-connection", testWordPressConnection);
+  app.get("/api/test-wordpress-api", testWordPressApiCall);
 
   // Payment calculation routes
   app.post("/api/payments/calculate", calculatePayment);
