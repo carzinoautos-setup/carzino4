@@ -86,6 +86,8 @@ export interface WordPressVehicleFilters {
   condition?: string;
   min_price?: number;
   max_price?: number;
+  min_payment?: number;
+  max_payment?: number;
   year?: number;
 }
 
