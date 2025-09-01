@@ -11,6 +11,7 @@ import MySQLVehiclesOriginalStyle from "./pages/MySQLVehiclesOriginalStyle";
 import { IconDemo } from "./pages/IconDemo";
 import { PaymentCalculatorDemo } from "./pages/PaymentCalculatorDemo";
 import { WooCommerceVehicles } from "./pages/WooCommerceVehicles";
+import WordPressApiTest from "./pages/WordPressApiTest";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
