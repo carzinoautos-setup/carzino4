@@ -1262,7 +1262,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
                   <input
                     type="text"
-                    placeholder="2,000"
+                    placeholder={downPayment ? "" : "2,000 Down Payment"}
                     value={downPayment}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^\d,]/g, '');
@@ -1270,9 +1270,6 @@ function MySQLVehiclesOriginalStyleInner() {
                     }}
                     className="w-full pl-6 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
                   />
-                  <span className="absolute left-8 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs pointer-events-none">
-                    {!downPayment ? "Down Payment" : ""}
-                  </span>
                 </div>
 
                 {/* Apply Payment Filter Button */}
