@@ -645,7 +645,7 @@ function MySQLVehiclesOriginalStyleInner() {
       cleanup();
 
       if (abortControllerRef.current !== requestController || !isMountedRef.current) {
-        console.log("🚫 Ignoring WordPress API error from superseded request");
+        console.log("🚫 Ignoring server API error from superseded request");
         return;
       }
 
@@ -2013,7 +2013,7 @@ function MySQLVehiclesOriginalStyleInner() {
         }
 
         input[type="checkbox"]:checked::before {
-          content: '✓' !important;
+          content: '��' !important;
           position: absolute !important;
           color: white !important;
           font-size: 12px !important;
@@ -3477,7 +3477,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   // NOTE: Dealer names should come from Advanced Custom Fields 'acount_name_seller'
                   // Current implementation may be using demo data - check backend API
                   if (import.meta.env.DEV && dealersToShow?.length > 0) {
-                    console.warn("������ DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
+                    console.warn("���� DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
                     console.log("🏪 Current dealer data source:", dealersToShow?.slice(0, 2));
                   }
 
