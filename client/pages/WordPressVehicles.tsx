@@ -187,7 +187,10 @@ export default function WordPressVehicles() {
   }, [fetchVehicles]);
 
   // Toggle favorite
-  const handleToggleFavorite = (vehicle: VehicleRecord) => {
+  const handleToggleFavorite = (vehicleId: number) => {
+    const vehicle = vehicles.find(v => v.id === vehicleId);
+    if (!vehicle) return;
+
     setFavorites(prev => {
       const newFavorites = { ...prev };
       if (newFavorites[vehicle.id]) {
