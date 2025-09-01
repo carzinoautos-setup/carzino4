@@ -221,10 +221,10 @@ export class CustomWordPressApiService {
         url.searchParams.set('mileage_range', filters.mileage);
       }
       if (filters.min_mileage) {
-        url.searchParams.set('mileage_min', filters.min_mileage);
+        url.searchParams.set('min_mileage', filters.min_mileage);
       }
       if (filters.max_mileage) {
-        url.searchParams.set('mileage_max', filters.max_mileage);
+        url.searchParams.set('max_mileage', filters.max_mileage);
       }
       if (filters.priceMin) {
         url.searchParams.set('price_min', filters.priceMin);
