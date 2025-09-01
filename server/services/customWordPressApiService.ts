@@ -164,13 +164,48 @@ export class CustomWordPressApiService {
         });
       }
 
-      // Apply client-side payment filtering since WordPress API doesn't support it
+      // Apply client-side dealer filtering since we need to map dealer names to account IDs
       const priceFilteredCount = vehicles.length;
+      if (filters.dealer && filters.dealer.length > 0) {
+        console.log("🏢 APPLYING CLIENT-SIDE DEALER FILTER:", {
+          dealerNames: filters.dealer,
+          originalCount: priceFilteredCount
+        });
+
+        vehicles = vehicles.filter(vehicle => {
+          // Get dealer/account information from vehicle
+          const dealerName = vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "";
+          const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
+
+          // Check if this vehicle matches any of the selected dealers
+          // We check both dealer name and account number to handle the relationship properly
+          const matchesByName = filters.dealer.some(selectedDealer =>
+            dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
+            selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
+          );
+
+          const matchesByAccount = filters.dealer.some(selectedDealer =>
+            accountNumber && accountNumber.toString() === selectedDealer
+          );
+
+          return matchesByName || matchesByAccount;
+        });
+
+        console.log("🏢 DEALER FILTER RESULTS:", {
+          selectedDealers: filters.dealer,
+          originalCount: priceFilteredCount,
+          filteredCount: vehicles.length,
+          filteredOut: priceFilteredCount - vehicles.length
+        });
+      }
+
+      // Apply client-side payment filtering since WordPress API doesn't support it
+      const dealerFilteredCount = vehicles.length;
       if (filters.paymentMin || filters.paymentMax) {
         console.log("💳 APPLYING CLIENT-SIDE PAYMENT FILTER:", {
           paymentMin: filters.paymentMin,
           paymentMax: filters.paymentMax,
-          originalCount: priceFilteredCount,
+          originalCount: dealerFilteredCount,
           sortBy: sortBy
         });
 
@@ -248,9 +283,9 @@ export class CustomWordPressApiService {
         });
 
         console.log("💳 PAYMENT FILTER RESULTS:", {
-          originalCount: priceFilteredCount,
+          originalCount: dealerFilteredCount,
           filteredCount: vehicles.length,
-          filteredOut: priceFilteredCount - vehicles.length,
+          filteredOut: dealerFilteredCount - vehicles.length,
           sortBy: sortBy,
           paymentRange: `${filters.paymentMin || 'min'} - ${filters.paymentMax || 'max'}`
         });
@@ -325,7 +360,7 @@ export class CustomWordPressApiService {
 
       // Use pagination info from API response, but adjust for client-side filtering
       const paginationInfo = apiResponse.pagination;
-      const isFiltered = (filters.priceMin || filters.priceMax);
+      const isFiltered = (filters.priceMin || filters.priceMax || filters.paymentMin || filters.paymentMax || (filters.dealer && filters.dealer.length > 0));
 
       if (isFiltered) {
         // For client-side filtering, we need to adjust pagination
