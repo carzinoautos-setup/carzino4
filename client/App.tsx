@@ -48,6 +48,10 @@ const App = () => (
             path="/wordpress-vehicles"
             element={<WordPressVehicles />}
           />
+          <Route
+            path="/wordpress-diagnostic"
+            element={<WordPressApiDiagnostic />}
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
