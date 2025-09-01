@@ -31,7 +31,7 @@ export interface WordPressVehicle {
     account_type_seller: string;
     car_location_latitude: number;
     car_location_longitude: number;
-    
+
     // Vehicle specifications
     year: number;
     make: string;
@@ -39,30 +39,37 @@ export interface WordPressVehicle {
     trim: string;
     mileage: number;
     drivetrain: string;
+    drive_type: string; // Alternative field name
     fuel_type: string;
     transmission: string;
     vin: string;
     stock_number: string;
-    
+
     // Vehicle details
     condition: string;
     doors: number;
     exterior_color: string;
     interior_color: string;
     body_style: string;
+    body_type: string; // Alternative field name
     engine_cylinders: number;
     highway_mpg: number;
-    
+
     // Status flags
     is_featured: boolean;
     certified: boolean;
     title_status: string;
-    
+
     // Financial information
+    price: number;
+    sale_price: number;
     interest_rate: number;
     down_payment: number;
     loan_term: number;
     payment: number;
+
+    // Images
+    featured_image: string;
   };
 }
 
