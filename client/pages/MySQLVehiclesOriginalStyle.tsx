@@ -227,15 +227,15 @@ function MySQLVehiclesOriginalStyleInner() {
           case "Under 15,000":
             apiUrl.searchParams.set('max_mileage', '15000');
             break;
-          case "15,000 - 30,000":
+          case "15,000 – 30,000":
             apiUrl.searchParams.set('min_mileage', '15000');
             apiUrl.searchParams.set('max_mileage', '30000');
             break;
-          case "30,000 - 60,000":
+          case "30,000 – 60,000":
             apiUrl.searchParams.set('min_mileage', '30000');
             apiUrl.searchParams.set('max_mileage', '60000');
             break;
-          case "60,000 - 100,000":
+          case "60,000 – 100,000":
             apiUrl.searchParams.set('min_mileage', '60000');
             apiUrl.searchParams.set('max_mileage', '100000');
             break;
