@@ -214,9 +214,10 @@ export class CustomWordPressApiService {
             }
           }
 
-          // If no valid payment found, exclude from payment filtering
+          // If no valid payment found, include the vehicle (don't exclude it just for lacking payment data)
+          // This allows price sorting to work properly even when payment filters are applied
           if (!monthlyPayment || monthlyPayment <= 0) {
-            return false;
+            return true;
           }
 
           // Apply min payment filter
