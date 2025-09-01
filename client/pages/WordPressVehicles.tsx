@@ -1082,7 +1082,7 @@ export default function WordPressVehicles() {
                         type="checkbox"
                         className="mr-2"
                         checked={appliedFilters.year.includes(year.toString())}
-                        onChange={(e) => updateFilter("year", year.toString(), e.target.checked)}
+                        onChange={(e) => updateFilter("year", year.toString(), e.target.checked, e)}
                       />
                       <span className="carzino-filter-option flex-1">{year}</span>
                     </label>
