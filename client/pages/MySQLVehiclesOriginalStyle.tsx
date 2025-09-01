@@ -347,6 +347,94 @@ function MySQLVehiclesOriginalStyleInner() {
 
   return (
     <div className="min-h-screen bg-white main-container" style={{ fontFamily: "Albert Sans, sans-serif" }}>
+      <style>{`
+        :root {
+          --carzino-featured-badge: 12px;
+          --carzino-badge-label: 12px;
+          --carzino-vehicle-title: 16px;
+          --carzino-vehicle-details: 12px;
+          --carzino-price-label: 12px;
+          --carzino-price-value: 16px;
+          --carzino-dealer-info: 10px;
+          --carzino-image-counter: 12px;
+        }
+
+        @media (max-width: 768px) {
+          :root {
+            --carzino-vehicle-title: 17px;
+            --carzino-price-value: 17px;
+            --carzino-dealer-info: 11px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          :root {
+            --carzino-featured-badge: 14px;
+            --carzino-badge-label: 14px;
+            --carzino-vehicle-title: 18px;
+            --carzino-vehicle-details: 13px;
+            --carzino-price-label: 14px;
+            --carzino-price-value: 18px;
+            --carzino-dealer-info: 12px;
+            --carzino-image-counter: 14px;
+          }
+        }
+
+        .carzino-featured-badge { font-size: var(--carzino-featured-badge) !important; font-weight: 500 !important; }
+        .carzino-badge-label { font-size: var(--carzino-badge-label) !important; font-weight: 500 !important; }
+        .carzino-vehicle-title { font-size: var(--carzino-vehicle-title) !important; font-weight: 600 !important; }
+        .carzino-vehicle-details { font-size: var(--carzino-vehicle-details) !important; font-weight: 400 !important; }
+        .carzino-price-label { font-size: var(--carzino-price-label) !important; font-weight: 400 !important; }
+        .carzino-price-value { font-size: var(--carzino-price-value) !important; font-weight: 700 !important; }
+        .carzino-dealer-info { font-size: var(--carzino-dealer-info) !important; font-weight: 500 !important; }
+        .carzino-image-counter { font-size: var(--carzino-image-counter) !important; font-weight: 400 !important; }
+
+        /* Enhanced checkbox styling */
+        input[type="checkbox"] {
+          appearance: none !important;
+          -webkit-appearance: none !important;
+          -moz-appearance: none !important;
+          width: 16px !important;
+          height: 16px !important;
+          border: 2px solid #d1d5db !important;
+          border-radius: 3px !important;
+          background-color: white !important;
+          position: relative !important;
+          cursor: pointer !important;
+          flex-shrink: 0 !important;
+          transition: all 0.2s ease !important;
+        }
+
+        input[type="checkbox"]:hover {
+          border-color: #6b7280 !important;
+          background-color: #f9fafb !important;
+          transform: scale(1.05) !important;
+        }
+
+        input[type="checkbox"]:checked {
+          background-color: #dc2626 !important;
+          border-color: #dc2626 !important;
+          background-image: none !important;
+        }
+
+        input[type="checkbox"]:checked::before {
+          content: '✓' !important;
+          position: absolute !important;
+          color: white !important;
+          font-size: 12px !important;
+          font-weight: bold !important;
+          top: -1px !important;
+          left: 1px !important;
+          line-height: 1 !important;
+          display: block !important;
+          z-index: 1 !important;
+        }
+
+        input[type="checkbox"]:focus {
+          outline: 2px solid #dc2626 !important;
+          outline-offset: 2px !important;
+        }
+      `}</style>
       <NavigationHeader />
       
       <div className="flex lg:space-x-6">
