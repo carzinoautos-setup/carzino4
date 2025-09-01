@@ -2999,6 +2999,8 @@ function MySQLVehiclesOriginalStyleInner() {
                               const newFilters = {
                                 ...appliedFilters,
                                 model: [...appliedFilters.model, modelOption.name],
+                                // CRITICAL: Clear trims when model selection changes
+                                trim: [],
                               };
                               console.log("����� Adding model filter:", newFilters);
                               setAppliedFilters(newFilters);
