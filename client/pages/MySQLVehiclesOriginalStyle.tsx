@@ -1268,7 +1268,20 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        onChange={() => {}}
+                        checked={appliedFilters.transmission.includes(transmission.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: [...prev.transmission, transmission.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: prev.transmission.filter(item => item !== transmission.name)
+                            }));
+                          }
+                        }}
                       />
                       <span className="carzino-filter-option">{transmission.name}</span>
                       <span className="carzino-filter-count ml-1">({transmission.count})</span>
@@ -1280,7 +1293,20 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        onChange={() => {}}
+                        checked={appliedFilters.transmission.includes(transmission)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: [...prev.transmission, transmission]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: prev.transmission.filter(item => item !== transmission)
+                            }));
+                          }
+                        }}
                       />
                       <span className="carzino-filter-option">{transmission}</span>
                     </label>
