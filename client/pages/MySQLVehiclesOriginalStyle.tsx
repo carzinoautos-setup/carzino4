@@ -566,95 +566,33 @@ function MySQLVehiclesOriginalStyleInner() {
         throw new Error(`WordPress API error: ${responseData.message || 'Unknown error'}`);
       }
 
-      console.log("✅ FIXED: WordPress API Response received:", {
-        vehiclesCount: responseData.data?.length || 0,
-        totalRecords: responseData.pagination?.total || 0,
-        success: responseData.success
+      console.log("✅ EMERGENCY REVERT: Server API Response received:", {
+        vehiclesCount: responseData.data?.vehicles?.length || 0,
+        filtersCount: Object.keys(responseData.data?.filters || {}).length,
+        dealersCount: responseData.data?.dealers?.length || 0,
+        totalRecords: responseData.data?.meta?.totalRecords || 0
       });
 
-      // Transform WordPress vehicles to our format
-      const transformVehicle = (wpVehicle: WordPressVehicle): any => {
-        const acf = wpVehicle.acf;
-        return {
-          id: wpVehicle.id,
-          featured: acf?.is_featured === "1" || acf?.is_featured === true,
-          viewed: false,
-          images: wpVehicle.images?.map(img => img.src) || [wpVehicle.featured_image].filter(Boolean),
-          badges: [
-            acf?.condition || "Used",
-            acf?.drive_type || acf?.drivetrain || "FWD",
-            ...(acf?.certified === "1" || acf?.certified === true ? ["Certified"] : []),
-            ...(acf?.is_featured === "1" || acf?.is_featured === true ? ["Featured"] : [])
-          ].filter(Boolean),
-          title: `${acf?.year || ""} ${acf?.make || ""} ${acf?.model || ""}`.trim() || wpVehicle.name,
-          mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
-          transmission: acf?.transmission || "Auto",
-          doors: acf?.doors ? `${acf.doors}` : "4",
-          salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
-          payment: acf?.payment ? `$${acf.payment}/mo*` : "Call for Payment",
-          dealer: acf?.account_name_seller || "Dealer Account #1000821",
-          location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
-          phone: acf?.phone_number_seller || "(253) 555-0100",
-          seller_type: acf?.account_type_seller || "Dealer",
-          city_seller: acf?.city_seller,
-          state_seller: acf?.state_seller,
-          zip_seller: acf?.zip_seller,
-          // Add missing fields for filtering
-          make: acf?.make,
-          model: acf?.model,
-          year: acf?.year,
-          trim: acf?.trim,
-          condition: acf?.condition,
-          body_style: acf?.body_style,
-          drivetrain: acf?.drive_type || acf?.drivetrain,
-          exterior_color_generic: acf?.exterior_color,
-          interior_color_generic: acf?.interior_color
-        };
-      };
-
-      // Convert WordPress format to our expected format
-      const transformedVehicles = (responseData.data || []).map(transformVehicle);
-
-      // Extract filter options from WordPress data
-      const extractFilterOptions = (vehicles: any[]) => {
-        const makes = Array.from(new Set(vehicles.map(v => v.make).filter(Boolean)))
-          .map(make => ({ name: make!, count: vehicles.filter(v => v.make === make).length }))
-          .sort((a, b) => b.count - a.count);
-
-        const models = Array.from(new Set(vehicles.map(v => v.model).filter(Boolean)))
-          .map(model => ({ name: model!, count: vehicles.filter(v => v.model === model).length }))
-          .sort((a, b) => b.count - a.count);
-
-        const conditions = Array.from(new Set(vehicles.map(v => v.condition).filter(Boolean)))
-          .map(condition => ({ name: condition!, count: vehicles.filter(v => v.condition === condition).length }))
-          .sort((a, b) => b.count - a.count);
-
-        const vehicleTypes = Array.from(new Set(vehicles.map(v => v.body_style).filter(Boolean)))
-          .map(type => ({ name: type!, count: vehicles.filter(v => v.body_style === type).length }))
-          .sort((a, b) => b.count - a.count);
-
-        return {
-          makes, models, conditions, vehicleTypes,
-          trims: [], driveTypes: [], transmissions: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: vehicles.length
-        };
-      };
-
+      // Server API already returns the correct format
       const data = {
         success: true,
         data: {
-          vehicles: transformedVehicles,
-          meta: {
-            totalRecords: responseData.pagination?.total || 0,
-            totalPages: responseData.pagination?.total_pages || 0,
-            currentPage: responseData.pagination?.page || 1,
-            pageSize: responseData.pagination?.per_page || 20,
-            hasNextPage: responseData.pagination?.page < responseData.pagination?.total_pages,
-            hasPreviousPage: responseData.pagination?.page > 1,
+          vehicles: responseData.data.vehicles || [],
+          meta: responseData.data.meta || {
+            totalRecords: 0,
+            totalPages: 0,
+            currentPage: 1,
+            pageSize: 20,
+            hasNextPage: false,
+            hasPreviousPage: false,
           },
-          filters: extractFilterOptions(transformedVehicles),
-          dealers: []
+          filters: responseData.data.filters || {
+            makes: [], models: [], trims: [], conditions: [],
+            vehicleTypes: [], driveTypes: [], transmissions: [],
+            exteriorColors: [], interiorColors: [], sellerTypes: [],
+            dealers: [], states: [], cities: [], totalVehicles: 0
+          },
+          dealers: responseData.data.dealers || []
         }
       };
 
