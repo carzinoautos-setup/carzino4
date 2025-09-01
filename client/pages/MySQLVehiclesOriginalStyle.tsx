@@ -128,7 +128,7 @@ function MySQLVehiclesOriginalStyleInner() {
   console.log("🚀 COMPONENT: MySQLVehiclesOriginalStyleInner rendering");
 
   // TEMPORARY: Force a visible render to test
-  const FORCE_TEST_RENDER = false; // Set to true to test
+  const FORCE_TEST_RENDER = true; // Set to true to test
   if (FORCE_TEST_RENDER) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -2731,7 +2731,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 // CRITICAL: Clear trims when model selection changes
                                 trim: [],
                               };
-                              console.log("����� Adding model filter:", newFilters);
+                              console.log("������ Adding model filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
