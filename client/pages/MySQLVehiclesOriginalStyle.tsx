@@ -815,7 +815,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     <span className="carzino-filter-count ml-1">({make.count})</span>
                   </label>
                 ))}
-                {filterOptions.makes.length > 8 && (
+                {(filterOptions.makes && filterOptions.makes.length > 8) && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -942,7 +942,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     </label>
                   ))
                 )}
-                {availableTrims.length > 8 && (
+                {(availableTrims && availableTrims.length > 8) && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -1107,7 +1107,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("driveType")}
             >
               <div className="space-y-1">
-                {filterOptions.driveTypes.length > 0 ? (
+                {(filterOptions.driveTypes && filterOptions.driveTypes.length > 0) ? (
                   filterOptions.driveTypes.map((driveType, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1167,7 +1167,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("transmissionSpeed")}
             >
               <div className="space-y-1">
-                {filterOptions.transmissions.length > 0 ? (
+                {(filterOptions.transmissions && filterOptions.transmissions.length > 0) ? (
                   filterOptions.transmissions.map((transmission, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1201,7 +1201,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("exteriorColor")}
             >
               <div className="space-y-1">
-                {filterOptions.exteriorColors.length > 0 ? (
+                {(filterOptions.exteriorColors && filterOptions.exteriorColors.length > 0) ? (
                   filterOptions.exteriorColors.map((color, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1261,7 +1261,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("interiorColor")}
             >
               <div className="space-y-1">
-                {filterOptions.interiorColors.length > 0 ? (
+                {(filterOptions.interiorColors && filterOptions.interiorColors.length > 0) ? (
                   filterOptions.interiorColors.map((color, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1295,7 +1295,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("sellerType")}
             >
               <div className="space-y-1">
-                {filterOptions.sellerTypes.length > 0 ? (
+                {(filterOptions.sellerTypes && filterOptions.sellerTypes.length > 0) ? (
                   filterOptions.sellerTypes.map((sellerType, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1355,7 +1355,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("dealer")}
             >
               <div className="space-y-1">
-                {filterOptions.dealers.length > 0 ? (
+                {(filterOptions.dealers && filterOptions.dealers.length > 0) ? (
                   filterOptions.dealers.slice(0, 10).map((dealer, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1382,7 +1382,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("state")}
             >
               <div className="space-y-1">
-                {filterOptions.states.length > 0 ? (
+                {(filterOptions.states && filterOptions.states.length > 0) ? (
                   filterOptions.states.slice(0, 10).map((state, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
@@ -1409,7 +1409,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("city")}
             >
               <div className="space-y-1">
-                {filterOptions.cities.length > 0 ? (
+                {(filterOptions.cities && filterOptions.cities.length > 0) ? (
                   filterOptions.cities.slice(0, 10).map((city, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
