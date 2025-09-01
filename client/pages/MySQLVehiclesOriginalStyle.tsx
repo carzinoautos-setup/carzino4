@@ -755,6 +755,57 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
+            {/* Trim Filter */}
+            <FilterSection
+              title={`Trim ${appliedFilters.model.length > 0 ? `(${appliedFilters.model.join(", ")})` : ""}`}
+              isCollapsed={collapsedFilters.trim}
+              onToggle={() => toggleFilter("trim")}
+            >
+              <div className="space-y-1">
+                {appliedFilters.model.length === 0 ? (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    Select a model first to see available trims
+                  </div>
+                ) : displayedTrims.length === 0 ? (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    No trims available for selected model(s)
+                  </div>
+                ) : (
+                  displayedTrims.map((trim, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.trim.includes(trim.name)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleTrimChange(trim.name, e.target.checked);
+                        }}
+                      />
+                      <span className="carzino-filter-option">{trim.name}</span>
+                      <span className="carzino-filter-count ml-1">({trim.count})</span>
+                    </label>
+                  ))
+                )}
+                {availableTrims.length > 8 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowMoreTrims(!showMoreTrims);
+                    }}
+                    className="carzino-show-more text-red-600 hover:text-red-700 mt-1"
+                  >
+                    {showMoreTrims ? "Show Less" : "Show More"}
+                  </button>
+                )}
+              </div>
+            </FilterSection>
+
             {/* Vehicle Type Filter */}
             <FilterSection
               title="Vehicle Type"
@@ -762,17 +813,467 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("vehicleType")}
             >
               <div className="space-y-1">
-                {["SUV / Crossover", "Truck", "Sedan", "Coupe", "Convertible", "Hatchback", "Van / Minivan", "Wagon"].map((type) => (
-                  <label key={type} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                {availableBodyTypes.length > 0 ? (
+                  availableBodyTypes.map((type, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.vehicleType.includes(type.name)}
+                        onChange={(e) => handleVehicleTypeToggle(type.name)}
+                      />
+                      <span className="carzino-filter-option">{type.name}</span>
+                      <span className="carzino-filter-count ml-1">({type.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["SUV / Crossover", "Truck", "Sedan", "Coupe", "Convertible", "Hatchback", "Van / Minivan", "Wagon"].map((type) => (
+                    <label key={type} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.vehicleType.includes(type)}
+                        onChange={(e) => handleVehicleTypeToggle(type)}
+                      />
+                      <span className="carzino-filter-option">{type}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Payment Calculator Filter */}
+            <FilterSection
+              title="Payment Calculator"
+              isCollapsed={collapsedFilters.payment}
+              onToggle={() => toggleFilter("payment")}
+            >
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="carzino-filter-option text-sm font-medium">Payment Range</label>
+                  <div className="flex gap-2">
                     <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.vehicleType.includes(type)}
-                      onChange={(e) => handleVehicleTypeToggle(type)}
+                      type="text"
+                      placeholder="$200"
+                      value={paymentMin}
+                      onChange={(e) => setPaymentMin(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
                     />
-                    <span className="carzino-filter-option">{type}</span>
+                    <input
+                      type="text"
+                      placeholder="$800"
+                      value={paymentMax}
+                      onChange={(e) => setPaymentMax(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="carzino-filter-option text-sm font-medium">Term Length</label>
+                  <select
+                    value={termLength}
+                    onChange={(e) => setTermLength(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none"
+                  >
+                    <option value="36">36 months</option>
+                    <option value="48">48 months</option>
+                    <option value="60">60 months</option>
+                    <option value="72">72 months</option>
+                    <option value="84">84 months</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="carzino-filter-option text-sm font-medium">Interest Rate</label>
+                  <input
+                    type="text"
+                    placeholder="8%"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="carzino-filter-option text-sm font-medium">Down Payment</label>
+                  <input
+                    type="text"
+                    placeholder="$2,000"
+                    value={downPayment}
+                    onChange={(e) => setDownPayment(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      paymentMin: paymentMin,
+                      paymentMax: paymentMax
+                    }));
+                  }}
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                >
+                  Apply Payment Filter
+                </button>
+              </div>
+            </FilterSection>
+
+            {/* Mileage Filter */}
+            <FilterSection
+              title="Mileage"
+              isCollapsed={collapsedFilters.mileage}
+              onToggle={() => toggleFilter("mileage")}
+            >
+              <div className="space-y-1">
+                {["Under 15,000", "15,000 - 30,000", "30,000 - 60,000", "60,000 - 100,000", "Over 100,000"].map((range) => (
+                  <label key={range} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="mileage"
+                      className="mr-2"
+                      checked={appliedFilters.mileage === range}
+                      onChange={() => {
+                        setAppliedFilters(prev => ({
+                          ...prev,
+                          mileage: range
+                        }));
+                      }}
+                    />
+                    <span className="carzino-filter-option">{range}</span>
                   </label>
                 ))}
+              </div>
+            </FilterSection>
+
+            {/* Drive Type Filter */}
+            <FilterSection
+              title="Drive Type"
+              isCollapsed={collapsedFilters.driveType}
+              onToggle={() => toggleFilter("driveType")}
+            >
+              <div className="space-y-1">
+                {filterOptions.driveTypes.length > 0 ? (
+                  filterOptions.driveTypes.map((driveType, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.driveType.includes(driveType.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: [...prev.driveType, driveType.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: prev.driveType.filter(item => item !== driveType.name)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{driveType.name}</span>
+                      <span className="carzino-filter-count ml-1">({driveType.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["AWD", "4WD", "FWD", "RWD"].map((driveType) => (
+                    <label key={driveType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.driveType.includes(driveType)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: [...prev.driveType, driveType]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: prev.driveType.filter(item => item !== driveType)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{driveType}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Transmission Speed Filter */}
+            <FilterSection
+              title="Transmission/Speed"
+              isCollapsed={collapsedFilters.transmissionSpeed}
+              onToggle={() => toggleFilter("transmissionSpeed")}
+            >
+              <div className="space-y-1">
+                {filterOptions.transmissions.length > 0 ? (
+                  filterOptions.transmissions.map((transmission, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{transmission.name}</span>
+                      <span className="carzino-filter-count ml-1">({transmission.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Automatic", "Manual", "CVT"].map((transmission) => (
+                    <label key={transmission} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{transmission}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Exterior Color Filter */}
+            <FilterSection
+              title="Exterior Color"
+              isCollapsed={collapsedFilters.exteriorColor}
+              onToggle={() => toggleFilter("exteriorColor")}
+            >
+              <div className="space-y-1">
+                {filterOptions.exteriorColors.length > 0 ? (
+                  filterOptions.exteriorColors.map((color, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.exteriorColor.includes(color.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: [...prev.exteriorColor, color.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: prev.exteriorColor.filter(item => item !== color.name)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{color.name}</span>
+                      <span className="carzino-filter-count ml-1">({color.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Black", "White", "Silver", "Gray", "Red", "Blue", "Green", "Brown", "Gold", "Yellow", "Orange", "Purple"].map((color) => (
+                    <label key={color} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.exteriorColor.includes(color)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: [...prev.exteriorColor, color]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: prev.exteriorColor.filter(item => item !== color)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{color}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Interior Color Filter */}
+            <FilterSection
+              title="Interior Color"
+              isCollapsed={collapsedFilters.interiorColor}
+              onToggle={() => toggleFilter("interiorColor")}
+            >
+              <div className="space-y-1">
+                {filterOptions.interiorColors.length > 0 ? (
+                  filterOptions.interiorColors.map((color, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{color.name}</span>
+                      <span className="carzino-filter-count ml-1">({color.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Black", "Beige", "Gray", "Brown", "Tan", "White"].map((color) => (
+                    <label key={color} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{color}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Seller Type Filter */}
+            <FilterSection
+              title="Seller Type"
+              isCollapsed={collapsedFilters.sellerType}
+              onToggle={() => toggleFilter("sellerType")}
+            >
+              <div className="space-y-1">
+                {filterOptions.sellerTypes.length > 0 ? (
+                  filterOptions.sellerTypes.map((sellerType, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.sellerType.includes(sellerType.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: [...prev.sellerType, sellerType.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: prev.sellerType.filter(item => item !== sellerType.name)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{sellerType.name}</span>
+                      <span className="carzino-filter-count ml-1">({sellerType.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Dealer", "Private Party"].map((sellerType) => (
+                    <label key={sellerType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.sellerType.includes(sellerType)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: [...prev.sellerType, sellerType]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: prev.sellerType.filter(item => item !== sellerType)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{sellerType}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+            </FilterSection>
+
+            {/* Dealer Filter */}
+            <FilterSection
+              title="Dealer"
+              isCollapsed={collapsedFilters.dealer}
+              onToggle={() => toggleFilter("dealer")}
+            >
+              <div className="space-y-1">
+                {filterOptions.dealers.length > 0 ? (
+                  filterOptions.dealers.slice(0, 10).map((dealer, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{dealer.name}</span>
+                      <span className="carzino-filter-count ml-1">({dealer.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    No dealer data available
+                  </div>
+                )}
+              </div>
+            </FilterSection>
+
+            {/* State Filter */}
+            <FilterSection
+              title="State"
+              isCollapsed={collapsedFilters.state}
+              onToggle={() => toggleFilter("state")}
+            >
+              <div className="space-y-1">
+                {filterOptions.states.length > 0 ? (
+                  filterOptions.states.slice(0, 10).map((state, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{state.name}</span>
+                      <span className="carzino-filter-count ml-1">({state.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    No state data available
+                  </div>
+                )}
+              </div>
+            </FilterSection>
+
+            {/* City Filter */}
+            <FilterSection
+              title="City"
+              isCollapsed={collapsedFilters.city}
+              onToggle={() => toggleFilter("city")}
+            >
+              <div className="space-y-1">
+                {filterOptions.cities.length > 0 ? (
+                  filterOptions.cities.slice(0, 10).map((city, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
+                      <span className="carzino-filter-option">{city.name}</span>
+                      <span className="carzino-filter-count ml-1">({city.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    No city data available
+                  </div>
+                )}
               </div>
             </FilterSection>
 
