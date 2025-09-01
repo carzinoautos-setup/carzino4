@@ -20,7 +20,8 @@ import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
 import { useDebounce, apiCache, OptimizedApiClient, PerformanceMonitor } from "@/lib/performance";
-// Using server-side Node.js API instead of WordPress API
+// Using WordPress custom API - FIXED to use user's fast API
+import { wordpressCustomApi, WordPressVehicle, WordPressVehiclesResponse } from "@/lib/wordpressCustomApi";
 
 // Vehicle interface for live WooCommerce data
 interface Vehicle {
@@ -464,93 +465,100 @@ function MySQLVehiclesOriginalStyleInner() {
         }, 30000);
       }
 
-      // Build server API URL with filters
-      const serverApiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
-      serverApiUrl.searchParams.set('page', currentPage.toString());
-      serverApiUrl.searchParams.set('pageSize', resultsPerPage.toString());
+      // FIXED: Use WordPress custom API instead of slow server API
+      console.log("📡 USING WORDPRESS CUSTOM API:", "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles");
 
-      // Add sorting
-      if (sortBy !== "relevance") {
-        serverApiUrl.searchParams.set('sortBy', sortBy);
-      }
-
+      // Build WordPress API filters
+      const wpFilters: any = {
+        page: currentPage,
+        per_page: resultsPerPage
+      };
       // Add search term
       if (debouncedSearchTerm.trim()) {
-        serverApiUrl.searchParams.set('search', debouncedSearchTerm.trim());
+        wpFilters.search = debouncedSearchTerm.trim();
       }
 
-      // Add location filters
-      if (appliedLocation && appliedRadius !== "nationwide") {
-        serverApiUrl.searchParams.set('lat', appliedLocation.lat.toString());
-        serverApiUrl.searchParams.set('lng', appliedLocation.lng.toString());
-        serverApiUrl.searchParams.set('radius', appliedRadius);
+      // Add sorting (WordPress API format)
+      if (sortBy !== "relevance") {
+        wpFilters.orderby = sortBy;
       }
 
       // Add applied filters
       if (debouncedAppliedFilters) {
         if (debouncedAppliedFilters.make.length > 0) {
-          serverApiUrl.searchParams.set('make', debouncedAppliedFilters.make.join(','));
+          wpFilters.make = debouncedAppliedFilters.make.join(',');
         }
         if (debouncedAppliedFilters.model.length > 0) {
-          serverApiUrl.searchParams.set('model', debouncedAppliedFilters.model.join(','));
+          wpFilters.model = debouncedAppliedFilters.model.join(',');
         }
         if (debouncedAppliedFilters.trim.length > 0) {
-          serverApiUrl.searchParams.set('trim', debouncedAppliedFilters.trim.join(','));
+          wpFilters.trim = debouncedAppliedFilters.trim.join(',');
         }
         if (debouncedAppliedFilters.condition.length > 0) {
-          serverApiUrl.searchParams.set('condition', debouncedAppliedFilters.condition.join(','));
+          wpFilters.condition = debouncedAppliedFilters.condition.join(',');
         }
         if (debouncedAppliedFilters.vehicleType.length > 0) {
-          serverApiUrl.searchParams.set('body_type', debouncedAppliedFilters.vehicleType.join(','));
+          wpFilters.body_type = debouncedAppliedFilters.vehicleType.join(',');
         }
         if (debouncedAppliedFilters.driveType.length > 0) {
-          serverApiUrl.searchParams.set('driveType', debouncedAppliedFilters.driveType.join(','));
+          wpFilters.drive_type = debouncedAppliedFilters.driveType.join(',');
         }
         if (debouncedAppliedFilters.transmission.length > 0) {
-          serverApiUrl.searchParams.set('transmission', debouncedAppliedFilters.transmission.join(','));
+          wpFilters.transmission = debouncedAppliedFilters.transmission.join(',');
         }
         if (debouncedAppliedFilters.exteriorColor.length > 0) {
-          serverApiUrl.searchParams.set('exteriorColor', debouncedAppliedFilters.exteriorColor.join(','));
+          wpFilters.exterior_color = debouncedAppliedFilters.exteriorColor.join(',');
+        }
+        if (debouncedAppliedFilters.interiorColor.length > 0) {
+          wpFilters.interior_color = debouncedAppliedFilters.interiorColor.join(',');
         }
         if (debouncedAppliedFilters.sellerType.length > 0) {
-          serverApiUrl.searchParams.set('sellerType', debouncedAppliedFilters.sellerType.join(','));
+          wpFilters.seller_type = debouncedAppliedFilters.sellerType.join(',');
         }
         if (debouncedAppliedFilters.dealer.length > 0) {
-          serverApiUrl.searchParams.set('dealer', debouncedAppliedFilters.dealer.join(','));
+          wpFilters.dealer = debouncedAppliedFilters.dealer.join(',');
+        }
+        if (debouncedAppliedFilters.state.length > 0) {
+          wpFilters.state = debouncedAppliedFilters.state.join(',');
+        }
+        if (debouncedAppliedFilters.city.length > 0) {
+          wpFilters.city = debouncedAppliedFilters.city.join(',');
         }
         if (debouncedAppliedFilters.mileage) {
-          serverApiUrl.searchParams.set('mileage', debouncedAppliedFilters.mileage);
+          wpFilters.max_mileage = parseInt(debouncedAppliedFilters.mileage.replace(/[^\d]/g, ''));
         }
         if (debouncedAppliedFilters.priceMin) {
-          serverApiUrl.searchParams.set('priceMin', debouncedAppliedFilters.priceMin);
+          wpFilters.min_price = parseInt(debouncedAppliedFilters.priceMin.replace(/[^\d]/g, ''));
         }
         if (debouncedAppliedFilters.priceMax) {
-          serverApiUrl.searchParams.set('priceMax', debouncedAppliedFilters.priceMax);
+          wpFilters.max_price = parseInt(debouncedAppliedFilters.priceMax.replace(/[^\d]/g, ''));
         }
         if (debouncedAppliedFilters.paymentMin) {
-          serverApiUrl.searchParams.set('paymentMin', debouncedAppliedFilters.paymentMin);
+          wpFilters.min_payment = parseInt(debouncedAppliedFilters.paymentMin.replace(/[^\d]/g, ''));
         }
         if (debouncedAppliedFilters.paymentMax) {
-          serverApiUrl.searchParams.set('paymentMax', debouncedAppliedFilters.paymentMax);
+          wpFilters.max_payment = parseInt(debouncedAppliedFilters.paymentMax.replace(/[^\d]/g, ''));
         }
       }
 
-      console.log("📡 FIXED: Calling your server-side API:", serverApiUrl.toString());
-
-      const response = await fetch(serverApiUrl.toString(), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        signal: requestController.signal
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server API Error: ${response.status} ${response.statusText}`);
+      // Add location filters
+      if (appliedLocation && appliedRadius !== "nationwide") {
+        wpFilters.lat = appliedLocation.lat;
+        wpFilters.lng = appliedLocation.lng;
+        wpFilters.radius = parseInt(appliedRadius);
       }
 
-      const responseData = await response.json();
+      console.log("📡 FIXED: Calling your FAST WordPress API with filters:", wpFilters);
+
+      // Use WordPress custom API instead of slow server API
+      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+        currentPage,
+        resultsPerPage,
+        wpFilters
+      );
+
+      // WordPress API already returns structured data
+      const responseData = response;
 
       cleanup();
 
@@ -567,33 +575,95 @@ function MySQLVehiclesOriginalStyleInner() {
         throw new Error(`Server API error: ${responseData.message || 'Unknown error'}`);
       }
 
-      console.log("✅ FIXED: Server API Response received:", {
-        vehiclesCount: responseData.data?.vehicles?.length || 0,
-        filtersCount: Object.keys(responseData.data?.filters || {}).length,
-        dealersCount: responseData.data?.dealers?.length || 0,
-        totalRecords: responseData.data?.meta?.totalRecords || 0
+      console.log("✅ FIXED: WordPress API Response received:", {
+        vehiclesCount: responseData.data?.length || 0,
+        totalRecords: responseData.pagination?.total || 0,
+        success: responseData.success
       });
 
-      // Server API already returns the correct format
+      // Transform WordPress vehicles to our format
+      const transformVehicle = (wpVehicle: WordPressVehicle): any => {
+        const acf = wpVehicle.acf;
+        return {
+          id: wpVehicle.id,
+          featured: acf?.is_featured === "1" || acf?.is_featured === true,
+          viewed: false,
+          images: wpVehicle.images?.map(img => img.src) || [wpVehicle.featured_image].filter(Boolean),
+          badges: [
+            acf?.condition || "Used",
+            acf?.drive_type || acf?.drivetrain || "FWD",
+            ...(acf?.certified === "1" || acf?.certified === true ? ["Certified"] : []),
+            ...(acf?.is_featured === "1" || acf?.is_featured === true ? ["Featured"] : [])
+          ].filter(Boolean),
+          title: `${acf?.year || ""} ${acf?.make || ""} ${acf?.model || ""}`.trim() || wpVehicle.name,
+          mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
+          transmission: acf?.transmission || "Auto",
+          doors: acf?.doors ? `${acf.doors}` : "4",
+          salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
+          payment: acf?.payment ? `$${acf.payment}/mo*` : null,
+          dealer: acf?.account_name_seller || "Dealer Account #1000821",
+          location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
+          phone: acf?.phone_number_seller || "(253) 555-0100",
+          seller_type: acf?.account_type_seller || "Dealer",
+          city_seller: acf?.city_seller,
+          state_seller: acf?.state_seller,
+          zip_seller: acf?.zip_seller,
+          // Add missing fields for filtering
+          make: acf?.make,
+          model: acf?.model,
+          year: acf?.year,
+          trim: acf?.trim,
+          condition: acf?.condition,
+          body_style: acf?.body_style,
+          drivetrain: acf?.drive_type || acf?.drivetrain,
+          exterior_color_generic: acf?.exterior_color,
+          interior_color_generic: acf?.interior_color
+        };
+      };
+
+      // Convert WordPress format to our expected format
+      const transformedVehicles = (responseData.data || []).map(transformVehicle);
+
+      // Extract filter options from WordPress data
+      const extractFilterOptions = (vehicles: any[]) => {
+        const makes = Array.from(new Set(vehicles.map(v => v.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: vehicles.filter(v => v.make === make).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const models = Array.from(new Set(vehicles.map(v => v.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: vehicles.filter(v => v.model === model).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const conditions = Array.from(new Set(vehicles.map(v => v.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: vehicles.filter(v => v.condition === condition).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const vehicleTypes = Array.from(new Set(vehicles.map(v => v.body_style).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicles.filter(v => v.body_style === type).length }))
+          .sort((a, b) => b.count - a.count);
+
+        return {
+          makes, models, conditions, vehicleTypes,
+          trims: [], driveTypes: [], transmissions: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: vehicles.length
+        };
+      };
+
       const data = {
         success: true,
         data: {
-          vehicles: responseData.data.vehicles || [],
-          meta: responseData.data.meta || {
-            totalRecords: 0,
-            totalPages: 0,
-            currentPage: 1,
-            pageSize: 20,
-            hasNextPage: false,
-            hasPreviousPage: false,
+          vehicles: transformedVehicles,
+          meta: {
+            totalRecords: responseData.pagination?.total || 0,
+            totalPages: responseData.pagination?.total_pages || 0,
+            currentPage: responseData.pagination?.page || 1,
+            pageSize: responseData.pagination?.per_page || 20,
+            hasNextPage: responseData.pagination?.page < responseData.pagination?.total_pages,
+            hasPreviousPage: responseData.pagination?.page > 1,
           },
-          filters: responseData.data.filters || {
-            makes: [], models: [], trims: [], conditions: [],
-            vehicleTypes: [], driveTypes: [], transmissions: [],
-            exteriorColors: [], interiorColors: [], sellerTypes: [],
-            dealers: [], states: [], cities: [], totalVehicles: 0
-          },
-          dealers: responseData.data.dealers || []
+          filters: extractFilterOptions(transformedVehicles),
+          dealers: []
         }
       };
 
