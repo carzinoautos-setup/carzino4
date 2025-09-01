@@ -329,6 +329,7 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const removeAppliedFilter = (category: string, value: string) => {
+    setCurrentPage(1); // Reset to first page when filters change
     setAppliedFilters((prev) => {
       const newFilters = {
         ...prev,
