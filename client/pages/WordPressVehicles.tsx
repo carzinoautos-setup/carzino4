@@ -79,45 +79,33 @@ export default function WordPressVehicles() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Transform WordPress vehicle to VehicleRecord
-  const transformVehicle = useCallback((wpVehicle: WordPressVehicle): VehicleRecord => {
+  // Transform WordPress vehicle to Vehicle interface (same as MySQL page)
+  const transformVehicle = useCallback((wpVehicle: WordPressVehicle): Vehicle => {
     const acf = wpVehicle.acf;
 
     return {
       id: wpVehicle.id,
-      year: parseInt(acf?.year) || 0,
-      make: acf?.make || "",
-      model: acf?.model || "",
-      trim: acf?.trim || "",
-      body_style: acf?.body_style || "",
-      engine_cylinders: parseInt(acf?.engine_cylinders) || 0,
-      fuel_type: acf?.fuel_type || "",
-      transmission: acf?.transmission || "",
-      transmission_speed: acf?.transmission_speed || "",
-      drivetrain: acf?.drivetrain || "",
-      exterior_color_generic: acf?.exterior_color || "",
-      interior_color_generic: acf?.interior_color || "",
-      doors: parseInt(acf?.doors) || 4,
-      price: parseInt(wpVehicle.price) || 0,
-      mileage: parseInt(acf?.mileage) || 0,
-      title_status: acf?.title_status || "Clean",
-      highway_mpg: parseInt(acf?.highway_mpg) || 0,
-      condition: acf?.condition || "Used",
-      certified: acf?.certified === "1" || acf?.certified === true,
-      seller_account_number: acf?.account_number_seller || "",
+      featured: acf?.is_featured === "1" || acf?.is_featured === true,
+      viewed: false, // Default for WordPress vehicles
+      images: wpVehicle.featured_image ? [wpVehicle.featured_image] : [],
+      badges: [
+        acf?.condition || "Used",
+        ...(acf?.certified === "1" || acf?.certified === true ? ["Certified"] : []),
+        ...(acf?.is_featured === "1" || acf?.is_featured === true ? ["Featured"] : [])
+      ].filter(Boolean),
+      title: `${acf?.year || ""} ${acf?.make || ""} ${acf?.model || ""}`.trim() || wpVehicle.name,
+      mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()} Mi.` : "0 Mi.",
+      transmission: acf?.transmission || "Auto",
+      doors: acf?.doors ? `${acf.doors} Doors` : "4 Doors",
+      salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
+      payment: acf?.payment ? `$${acf.payment}/mo*` : null,
+      dealer: acf?.account_name_seller || "Dealer",
+      location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
+      phone: acf?.phone_number_seller || "(253) 555-0100",
       seller_type: acf?.account_type_seller || "Dealer",
       city_seller: acf?.city_seller,
       state_seller: acf?.state_seller,
       zip_seller: acf?.zip_seller,
-      acount_name_seller: acf?.account_name_seller,
-      phone_number_seller: acf?.phone_number_seller,
-      email_seller: acf?.email_seller,
-      address_seller: acf?.address_seller,
-      business_name_seller: acf?.business_name_seller,
-      interest_rate: parseFloat(acf?.interest_rate) || 0,
-      down_payment: parseFloat(acf?.down_payment) || 0,
-      loan_term: parseInt(acf?.loan_term) || 60,
-      payments: parseFloat(acf?.payment) || 0,
     };
   }, []);
 
