@@ -1210,12 +1210,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
 
-      // Trims don't affect other filters, but still update
-      setTimeout(() => updateConditionalFilters(newFilters), 0);
-
       return newFilters;
     });
-  }, [updateConditionalFilters]);
+  }, []);
 
   // FIXED: Location filter with proper inventory refresh
   const applyLocationFilter = useCallback(() => {
@@ -1466,7 +1463,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
-      console.log("🚫 Component unmounted, skipping geocoding");
+      console.log("�� Component unmounted, skipping geocoding");
       return null;
     }
 
