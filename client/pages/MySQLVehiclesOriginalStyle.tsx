@@ -590,56 +590,16 @@ function MySQLVehiclesOriginalStyleInner() {
         success: responseData.success
       });
 
-      // Helper function to calculate monthly payment
-      const calculatePayment = (price: number, termMonths: number = 60, apr: number = 5.0, downPayment: number = 2000): number => {
-        const principal = price - downPayment;
-        if (principal <= 0) return 0;
-
-        const monthlyRate = apr / 100 / 12;
-        if (monthlyRate === 0) {
-          return principal / termMonths;
-        }
-
-        const payment = (principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
-                       (Math.pow(1 + monthlyRate, termMonths) - 1);
-        return Math.round(payment);
-      };
-
       // Transform WordPress vehicles to our format
       const transformVehicle = (wpVehicle: WordPressVehicle): any => {
         const acf = wpVehicle.acf;
 
-        // Handle price conversion carefully
-        const rawPrice = wpVehicle.price || wpVehicle.sale_price || acf?.price || acf?.sale_price;
-        const numericPrice = typeof rawPrice === 'string' ? parseFloat(rawPrice) : (rawPrice || 0);
-        const formattedPrice = numericPrice > 0 ? `$${numericPrice.toLocaleString()}` : null;
+        // Simple price handling
+        const price = wpVehicle.price || 0;
+        const salePrice = price > 0 ? `$${price.toLocaleString()}` : null;
 
-        // Debug logging for problematic prices
-        if (import.meta.env.DEV && numericPrice > 1000000) {
-          console.log("🚨 PRICE DEBUG - Vehicle with high price:", {
-            name: wpVehicle.name,
-            rawPrice,
-            numericPrice,
-            wpVehicle_price: wpVehicle.price,
-            wpVehicle_sale_price: wpVehicle.sale_price,
-            acf_price: acf?.price,
-            acf_sale_price: acf?.sale_price
-          });
-        }
-
-        // Calculate payment if not provided or if provided payment is 0
-        let paymentAmount = acf?.payment && acf.payment > 0 ? acf.payment : null;
-        if (!paymentAmount && numericPrice > 0) {
-          const calculatedPayment = calculatePayment(
-            numericPrice,
-            acf?.loan_term || 60,
-            acf?.interest_rate || 5.0,
-            acf?.down_payment || 2000
-          );
-          paymentAmount = calculatedPayment;
-        }
-
-        const formattedPayment = paymentAmount && paymentAmount > 0 ? `$${paymentAmount.toLocaleString()}/mo*` : "Call for Payment";
+        // Simple payment - always show something so payment section appears
+        const payment = acf?.payment > 0 ? `$${acf.payment}/mo*` : "$Call/mo*";
 
         return {
           id: wpVehicle.id,
@@ -656,8 +616,8 @@ function MySQLVehiclesOriginalStyleInner() {
           mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
           transmission: acf?.transmission || "Auto",
           doors: acf?.doors ? `${acf.doors}` : "4",
-          salePrice: formattedPrice,
-          payment: formattedPayment,
+          salePrice: salePrice,
+          payment: payment,
           dealer: acf?.account_name_seller || "Dealer Account #1000821",
           location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
           phone: acf?.phone_number_seller || "(253) 555-0100",
@@ -665,6 +625,7 @@ function MySQLVehiclesOriginalStyleInner() {
           city_seller: acf?.city_seller,
           state_seller: acf?.state_seller,
           zip_seller: acf?.zip_seller,
+          seller_account_number: acf?.account_name_seller || "#1000821",
           // Add missing fields for filtering
           make: acf?.make,
           model: acf?.model,
@@ -674,9 +635,7 @@ function MySQLVehiclesOriginalStyleInner() {
           body_style: acf?.body_style,
           drivetrain: acf?.drive_type || acf?.drivetrain,
           exterior_color_generic: acf?.exterior_color,
-          interior_color_generic: acf?.interior_color,
-          // Add missing VehicleCard interface fields
-          seller_account_number: acf?.account_name_seller || "#1000821"
+          interior_color_generic: acf?.interior_color
         };
       };
 
