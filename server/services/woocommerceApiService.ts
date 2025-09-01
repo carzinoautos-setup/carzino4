@@ -400,7 +400,7 @@ export class WooCommerceApiService {
       transmission: getMeta('transmission') || "Auto",
       doors: getMeta('doors') ? `${getMeta('doors')} doors` : "4 doors",
       salePrice: price > 0 ? `$${price.toLocaleString()}` : null,
-      payment: estimatedPayment > 0 ? `$${estimatedPayment}/mo*` : null,
+      payment: estimatedPayment > 0 ? `$${estimatedPayment}/mo*` : "Call for Price",
       dealer: getMeta('dealer_name') || "Carzino Autos",
       location: getMeta('location') || "Local Area",
       phone: getMeta('dealer_phone') || "Contact Dealer",
