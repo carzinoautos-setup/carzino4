@@ -224,6 +224,14 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       console.log("🔗 API URL:", apiUrl.toString());
+      console.log("🔍 DEBUG: Applied filters being sent:", appliedFilters);
+      console.log("🔍 DEBUG: All filter params:", {
+        make: appliedFilters.make,
+        condition: appliedFilters.condition,
+        model: appliedFilters.model,
+        zipCode,
+        radius
+      });
 
       const response = await fetch(apiUrl.toString());
       const data = await response.json();
