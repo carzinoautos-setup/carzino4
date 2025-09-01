@@ -200,6 +200,41 @@ export class CustomWordPressApiService {
         });
       }
 
+      // Apply client-side dealer filtering since we need to map dealer names to account IDs
+      if (filters.dealer && filters.dealer.length > 0) {
+        console.log("🏢 APPLYING CLIENT-SIDE DEALER FILTER:", {
+          dealerNames: filters.dealer,
+          originalCount: vehicles.length
+        });
+
+        const originalCount = vehicles.length;
+        vehicles = vehicles.filter(vehicle => {
+          // Get dealer/account information from vehicle
+          const dealerName = vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "";
+          const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
+
+          // Check if this vehicle matches any of the selected dealers
+          // We check both dealer name and account number to handle the relationship properly
+          const matchesByName = filters.dealer.some(selectedDealer =>
+            dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
+            selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
+          );
+
+          const matchesByAccount = filters.dealer.some(selectedDealer =>
+            accountNumber && accountNumber.toString() === selectedDealer
+          );
+
+          return matchesByName || matchesByAccount;
+        });
+
+        console.log("🏢 DEALER FILTER RESULTS:", {
+          selectedDealers: filters.dealer,
+          originalCount: originalCount,
+          filteredCount: vehicles.length,
+          filteredOut: originalCount - vehicles.length
+        });
+      }
+
       // Apply client-side payment filtering since WordPress API doesn't support it
       const dealerFilteredCount = vehicles.length;
       if (filters.paymentMin || filters.paymentMax) {
