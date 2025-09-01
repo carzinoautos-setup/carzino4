@@ -20,8 +20,7 @@ import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
 import { useDebounce, apiCache, OptimizedApiClient, PerformanceMonitor } from "@/lib/performance";
-// Using WordPress custom API - FIXED to use user's fast API
-import { wordpressCustomApi, WordPressVehicle, WordPressVehiclesResponse } from "@/lib/wordpressCustomApi";
+// Using server-side Node.js API instead of WordPress API
 
 // Vehicle interface for live WooCommerce data
 interface Vehicle {
@@ -433,7 +432,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (import.meta.env.DEV && retryCount === 0) {
-        console.log("���� COMBINED FETCH: Calling your server-side API");
+        console.log("🚀 COMBINED FETCH: Calling your server-side API");
       }
 
       // Set timeout for request
@@ -1808,7 +1807,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Handle AbortError gracefully
       if (error instanceof Error && error.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("��� Geocoding request aborted (expected behavior)");
+          console.log("🚫 Geocoding request aborted (expected behavior)");
         }
         return null;
       }
@@ -4046,7 +4045,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }
                         className="ml-1 text-white"
                       >
-                        ��
+                        ���
                       </button>
                     </span>
                   )}
