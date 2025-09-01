@@ -4386,10 +4386,19 @@ function MySQLVehiclesOriginalStyleInner() {
                   </option>
                 </select>
 
-                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white">
-                  <option value="30">View: 30</option>
-                  <option value="60">View: 60</option>
-                  <option value="100">View: 100</option>
+                <select
+                  value={resultsPerPage}
+                  onChange={(e) => {
+                    const newValue = parseInt(e.target.value);
+                    setResultsPerPage(newValue);
+                    setCurrentPage(1); // Reset to first page when changing view count
+                  }}
+                  className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white"
+                >
+                  <option value={20}>View: 20</option>
+                  <option value={30}>View: 30</option>
+                  <option value={60}>View: 60</option>
+                  <option value={100}>View: 100</option>
                 </select>
               </div>
             </div>
