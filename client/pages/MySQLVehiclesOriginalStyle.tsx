@@ -606,30 +606,35 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (data.success) {
-        // Cache combined response
-        const cacheTTL = import.meta.env.DEV ? 30 * 1000 : 1 * 60 * 1000;
-        apiCache.set(cacheKey, data, cacheTTL);
+        try {
+          // Cache combined response
+          const cacheTTL = import.meta.env.DEV ? 30 * 1000 : 1 * 60 * 1000;
+          apiCache.set(cacheKey, data, cacheTTL);
 
-        // Set all data from combined response
-        setVehicles(data.data.vehicles || []);
-        setApiResponse({
-          data: data.data.vehicles,
-          meta: data.data.meta,
-          success: true
-        });
-        setFilterOptions(data.data.filters || {
-          makes: [], models: [], trims: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: 0
-        });
-        setAvailableDealers(data.data.dealers || []);
-        setVehicleTypes(data.data.filters?.vehicleTypes || []);
+          // Set all data from combined response with error handling
+          setVehicles(data.data.vehicles || []);
+          setApiResponse({
+            data: data.data.vehicles,
+            meta: data.data.meta,
+            success: true
+          });
+          setFilterOptions(data.data.filters || {
+            makes: [], models: [], trims: [], conditions: [],
+            vehicleTypes: [], driveTypes: [], transmissions: [],
+            exteriorColors: [], interiorColors: [], sellerTypes: [],
+            dealers: [], states: [], cities: [], totalVehicles: 0
+          });
+          setAvailableDealers(data.data.dealers || []);
+          setVehicleTypes(data.data.filters?.vehicleTypes || []);
 
-        // Force update of totalResults and loading state
-        setTimeout(() => {
+          // Force update of totalResults and loading state
           setLoading(false);
-        }, 100);
+        } catch (transformError) {
+          console.error("❌ Error in data transformation:", transformError);
+          // Still set basic data to show something
+          setVehicles(data.data.vehicles || []);
+          setLoading(false);
+        }
 
         if (import.meta.env.DEV) {
           console.log("✅ EMERGENCY REVERT: Successfully loaded all data from server API", {
