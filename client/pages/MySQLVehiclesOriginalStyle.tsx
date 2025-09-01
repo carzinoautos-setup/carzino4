@@ -20,7 +20,7 @@ import { Pagination } from "@/components/Pagination";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
 import { useDebounce, apiCache, OptimizedApiClient, PerformanceMonitor } from "@/lib/performance";
-import { wordpressCustomApi, WordPressVehiclesResponse, WordPressVehicleFilters } from "../lib/wordpressCustomApi";
+// Using server-side Node.js API instead of WordPress API
 
 // Vehicle interface for live WooCommerce data
 interface Vehicle {
