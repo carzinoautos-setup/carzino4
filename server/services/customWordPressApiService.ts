@@ -164,6 +164,83 @@ export class CustomWordPressApiService {
         });
       }
 
+      // Apply client-side payment filtering since WordPress API doesn't support it
+      const priceFilteredCount = vehicles.length;
+      if (filters.paymentMin || filters.paymentMax) {
+        console.log("💳 APPLYING CLIENT-SIDE PAYMENT FILTER:", {
+          paymentMin: filters.paymentMin,
+          paymentMax: filters.paymentMax,
+          originalCount: priceFilteredCount
+        });
+
+        vehicles = vehicles.filter(vehicle => {
+          // Get payment from ACF field or calculate from price
+          let monthlyPayment = null;
+
+          // Try ACF payment field first
+          const existingPayment = vehicle.acf?.payment;
+          if (existingPayment && existingPayment !== "0" && parseInt(existingPayment) > 0) {
+            monthlyPayment = parseInt(existingPayment);
+          } else {
+            // Calculate payment from price if available
+            const priceFields = [
+              vehicle.acf?.price,
+              vehicle.acf?.sale_price,
+              vehicle.acf?.listing_price,
+              vehicle.price,
+              vehicle.regular_price,
+              vehicle.acf?.vehicle_price,
+              vehicle.acf?.asking_price
+            ];
+
+            const priceStr = priceFields.find(p => p && p !== "" && p !== "0" && parseInt(p) > 0);
+            if (priceStr) {
+              const price = parseInt(priceStr);
+              const termLength = parseInt(filters.termLength || "72");
+              const interestRate = parseFloat(filters.interestRate || "8") / 100 / 12;
+              const downPayment = parseInt(filters.downPayment || "2000");
+              const principal = price - downPayment;
+
+              if (principal > 0) {
+                if (interestRate === 0) {
+                  monthlyPayment = Math.round(principal / termLength);
+                } else {
+                  monthlyPayment = Math.round(
+                    (principal * interestRate * Math.pow(1 + interestRate, termLength)) /
+                    (Math.pow(1 + interestRate, termLength) - 1)
+                  );
+                }
+              }
+            }
+          }
+
+          // If no valid payment found, exclude from payment filtering
+          if (!monthlyPayment || monthlyPayment <= 0) {
+            return false;
+          }
+
+          // Apply min payment filter
+          if (filters.paymentMin) {
+            const minPayment = parseInt(filters.paymentMin.replace(/[,$]/g, ''));
+            if (monthlyPayment < minPayment) return false;
+          }
+
+          // Apply max payment filter
+          if (filters.paymentMax) {
+            const maxPayment = parseInt(filters.paymentMax.replace(/[,$]/g, ''));
+            if (monthlyPayment > maxPayment) return false;
+          }
+
+          return true;
+        });
+
+        console.log("💳 PAYMENT FILTER RESULTS:", {
+          originalCount: priceFilteredCount,
+          filteredCount: vehicles.length,
+          filteredOut: priceFilteredCount - vehicles.length
+        });
+      }
+
       // Transform vehicles to expected format using new ACF structure
       const transformedVehicles = vehicles.map(vehicle => {
         // Get price from multiple possible fields with better logic
