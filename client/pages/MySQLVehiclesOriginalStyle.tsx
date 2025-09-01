@@ -342,10 +342,31 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const getDisplayedVehicles = () => {
+    let vehiclesToDisplay;
     if (viewMode === "favorites") {
-      return Object.values(favorites);
+      vehiclesToDisplay = Object.values(favorites);
+    } else {
+      vehiclesToDisplay = vehicles;
     }
-    return vehicles;
+
+    // Sort vehicles to put those without prices at the end
+    return vehiclesToDisplay.sort((a, b) => {
+      const hasAPrice = a.salePrice && a.salePrice !== "Call for Price" && a.salePrice !== "No Sale Price Listed";
+      const hasBPrice = b.salePrice && b.salePrice !== "Call for Price" && b.salePrice !== "No Sale Price Listed";
+
+      // If both have prices or both don't have prices, maintain original order
+      if (hasAPrice === hasBPrice) {
+        return 0;
+      }
+
+      // If A has price but B doesn't, A comes first
+      if (hasAPrice && !hasBPrice) {
+        return -1;
+      }
+
+      // If B has price but A doesn't, B comes first (A goes to end)
+      return 1;
+    });
   };
 
   const clearAllFilters = () => {
