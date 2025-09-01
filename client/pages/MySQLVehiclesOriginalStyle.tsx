@@ -1146,7 +1146,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Van": "🚐",
       "Vans": "🚐",
       "Minivan": "🚐",
-      "Minivans": "🚐",
+      "Minivans": "��",
       "Van / Minivan": "🚐",
       "Cargo Van": "🚐",
       "Passenger Van": "🚐",
@@ -1857,7 +1857,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Call our geocoding API with proper error handling
       const apiUrl = `${getApiBaseUrl()}/api/geocode/${zip}`;
-      console.log("��� Geocoding ZIP:", zip, "using:", apiUrl);
+      console.log("🔍 Geocoding ZIP:", zip, "using:", apiUrl);
 
       const controller = new AbortController();
 
@@ -4393,7 +4393,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    {import.meta.env.DEV && `API: ${getApiBaseUrl()}/api/simple-vehicles/combined`}
+                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles)`}
                   </div>
                   {import.meta.env.DEV && (
                     <button
