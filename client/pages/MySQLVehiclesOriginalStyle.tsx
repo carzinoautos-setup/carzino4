@@ -1050,9 +1050,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // REMOVED: Dealers now fetched via combined endpoint for better performance
 
-  // Update filter options based on current selections (conditional filtering)
-  // This needs to call the API to get proper conditional filter counts
-  const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters, forceRefresh = false) => {
+  // FIXED: Conditional filtering with proper API integration
+  // This function now properly handles Make->Model->Trim cascading
+  const fetchFilterOptions = useCallback(async (currentFilters = appliedFilters, forceRefresh = false) => {
     if (!isMountedRef.current) {
       return;
     }
@@ -1107,19 +1107,28 @@ function MySQLVehiclesOriginalStyleInner() {
       // Calculate filter options from all vehicles matching current filters
       const allVehicles = response.data;
 
-      // For conditional filtering: if makes are selected, only show models for those makes
+      // FIXED: Proper conditional filtering logic
+      // Step 1: Filter models based on selected makes
       let filteredModels = allVehicles;
       if (currentFilters.make && currentFilters.make.length > 0) {
-        filteredModels = allVehicles.filter(v => currentFilters.make.includes(v.acf?.make));
+        filteredModels = allVehicles.filter(v => {
+          return v.acf?.make && currentFilters.make.includes(v.acf.make);
+        });
+        console.log(`🔄 CONDITIONAL: ${currentFilters.make.length} makes selected, filtered to ${filteredModels.length} vehicles`);
       }
 
-      // For conditional filtering: if makes/models are selected, only show trims for those
+      // Step 2: Filter trims based on selected makes AND models
       let filteredTrims = allVehicles;
       if (currentFilters.make && currentFilters.make.length > 0) {
-        filteredTrims = allVehicles.filter(v => currentFilters.make.includes(v.acf?.make));
+        filteredTrims = allVehicles.filter(v => {
+          return v.acf?.make && currentFilters.make.includes(v.acf.make);
+        });
       }
       if (currentFilters.model && currentFilters.model.length > 0) {
-        filteredTrims = filteredTrims.filter(v => currentFilters.model.includes(v.acf?.model));
+        filteredTrims = filteredTrims.filter(v => {
+          return v.acf?.model && currentFilters.model.includes(v.acf.model);
+        });
+        console.log(`🔄 CONDITIONAL: ${currentFilters.model.length} models selected, filtered to ${filteredTrims.length} vehicles`);
       }
 
       const updatedOptions = {
@@ -1170,26 +1179,29 @@ function MySQLVehiclesOriginalStyleInner() {
           .map(drive => ({ name: drive!, count: allVehicles.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length }))
           .sort((a, b) => b.count - a.count),
         transmissions: (() => {
-          // Normalize transmission values to prevent duplicates
+          // FIXED: Enhanced transmission normalization to eliminate duplicates
           const transmissionMap = new Map();
           allVehicles.forEach(v => {
             if (v.acf?.transmission) {
-              let normalized = v.acf.transmission.trim();
-              // Normalize Auto/Automatic to just Automatic
-              if (normalized.toLowerCase() === 'auto' || normalized.toLowerCase() === 'automatic') {
+              let normalized = String(v.acf.transmission).trim();
+              // Comprehensive normalization
+              const lower = normalized.toLowerCase();
+              if (lower.includes('auto') || lower === 'a' || lower === 'at') {
                 normalized = 'Automatic';
-              }
-              // Normalize Manual variations
-              if (normalized.toLowerCase() === 'manual' || normalized.toLowerCase() === 'stick') {
+              } else if (lower.includes('manual') || lower.includes('stick') || lower === 'm' || lower === 'mt') {
                 normalized = 'Manual';
+              } else if (lower.includes('cvt')) {
+                normalized = 'CVT';
               }
               const current = transmissionMap.get(normalized) || 0;
               transmissionMap.set(normalized, current + 1);
             }
           });
-          return Array.from(transmissionMap.entries())
+          const result = Array.from(transmissionMap.entries())
             .map(([name, count]) => ({ name, count }))
             .sort((a, b) => b.count - a.count);
+          console.log('🔧 FIXED: Transmission normalization result:', result);
+          return result;
         })(),
         exteriorColors: Array.from(new Set(allVehicles.map(v => v.acf?.exterior_color).filter(Boolean)))
           .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.exterior_color === color).length }))
@@ -1197,10 +1209,25 @@ function MySQLVehiclesOriginalStyleInner() {
         interiorColors: Array.from(new Set(allVehicles.map(v => v.acf?.interior_color).filter(Boolean)))
           .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.interior_color === color).length }))
           .sort((a, b) => b.count - a.count),
-        sellerTypes: Array.from(new Set(allVehicles.map(v => v.acf?.account_type_seller).filter(Boolean)))
-          .map(type => ({ name: type!, count: allVehicles.filter(v => v.acf?.account_type_seller === type).length }))
-          .filter(type => type.count > 0) // Only show types with vehicles
-          .sort((a, b) => b.count - a.count),
+        sellerTypes: (() => {
+          // FIXED: Accurate seller type counts with proper filtering
+          const sellerTypeMap = new Map();
+          allVehicles.forEach(v => {
+            if (v.acf?.account_type_seller) {
+              const type = String(v.acf.account_type_seller).trim();
+              if (type) {
+                const current = sellerTypeMap.get(type) || 0;
+                sellerTypeMap.set(type, current + 1);
+              }
+            }
+          });
+          const result = Array.from(sellerTypeMap.entries())
+            .map(([name, count]) => ({ name, count }))
+            .filter(type => type.count > 0)
+            .sort((a, b) => b.count - a.count);
+          console.log('🔧 FIXED: Seller type counts:', result);
+          return result;
+        })(),
         dealers: Array.from(new Set(allVehicles.map(v => v.acf?.account_name_seller).filter(Boolean)))
           .map(dealer => ({ name: dealer!, count: allVehicles.filter(v => v.acf?.account_name_seller === dealer).length }))
           .sort((a, b) => b.count - a.count),
@@ -1227,26 +1254,35 @@ function MySQLVehiclesOriginalStyleInner() {
       }
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error("❌ Error fetching filter options:", error);
+        console.error("❌ FIXED: Error fetching filter options:", error);
       }
-      // Fall back to local filtering if API fails
+      // FIXED: Better fallback filtering with proper property access
       const filteredVehicles = vehicles.filter(v => {
-        if (currentFilters.make && currentFilters.make.length > 0 && !currentFilters.make.includes(v.make)) return false;
-        if (currentFilters.model && currentFilters.model.length > 0 && !currentFilters.model.includes(v.model)) return false;
-        if (currentFilters.condition && currentFilters.condition.length > 0 && !currentFilters.condition.includes(v.condition)) return false;
+        if (currentFilters.make && currentFilters.make.length > 0) {
+          const vehicleMake = v.make || (v as any).acf?.make;
+          if (!vehicleMake || !currentFilters.make.includes(vehicleMake)) return false;
+        }
+        if (currentFilters.model && currentFilters.model.length > 0) {
+          const vehicleModel = v.model || (v as any).acf?.model;
+          if (!vehicleModel || !currentFilters.model.includes(vehicleModel)) return false;
+        }
+        if (currentFilters.condition && currentFilters.condition.length > 0) {
+          const vehicleCondition = v.condition || (v as any).acf?.condition;
+          if (!vehicleCondition || !currentFilters.condition.includes(vehicleCondition)) return false;
+        }
         return true;
       });
 
       const fallbackOptions = {
-        makes: Array.from(new Set(filteredVehicles.map(v => v.make).filter(Boolean)))
-          .map(make => ({ name: make!, count: filteredVehicles.filter(v => v.make === make).length }))
-          .sort((a, b) => b.count - a.count),
-        models: Array.from(new Set(filteredVehicles.map(v => v.model).filter(Boolean)))
-          .map(model => ({ name: model!, count: filteredVehicles.filter(v => v.model === model).length }))
-          .sort((a, b) => b.count - a.count),
-        trims: Array.from(new Set(filteredVehicles.map(v => v.trim).filter(Boolean)))
-          .map(trim => ({ name: trim!, count: filteredVehicles.filter(v => v.trim === trim).length }))
-          .sort((a, b) => b.count - a.count),
+        makes: Array.from(new Set(filteredVehicles.map(v => v.make || (v as any).acf?.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: filteredVehicles.filter(v => (v.make || (v as any).acf?.make) === make).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        models: Array.from(new Set(filteredVehicles.map(v => v.model || (v as any).acf?.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: filteredVehicles.filter(v => (v.model || (v as any).acf?.model) === model).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        trims: Array.from(new Set(filteredVehicles.map(v => v.trim || (v as any).acf?.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: filteredVehicles.filter(v => (v.trim || (v as any).acf?.trim) === trim).length }))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })),
         conditions: Array.from(new Set(filteredVehicles.map(v => v.condition).filter(Boolean)))
           .map(condition => ({ name: condition!, count: filteredVehicles.filter(v => v.condition === condition).length }))
           .sort((a, b) => b.count - a.count),
@@ -1284,7 +1320,7 @@ function MySQLVehiclesOriginalStyleInner() {
       setVehicleTypes(fallbackOptions.vehicleTypes);
       setAvailableDealers(fallbackOptions.dealers);
     }
-  }, [debouncedAppliedFilters, vehicles]);
+  }, [appliedFilters, vehicles]); // FIXED: Use appliedFilters instead of debounced to be more responsive
 
   // Load initial data on component mount - OPTIMIZED: Single combined call
   useEffect(() => {
@@ -1303,28 +1339,24 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, [fetchCombinedData]);
 
-  // Performance: Re-fetch filter options when filters change for conditional filtering
-  const filterChangeDebounced = useDebounce(appliedFilters, 300); // Faster debounce for better UX
+  // FIXED: Simplified conditional filtering - let fetchCombinedData handle everything
+  // Remove separate fetchFilterOptions calls to prevent race conditions
 
-  useEffect(() => {
-    // Always re-fetch filter options when filters change for conditional filtering
-    if (isMountedRef.current) {
-      if (import.meta.env.DEV) {
-        console.log("🔄 Filters changed, re-fetching conditional filter options...");
-      }
-      fetchFilterOptions(filterChangeDebounced);
-    }
-  }, [filterChangeDebounced, fetchFilterOptions]);
-
-  // Critical: Re-fetch vehicles when filters change
+  // FIXED: Critical inventory refresh with proper conditional filtering
   useEffect(() => {
     if (isMountedRef.current) {
       if (import.meta.env.DEV) {
-        console.log("🚗 Applied filters changed, refreshing vehicle inventory...");
+        console.log("🚗 FIXED: Applied filters changed, refreshing vehicle inventory AND conditional filters...");
       }
-      fetchCombinedData();
+      // Force immediate refresh of both vehicles and conditional filters
+      fetchCombinedData().then(() => {
+        // After getting fresh vehicle data, update conditional filter options
+        if (isMountedRef.current) {
+          fetchFilterOptions(debouncedAppliedFilters, true);
+        }
+      });
     }
-  }, [debouncedAppliedFilters, sortBy, currentPage, resultsPerPage]); // Include resultsPerPage for view count fix
+  }, [debouncedAppliedFilters, sortBy, currentPage, resultsPerPage]);
 
   // Helper functions for price formatting
   const formatPrice = (value: string): string => {
