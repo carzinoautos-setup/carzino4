@@ -38,6 +38,10 @@ const App = () => (
             path="/woocommerce-vehicles"
             element={<WooCommerceVehicles />}
           />
+          <Route
+            path="/wordpress-api-test"
+            element={<WordPressApiTest />}
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
