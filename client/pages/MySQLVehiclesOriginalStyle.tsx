@@ -965,7 +965,7 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("vehicleType")}
             >
               <div className="space-y-1">
-                {availableBodyTypes.length > 0 ? (
+                {(availableBodyTypes && availableBodyTypes.length > 0) ? (
                   availableBodyTypes.map((type, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
