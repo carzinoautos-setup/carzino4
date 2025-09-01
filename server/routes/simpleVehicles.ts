@@ -235,6 +235,8 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
     // Handle single value filters
     if (req.query.search) filters.search = req.query.search as string;
     if (req.query.mileage) filters.mileage = req.query.mileage as string;
+    if (req.query.min_mileage) filters.min_mileage = req.query.min_mileage as string;
+    if (req.query.max_mileage) filters.max_mileage = req.query.max_mileage as string;
     if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
     if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
 
