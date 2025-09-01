@@ -1012,11 +1012,8 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
             {/* Price Filter */}
-            <FilterSection
-              title="Filter by Price"
-              isCollapsed={collapsedFilters.price}
-              onToggle={() => toggleFilter("price")}
-            >
+            <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3">
+              <label className="carzino-location-label block mb-2">Filter by Price</label>
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <input
@@ -1048,7 +1045,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   Apply Price Filter
                 </button>
               </div>
-            </FilterSection>
+            </div>
 
             {/* Trim Filter */}
             <FilterSection
