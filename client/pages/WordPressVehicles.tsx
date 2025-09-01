@@ -502,7 +502,7 @@ export default function WordPressVehicles() {
                       <MySQLVehicleCard
                         key={vehicle.id}
                         vehicle={vehicle}
-                        onFavoriteToggle={handleToggleFavorite}
+                        onFavoriteToggle={() => handleToggleFavorite(vehicle.id)}
                         isFavorite={!!favorites[vehicle.id]}
                       />
                     ))}
