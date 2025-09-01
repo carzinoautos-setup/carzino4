@@ -1374,7 +1374,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Transmission Speed Filter */}
             <FilterSection
-              title="Transmission/Speed"
+              title="Transmission"
               isCollapsed={collapsedFilters.transmissionSpeed}
               onToggle={() => toggleFilter("transmissionSpeed")}
             >
