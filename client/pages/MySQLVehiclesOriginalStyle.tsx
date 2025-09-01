@@ -1193,12 +1193,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
 
-      // Trigger conditional filter update immediately
-      setTimeout(() => updateConditionalFilters(newFilters), 0);
-
       return newFilters;
     });
-  }, [updateConditionalFilters]);
+  }, []);
 
   const handleTrimChange = useCallback((trimName: string, isChecked: boolean) => {
     console.log(`🔄 TRIM CHANGE: ${trimName} ${isChecked ? 'selected' : 'deselected'}`);
