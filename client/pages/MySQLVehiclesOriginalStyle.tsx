@@ -969,13 +969,13 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // SUVs and Crossovers
       "SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
-      "SUVs": "🚙",
-      "Crossover": "🚙",
-      "Crossovers": "🚙",
-      "Crossover/SUV": "🚙",
-      "SUV / Crossover": "🚙",
+      "SUVs": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
+      "Crossover": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
+      "Crossovers": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
+      "Crossover/SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
+      "SUV / Crossover": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "SUV/Crossover": "����",
-      "Sport Utility Vehicle": "🚙",
+      "Sport Utility Vehicle": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
 
       // Trucks
       "Truck": "🚚",
@@ -1019,7 +1019,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Motorcycles
       "Motorcycle": "🏍️",
-      "Motorcycles": "🏍���",
+      "Motorcycles": "🏍️",
       "Bike": "🏍️",
 
       // RVs and Large Vehicles
@@ -4414,7 +4414,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     />
                   )) : (
                     <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
-                      🚗 No vehicles found matching current filters.<br/>
+                      ���� No vehicles found matching current filters.<br/>
                       <small>Total vehicles loaded: {vehicles.length}</small>
                     </div>
                   )}
