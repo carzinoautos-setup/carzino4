@@ -1843,8 +1843,10 @@ function MySQLVehiclesOriginalStyleInner() {
                 <option value="relevance">Sort by Relevance</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
-                <option value="miles-low">Miles: Low to High</option>
+                <option value="miles-low">Mileage: Low to High</option>
+                <option value="mileage-high">Mileage: High to Low</option>
                 <option value="year-newest">Year: Newest First</option>
+                <option value="year-oldest">Year: Oldest First</option>
               </select>
             </div>
           </div>
