@@ -278,18 +278,94 @@ Original error: ${error.message}`);
   }
 
   /**
-   * Test API connection
+   * Test WordPress site basic connectivity
    */
-  async testConnection(): Promise<{ success: boolean; message: string; data?: any }> {
+  async testWordPressSite(): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      console.log("🔍 Testing WordPress Custom API connection...");
-      
+      console.log("🔍 Testing WordPress site basic connectivity...");
+
+      // Try to fetch the main WordPress site
+      const response = await fetch(this.baseUrl, {
+        method: 'HEAD', // Just check if site is reachable
+        mode: 'no-cors', // Bypass CORS for basic connectivity test
+      });
+
+      return {
+        success: true,
+        message: "WordPress site is reachable",
+        data: {
+          url: this.baseUrl,
+          status: "Site accessible"
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `WordPress site unreachable: ${error.message}`,
+        data: {
+          url: this.baseUrl,
+          error: error.message
+        }
+      };
+    }
+  }
+
+  /**
+   * Test WordPress REST API availability
+   */
+  async testWordPressRestApi(): Promise<{ success: boolean; message: string; data?: any }> {
+    try {
+      console.log("🔍 Testing WordPress REST API availability...");
+
+      const response = await fetch(`${this.baseUrl}/wp-json`, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      return {
+        success: true,
+        message: "WordPress REST API is available",
+        data: {
+          endpoint: `${this.baseUrl}/wp-json`,
+          namespaces: data.namespaces || [],
+          routes: Object.keys(data.routes || {}).slice(0, 5) // Show first 5 routes
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `WordPress REST API unavailable: ${error.message}`,
+        data: {
+          endpoint: `${this.baseUrl}/wp-json`,
+          error: error.message
+        }
+      };
+    }
+  }
+
+  /**
+   * Test custom API endpoint specifically
+   */
+  async testCustomEndpoint(): Promise<{ success: boolean; message: string; data?: any }> {
+    try {
+      console.log("🔍 Testing custom API endpoint...");
+
       const response = await this.getVehicles(1, 1); // Get just 1 vehicle to test
-      
+
       if (response.success && response.data?.length > 0) {
         return {
           success: true,
-          message: "WordPress Custom API connection successful",
+          message: "Custom API endpoint working",
           data: {
             endpoint: `${this.baseUrl}/wp-json/custom/v1/vehicles`,
             totalVehicles: response.pagination?.total || 0,
@@ -299,14 +375,73 @@ Original error: ${error.message}`);
       } else {
         return {
           success: false,
-          message: "API connected but no vehicles returned"
+          message: "Custom endpoint connected but no vehicles returned",
+          data: {
+            endpoint: `${this.baseUrl}/wp-json/custom/v1/vehicles`,
+            response: response
+          }
         };
       }
     } catch (error) {
-      console.error("❌ WordPress Custom API connection test failed:", error);
       return {
         success: false,
-        message: `Connection failed: ${error.message}`,
+        message: `Custom endpoint failed: ${error.message}`,
+        data: {
+          endpoint: `${this.baseUrl}/wp-json/custom/v1/vehicles`,
+          error: error.message
+        }
+      };
+    }
+  }
+
+  /**
+   * Comprehensive connection test
+   */
+  async testConnection(): Promise<{ success: boolean; message: string; data?: any }> {
+    try {
+      console.log("🔍 Running comprehensive WordPress API tests...");
+
+      const results = {
+        siteReachable: await this.testWordPressSite(),
+        restApiAvailable: await this.testWordPressRestApi(),
+        customEndpoint: await this.testCustomEndpoint()
+      };
+
+      // Determine overall success
+      const customEndpointWorking = results.customEndpoint.success;
+
+      if (customEndpointWorking) {
+        return {
+          success: true,
+          message: "All tests passed - WordPress Custom API is working",
+          data: results
+        };
+      } else {
+        // Provide specific guidance based on what failed
+        let guidance = "WordPress Custom API issues detected:\n";
+
+        if (!results.siteReachable.success) {
+          guidance += "• WordPress site is not reachable - check URL and network connectivity\n";
+        }
+
+        if (!results.restApiAvailable.success) {
+          guidance += "• WordPress REST API is not available - check if REST API is enabled\n";
+        } else {
+          guidance += "• WordPress REST API is available but custom endpoint '/wp-json/custom/v1/vehicles' is not working\n";
+          guidance += "• Make sure your custom API endpoint is properly implemented in WordPress\n";
+        }
+
+        return {
+          success: false,
+          message: guidance.trim(),
+          data: results
+        };
+      }
+    } catch (error) {
+      console.error("❌ WordPress API comprehensive test failed:", error);
+      return {
+        success: false,
+        message: `Connection test failed: ${error.message}`,
         data: {
           endpoint: `${this.baseUrl}/wp-json/custom/v1/vehicles`,
           error: error.message
