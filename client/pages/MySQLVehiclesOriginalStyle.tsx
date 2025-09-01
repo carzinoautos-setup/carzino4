@@ -303,7 +303,7 @@ function MySQLVehiclesOriginalStyleInner() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, resultsPerPage, sortBy, appliedFilters, zipCode, radius, priceMin, priceMax, paymentMin, paymentMax, termLength, interestRate, downPayment]);
+  }, [currentPage, resultsPerPage, sortBy, appliedFilters, zipCode, radius, termLength, interestRate, downPayment]);
 
   // Effects
   useEffect(() => {
@@ -1248,17 +1248,38 @@ function MySQLVehiclesOriginalStyleInner() {
                   </select>
                 </div>
 
-                {/* Down Payment - full width */}
-                <input
-                  type="text"
-                  placeholder="Down Payment: 2000"
-                  value={`Down Payment: ${downPayment}`}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^\d]/g, '');
-                    setDownPayment(value);
+                {/* Down Payment - full width with $ symbol */}
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                  <input
+                    type="text"
+                    placeholder="2,000"
+                    value={downPayment}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^\d,]/g, '');
+                      setDownPayment(value);
+                    }}
+                    className="w-full pl-6 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                  <span className="absolute left-8 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs pointer-events-none">
+                    {!downPayment ? "Down Payment" : ""}
+                  </span>
+                </div>
+
+                {/* Apply Payment Filter Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(1); // Reset to first page when filters change
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      paymentMin: paymentMin,
+                      paymentMax: paymentMax
+                    }));
                   }}
-                  className="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600 text-gray-500"
-                />
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                >
+                  Apply Payment Filter
+                </button>
               </div>
             </FilterSection>
 
