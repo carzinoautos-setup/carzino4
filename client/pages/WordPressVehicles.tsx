@@ -241,6 +241,22 @@ export default function WordPressVehicles() {
     });
   };
 
+  // Handle unified search submit
+  const handleUnifiedSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchTerm(unifiedSearch);
+    setCurrentPage(1);
+    fetchVehicles(1);
+  };
+
+  // Apply location filters
+  const applyLocationFilters = () => {
+    setAppliedLocation(userLocation);
+    setAppliedRadius(radius);
+    setCurrentPage(1);
+    fetchVehicles(1);
+  };
+
   // Clear all filters
   const clearAllFilters = () => {
     setAppliedFilters({
@@ -252,6 +268,8 @@ export default function WordPressVehicles() {
       priceMin: "",
       priceMax: "",
     });
+    setAppliedLocation(null);
+    setAppliedRadius("200");
     setCurrentPage(1);
     fetchVehicles(1);
   };
