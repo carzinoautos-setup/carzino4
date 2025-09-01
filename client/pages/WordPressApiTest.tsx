@@ -83,8 +83,18 @@ export default function WordPressApiTest() {
             </code>
           </p>
           
+          {/* Environment Info */}
+          <div className="mt-4 p-3 bg-gray-100 rounded text-sm">
+            <h4 className="font-medium text-gray-700 mb-1">Environment Configuration:</h4>
+            <div className="space-y-1 text-gray-600">
+              <div>VITE_WP_URL: <code className="bg-white px-1 rounded">{import.meta.env.VITE_WP_URL || 'Not set (using default)'}</code></div>
+              <div>Current URL: <code className="bg-white px-1 rounded">{window.location.origin}</code></div>
+              <div>Target WordPress: <code className="bg-white px-1 rounded">https://env-uploadbackup62225-czdev.kinsta.cloud</code></div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-wrap gap-4 mt-4">
             <button
               onClick={handleRetry}
               disabled={loading}
@@ -97,6 +107,24 @@ export default function WordPressApiTest() {
               className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
             >
               Clear Cache
+            </button>
+            <button
+              onClick={() => {
+                const url = 'https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles';
+                window.open(url, '_blank');
+              }}
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            >
+              Test in Browser
+            </button>
+            <button
+              onClick={() => {
+                const url = 'https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json';
+                window.open(url, '_blank');
+              }}
+              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >
+              Check WP REST API
             </button>
           </div>
 
