@@ -590,19 +590,32 @@ function MySQLVehiclesOriginalStyleInner() {
             hasPreviousPage: (response.pagination?.page || 1) > 1,
           },
           filters: {
-            makes: [],
-            models: [],
-            trims: [],
-            conditions: [],
-            vehicleTypes: [],
-            driveTypes: [],
-            transmissions: [],
-            exteriorColors: [],
-            interiorColors: [],
-            sellerTypes: [],
-            dealers: [],
-            states: [],
-            cities: [],
+            makes: Array.from(new Set(response.data.map(v => v.acf?.make).filter(Boolean)))
+              .map(make => ({ name: make!, count: response.data.filter(v => v.acf?.make === make).length })),
+            models: Array.from(new Set(response.data.map(v => v.acf?.model).filter(Boolean)))
+              .map(model => ({ name: model!, count: response.data.filter(v => v.acf?.model === model).length })),
+            trims: Array.from(new Set(response.data.map(v => v.acf?.trim).filter(Boolean)))
+              .map(trim => ({ name: trim!, count: response.data.filter(v => v.acf?.trim === trim).length })),
+            conditions: Array.from(new Set(response.data.map(v => v.acf?.condition).filter(Boolean)))
+              .map(condition => ({ name: condition!, count: response.data.filter(v => v.acf?.condition === condition).length })),
+            vehicleTypes: Array.from(new Set(response.data.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
+              .map(type => ({ name: type!, count: response.data.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length })),
+            driveTypes: Array.from(new Set(response.data.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
+              .map(drive => ({ name: drive!, count: response.data.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length })),
+            transmissions: Array.from(new Set(response.data.map(v => v.acf?.transmission).filter(Boolean)))
+              .map(trans => ({ name: trans!, count: response.data.filter(v => v.acf?.transmission === trans).length })),
+            exteriorColors: Array.from(new Set(response.data.map(v => v.acf?.exterior_color).filter(Boolean)))
+              .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.exterior_color === color).length })),
+            interiorColors: Array.from(new Set(response.data.map(v => v.acf?.interior_color).filter(Boolean)))
+              .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.interior_color === color).length })),
+            sellerTypes: Array.from(new Set(response.data.map(v => v.acf?.account_type_seller).filter(Boolean)))
+              .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.account_type_seller === type).length })),
+            dealers: Array.from(new Set(response.data.map(v => v.acf?.account_name_seller || v.acf?.acount_name_seller).filter(Boolean)))
+              .map(dealer => ({ name: dealer!, count: response.data.filter(v => (v.acf?.account_name_seller || v.acf?.acount_name_seller) === dealer).length })),
+            states: Array.from(new Set(response.data.map(v => v.acf?.state_seller).filter(Boolean)))
+              .map(state => ({ name: state!, count: response.data.filter(v => v.acf?.state_seller === state).length })),
+            cities: Array.from(new Set(response.data.map(v => v.acf?.city_seller).filter(Boolean)))
+              .map(city => ({ name: city!, count: response.data.filter(v => v.acf?.city_seller === city).length })),
             totalVehicles: response.pagination?.total || 0
           },
           dealers: []
