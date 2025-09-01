@@ -281,6 +281,9 @@ function MySQLVehiclesOriginalStyleInner() {
     setPriceMax("");
     setPaymentMin("");
     setPaymentMax("");
+    setTermLength("72");
+    setInterestRate("8");
+    setDownPayment("2000");
     setZipCode("");
     setRadius("10");
     setCurrentPage(1);
