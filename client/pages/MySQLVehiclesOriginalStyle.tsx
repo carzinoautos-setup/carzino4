@@ -512,7 +512,7 @@ function MySQLVehiclesOriginalStyleInner() {
       cleanup();
 
       if (abortControllerRef.current !== requestController || !isMountedRef.current) {
-        console.log("🚫 Combined request superseded or component unmounted");
+        console.log("���� Combined request superseded or component unmounted");
         return;
       }
 
@@ -795,11 +795,9 @@ function MySQLVehiclesOriginalStyleInner() {
         return;
       }
 
-      // Set error state with more helpful messages
+      // Set error state
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
-        setError("WordPress API temporarily unavailable. Using demo data for testing. Check connection and refresh to retry.");
-      } else if (err.message && err.message.includes('Network/CORS Error')) {
-        setError("WordPress site connection failed. Using demo data. Check WordPress site status and CORS configuration.");
+        setError("Unable to connect to vehicle database. Check your internet connection and try refreshing the page.");
       } else {
         setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data.");
       }
