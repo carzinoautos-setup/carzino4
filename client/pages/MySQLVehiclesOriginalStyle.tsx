@@ -396,8 +396,6 @@ function MySQLVehiclesOriginalStyleInner() {
       setLoading(true);
       setError(null);
 
-      const apiUrl = `${getApiBaseUrl()}/api/simple-vehicles/combined?${apiParams}`;
-
       PerformanceMonitor.startMeasure('fetchCombinedData');
 
       // Check cache first
@@ -427,7 +425,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (import.meta.env.DEV && retryCount === 0) {
-        console.log("🚀 COMBINED FETCH: Calling combined endpoint:", apiUrl);
+        console.log("🚀 COMBINED FETCH: Calling WordPress API");
       }
 
       // Set timeout for request
@@ -459,13 +457,40 @@ function MySQLVehiclesOriginalStyleInner() {
         }, 30000);
       }
 
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        signal: requestController.signal,
-      });
+      // Build WordPress API filters from current applied filters
+      const wpFilters: WordPressVehicleFilters = {
+        page: currentPage,
+        per_page: resultsPerPage,
+      };
+
+      // Add filters from URL params
+      if (debouncedSearchTerm.trim()) {
+        // WordPress API doesn't have search yet, skip for now
+      }
+
+      if (debouncedAppliedFilters) {
+        if (debouncedAppliedFilters.make.length > 0) {
+          wpFilters.make = debouncedAppliedFilters.make[0];
+        }
+        if (debouncedAppliedFilters.model.length > 0) {
+          wpFilters.model = debouncedAppliedFilters.model[0];
+        }
+        if (debouncedAppliedFilters.condition.length > 0) {
+          wpFilters.condition = debouncedAppliedFilters.condition[0];
+        }
+        if (debouncedAppliedFilters.priceMin) {
+          wpFilters.min_price = parseInt(debouncedAppliedFilters.priceMin.replace(/[^\d]/g, ''));
+        }
+        if (debouncedAppliedFilters.priceMax) {
+          wpFilters.max_price = parseInt(debouncedAppliedFilters.priceMax.replace(/[^\d]/g, ''));
+        }
+      }
+
+      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+        currentPage,
+        resultsPerPage,
+        wpFilters
+      );
 
       cleanup();
 
@@ -478,11 +503,81 @@ function MySQLVehiclesOriginalStyleInner() {
         abortControllerRef.current = null;
       }
 
-      if (!response.ok) {
-        throw new Error(`Combined API error: ${response.status} ${response.statusText}`);
+      if (!response.success) {
+        throw new Error(`WordPress API error: ${response.message || 'Unknown error'}`);
       }
 
-      const data = await response.json();
+      const data = {
+        success: true,
+        data: {
+          vehicles: response.data.map(wpVehicle => {
+            // Transform WordPress vehicle to MySQL format
+            const acf = wpVehicle.acf;
+            return {
+              id: wpVehicle.id,
+              year: acf.year,
+              make: acf.make,
+              model: acf.model,
+              trim: acf.trim,
+              body_style: acf.body_style,
+              engine_cylinders: acf.engine_cylinders,
+              fuel_type: acf.fuel_type,
+              transmission: acf.transmission,
+              drivetrain: acf.drivetrain,
+              exterior_color_generic: acf.exterior_color,
+              interior_color_generic: acf.interior_color,
+              doors: acf.doors,
+              price: wpVehicle.price || wpVehicle.sale_price || 0,
+              mileage: acf.mileage,
+              title_status: acf.title_status,
+              highway_mpg: acf.highway_mpg,
+              condition: acf.condition,
+              certified: acf.certified,
+              seller_type: acf.account_type_seller,
+              city_seller: acf.city_seller,
+              state_seller: acf.state_seller,
+              zip_seller: acf.zip_seller,
+              interest_rate: acf.interest_rate,
+              down_payment: acf.down_payment,
+              loan_term: acf.loan_term,
+              payments: acf.payment,
+              featured: acf.is_featured,
+              viewed: false,
+              images: wpVehicle.images?.map(img => img.src) || [],
+              badges: [acf.condition, acf.drivetrain].filter(Boolean),
+              title: wpVehicle.name,
+              phone: acf.phone_number_seller,
+              dealer: acf.account_name_seller,
+              location: `${acf.city_seller}, ${acf.state_seller} ${acf.zip_seller}`,
+            };
+          }),
+          meta: {
+            totalRecords: response.pagination?.total || 0,
+            totalPages: response.pagination?.total_pages || 0,
+            currentPage: response.pagination?.page || 1,
+            pageSize: response.pagination?.per_page || 20,
+            hasNextPage: (response.pagination?.page || 1) < (response.pagination?.total_pages || 0),
+            hasPreviousPage: (response.pagination?.page || 1) > 1,
+          },
+          filters: {
+            makes: [],
+            models: [],
+            trims: [],
+            conditions: [],
+            vehicleTypes: [],
+            driveTypes: [],
+            transmissions: [],
+            exteriorColors: [],
+            interiorColors: [],
+            sellerTypes: [],
+            dealers: [],
+            states: [],
+            cities: [],
+            totalVehicles: response.pagination?.total || 0
+          },
+          dealers: []
+        }
+      };
 
       if (import.meta.env.DEV) {
         console.log("🚀 COMBINED API Response:", {
@@ -1762,7 +1857,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Call our geocoding API with proper error handling
       const apiUrl = `${getApiBaseUrl()}/api/geocode/${zip}`;
-      console.log("🔍 Geocoding ZIP:", zip, "using:", apiUrl);
+      console.log("��� Geocoding ZIP:", zip, "using:", apiUrl);
 
       const controller = new AbortController();
 
