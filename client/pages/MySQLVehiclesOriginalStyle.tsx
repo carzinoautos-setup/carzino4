@@ -463,51 +463,93 @@ function MySQLVehiclesOriginalStyleInner() {
         }, 30000);
       }
 
-      // Build WordPress API filters from current applied filters
-      const wpFilters: WordPressVehicleFilters = {
-        page: currentPage,
-        per_page: resultsPerPage,
-      };
+      // Build server API URL with filters
+      const serverApiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
+      serverApiUrl.searchParams.set('page', currentPage.toString());
+      serverApiUrl.searchParams.set('pageSize', resultsPerPage.toString());
 
       // Add sorting
       if (sortBy !== "relevance") {
-        wpFilters.orderby = sortBy;
+        serverApiUrl.searchParams.set('sortBy', sortBy);
       }
 
-      // Add filters from URL params
+      // Add search term
       if (debouncedSearchTerm.trim()) {
-        // WordPress API doesn't have search yet, skip for now
+        serverApiUrl.searchParams.set('search', debouncedSearchTerm.trim());
       }
 
+      // Add location filters
+      if (appliedLocation && appliedRadius !== "nationwide") {
+        serverApiUrl.searchParams.set('lat', appliedLocation.lat.toString());
+        serverApiUrl.searchParams.set('lng', appliedLocation.lng.toString());
+        serverApiUrl.searchParams.set('radius', appliedRadius);
+      }
+
+      // Add applied filters
       if (debouncedAppliedFilters) {
         if (debouncedAppliedFilters.make.length > 0) {
-          wpFilters.make = debouncedAppliedFilters.make.join(',');
+          serverApiUrl.searchParams.set('make', debouncedAppliedFilters.make.join(','));
         }
         if (debouncedAppliedFilters.model.length > 0) {
-          wpFilters.model = debouncedAppliedFilters.model.join(',');
+          serverApiUrl.searchParams.set('model', debouncedAppliedFilters.model.join(','));
+        }
+        if (debouncedAppliedFilters.trim.length > 0) {
+          serverApiUrl.searchParams.set('trim', debouncedAppliedFilters.trim.join(','));
         }
         if (debouncedAppliedFilters.condition.length > 0) {
-          wpFilters.condition = debouncedAppliedFilters.condition.join(',');
+          serverApiUrl.searchParams.set('condition', debouncedAppliedFilters.condition.join(','));
+        }
+        if (debouncedAppliedFilters.vehicleType.length > 0) {
+          serverApiUrl.searchParams.set('body_type', debouncedAppliedFilters.vehicleType.join(','));
+        }
+        if (debouncedAppliedFilters.driveType.length > 0) {
+          serverApiUrl.searchParams.set('driveType', debouncedAppliedFilters.driveType.join(','));
+        }
+        if (debouncedAppliedFilters.transmission.length > 0) {
+          serverApiUrl.searchParams.set('transmission', debouncedAppliedFilters.transmission.join(','));
+        }
+        if (debouncedAppliedFilters.exteriorColor.length > 0) {
+          serverApiUrl.searchParams.set('exteriorColor', debouncedAppliedFilters.exteriorColor.join(','));
+        }
+        if (debouncedAppliedFilters.sellerType.length > 0) {
+          serverApiUrl.searchParams.set('sellerType', debouncedAppliedFilters.sellerType.join(','));
+        }
+        if (debouncedAppliedFilters.dealer.length > 0) {
+          serverApiUrl.searchParams.set('dealer', debouncedAppliedFilters.dealer.join(','));
+        }
+        if (debouncedAppliedFilters.mileage) {
+          serverApiUrl.searchParams.set('mileage', debouncedAppliedFilters.mileage);
         }
         if (debouncedAppliedFilters.priceMin) {
-          wpFilters.min_price = parseInt(debouncedAppliedFilters.priceMin.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('priceMin', debouncedAppliedFilters.priceMin);
         }
         if (debouncedAppliedFilters.priceMax) {
-          wpFilters.max_price = parseInt(debouncedAppliedFilters.priceMax.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('priceMax', debouncedAppliedFilters.priceMax);
         }
         if (debouncedAppliedFilters.paymentMin) {
-          wpFilters.min_payment = parseInt(debouncedAppliedFilters.paymentMin.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('paymentMin', debouncedAppliedFilters.paymentMin);
         }
         if (debouncedAppliedFilters.paymentMax) {
-          wpFilters.max_payment = parseInt(debouncedAppliedFilters.paymentMax.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('paymentMax', debouncedAppliedFilters.paymentMax);
         }
       }
 
-      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
-        currentPage,
-        resultsPerPage,
-        wpFilters
-      );
+      console.log("📡 FIXED: Calling your server-side API:", serverApiUrl.toString());
+
+      const response = await fetch(serverApiUrl.toString(), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        signal: requestController.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
 
       cleanup();
 
