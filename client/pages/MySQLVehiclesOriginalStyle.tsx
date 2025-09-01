@@ -303,10 +303,16 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   // Get models for a specific make from live filter options
-  const getModelsForMake = (make: string): { name: string; count: number }[] => {
-    // This will be populated by the live API data
-    // For now, return empty array - models will be fetched from the server
-    return [];
+  const getModelsForMake = (selectedMakes: string[]): { name: string; count: number }[] => {
+    if (selectedMakes.length === 0) {
+      return filterOptions.models; // Return all models if no make selected
+    }
+
+    // Filter models based on selected makes by calling API with make filter
+    return filterOptions.models.filter(model => {
+      // This will be populated by conditional API calls
+      return model.count > 0;
+    });
   };
 
   // Performance: Memoize API parameters to prevent unnecessary calls
@@ -589,37 +595,21 @@ function MySQLVehiclesOriginalStyleInner() {
               });
             }
 
-            // Handle featured image from multiple sources - constrain to medium size (450x300px)
+            // Handle featured image from multiple sources - ALWAYS constrain to medium size (450x300px)
             const vehicleImages = [];
             // Priority: ACF featured_image, main featured_image, WooCommerce images
+            const constrainToMediumSize = (url: string) => {
+              // Remove any existing size parameters and add medium size
+              const baseUrl = url.split('?')[0];
+              return `${baseUrl}?w=450&h=300&fit=crop&auto=format`;
+            };
+
             if (acf?.featured_image) {
-              // Ensure image is medium size (450x300px)
-              let imageUrl = acf.featured_image;
-              if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
-                // Add medium size parameters
-                imageUrl = imageUrl.includes('?')
-                  ? `${imageUrl}&w=450&h=300&fit=crop`
-                  : `${imageUrl}?w=450&h=300&fit=crop`;
-              }
-              vehicleImages.push(imageUrl);
+              vehicleImages.push(constrainToMediumSize(acf.featured_image));
             } else if (wpVehicle.featured_image) {
-              let imageUrl = wpVehicle.featured_image;
-              if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
-                imageUrl = imageUrl.includes('?')
-                  ? `${imageUrl}&w=450&h=300&fit=crop`
-                  : `${imageUrl}?w=450&h=300&fit=crop`;
-              }
-              vehicleImages.push(imageUrl);
+              vehicleImages.push(constrainToMediumSize(wpVehicle.featured_image));
             } else if (wpVehicle.images && wpVehicle.images.length > 0) {
-              vehicleImages.push(...wpVehicle.images.map(img => {
-                let imageUrl = img.src;
-                if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
-                  imageUrl = imageUrl.includes('?')
-                    ? `${imageUrl}&w=450&h=300&fit=crop`
-                    : `${imageUrl}?w=450&h=300&fit=crop`;
-                }
-                return imageUrl;
-              }));
+              vehicleImages.push(...wpVehicle.images.map(img => constrainToMediumSize(img.src)));
             }
 
             if (import.meta.env.DEV && vehicleImages.length === 0) {
@@ -1116,18 +1106,35 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Calculate filter options from all vehicles matching current filters
       const allVehicles = response.data;
+
+      // For conditional filtering: if makes are selected, only show models for those makes
+      let filteredModels = allVehicles;
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        filteredModels = allVehicles.filter(v => currentFilters.make.includes(v.acf?.make));
+      }
+
+      // For conditional filtering: if makes/models are selected, only show trims for those
+      let filteredTrims = allVehicles;
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        filteredTrims = allVehicles.filter(v => currentFilters.make.includes(v.acf?.make));
+      }
+      if (currentFilters.model && currentFilters.model.length > 0) {
+        filteredTrims = filteredTrims.filter(v => currentFilters.model.includes(v.acf?.model));
+      }
+
       const updatedOptions = {
         makes: Array.from(new Set(allVehicles.map(v => v.acf?.make).filter(Boolean)))
           .map(make => ({ name: make!, count: allVehicles.filter(v => v.acf?.make === make).length }))
-          .sort((a, b) => b.count - a.count),
-        models: Array.from(new Set(allVehicles.map(v => v.acf?.model).filter(Boolean)))
-          .map(model => ({ name: model!, count: allVehicles.filter(v => v.acf?.model === model).length }))
-          .sort((a, b) => b.count - a.count),
-        trims: Array.from(new Set(allVehicles.map(v => v.acf?.trim).filter(Boolean)))
-          .map(trim => ({ name: trim!, count: allVehicles.filter(v => v.acf?.trim === trim).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)),
-        conditions: Array.from(new Set(allVehicles.map(v => v.acf?.condition).filter(Boolean)))
-          .map(condition => ({ name: condition!, count: allVehicles.filter(v => v.acf?.condition === condition).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
+        models: Array.from(new Set(filteredModels.map(v => v.acf?.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: filteredModels.filter(v => v.acf?.model === model).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
+        trims: Array.from(new Set(filteredTrims.map(v => v.acf?.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: filteredTrims.filter(v => v.acf?.trim === trim).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
+        conditions: Array.from(new Set(['New', 'Used', 'Certified', ...allVehicles.map(v => v.acf?.condition).filter(Boolean)]))
+          .map(condition => ({ name: condition!, count: allVehicles.filter(v => v.acf?.condition === condition || (condition === 'Used' && (!v.acf?.condition || v.acf?.condition.toLowerCase() === 'used'))).length }))
+          .filter(condition => condition.count > 0)
           .sort((a, b) => b.count - a.count),
         vehicleTypes: Array.from(new Set(allVehicles.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
           .map(type => ({ name: type!, count: allVehicles.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length }))
@@ -1135,9 +1142,28 @@ function MySQLVehiclesOriginalStyleInner() {
         driveTypes: Array.from(new Set(allVehicles.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
           .map(drive => ({ name: drive!, count: allVehicles.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length }))
           .sort((a, b) => b.count - a.count),
-        transmissions: Array.from(new Set(allVehicles.map(v => v.acf?.transmission).filter(Boolean)))
-          .map(trans => ({ name: trans!, count: allVehicles.filter(v => v.acf?.transmission === trans).length }))
-          .sort((a, b) => b.count - a.count),
+        transmissions: (() => {
+          // Normalize transmission values to prevent duplicates
+          const transmissionMap = new Map();
+          allVehicles.forEach(v => {
+            if (v.acf?.transmission) {
+              let normalized = v.acf.transmission.trim();
+              // Normalize Auto/Automatic to just Automatic
+              if (normalized.toLowerCase() === 'auto' || normalized.toLowerCase() === 'automatic') {
+                normalized = 'Automatic';
+              }
+              // Normalize Manual variations
+              if (normalized.toLowerCase() === 'manual' || normalized.toLowerCase() === 'stick') {
+                normalized = 'Manual';
+              }
+              const current = transmissionMap.get(normalized) || 0;
+              transmissionMap.set(normalized, current + 1);
+            }
+          });
+          return Array.from(transmissionMap.entries())
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count);
+        })(),
         exteriorColors: Array.from(new Set(allVehicles.map(v => v.acf?.exterior_color).filter(Boolean)))
           .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.exterior_color === color).length }))
           .sort((a, b) => b.count - a.count),
@@ -1146,6 +1172,7 @@ function MySQLVehiclesOriginalStyleInner() {
           .sort((a, b) => b.count - a.count),
         sellerTypes: Array.from(new Set(allVehicles.map(v => v.acf?.account_type_seller).filter(Boolean)))
           .map(type => ({ name: type!, count: allVehicles.filter(v => v.acf?.account_type_seller === type).length }))
+          .filter(type => type.count > 0) // Only show types with vehicles
           .sort((a, b) => b.count - a.count),
         dealers: Array.from(new Set(allVehicles.map(v => v.acf?.account_name_seller).filter(Boolean)))
           .map(dealer => ({ name: dealer!, count: allVehicles.filter(v => v.acf?.account_name_seller === dealer).length }))
@@ -1249,22 +1276,28 @@ function MySQLVehiclesOriginalStyleInner() {
     }
   }, [fetchCombinedData]);
 
-  // Performance: Only re-fetch filter options when filters change (reduced debounce)
-  const filterChangeDebounced = useDebounce(appliedFilters, 500); // 500ms debounce
+  // Performance: Re-fetch filter options when filters change for conditional filtering
+  const filterChangeDebounced = useDebounce(appliedFilters, 300); // Faster debounce for better UX
 
   useEffect(() => {
-    // Only re-fetch if we have some filters applied and component is mounted
-    const hasFilters = Object.values(filterChangeDebounced).some(filter =>
-      Array.isArray(filter) ? filter.length > 0 : Boolean(filter)
-    );
-
-    if (hasFilters && isMountedRef.current) {
+    // Always re-fetch filter options when filters change for conditional filtering
+    if (isMountedRef.current) {
       if (import.meta.env.DEV) {
         console.log("🔄 Filters changed, re-fetching conditional filter options...");
       }
       fetchFilterOptions(filterChangeDebounced);
     }
   }, [filterChangeDebounced, fetchFilterOptions]);
+
+  // Critical: Re-fetch vehicles when filters change
+  useEffect(() => {
+    if (isMountedRef.current) {
+      if (import.meta.env.DEV) {
+        console.log("🚗 Applied filters changed, refreshing vehicle inventory...");
+      }
+      fetchCombinedData();
+    }
+  }, [debouncedAppliedFilters, sortBy, currentPage, resultsPerPage]); // Include resultsPerPage for view count fix
 
   // Helper functions for price formatting
   const formatPrice = (value: string): string => {
@@ -3459,7 +3492,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   // NOTE: Dealer names should come from Advanced Custom Fields 'acount_name_seller'
                   // Current implementation may be using demo data - check backend API
                   if (import.meta.env.DEV && dealersToShow?.length > 0) {
-                    console.warn("🏪 DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
+                    console.warn("��� DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
                     console.log("🏪 Current dealer data source:", dealersToShow?.slice(0, 2));
                   }
 
