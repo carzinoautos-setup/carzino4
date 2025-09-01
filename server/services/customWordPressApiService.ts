@@ -100,8 +100,8 @@ export class CustomWordPressApiService {
 
       // Transform vehicles to expected format using new ACF structure
       const transformedVehicles = vehicles.map(vehicle => {
-        // Get price from ACF custom field (_price) or WooCommerce price field
-        const price = vehicle.acf?._price || vehicle.acf?.price || vehicle.price || vehicle.regular_price;
+        // Get price from ACF custom field (price) first, then fallback to WooCommerce fields
+        const price = vehicle.acf?.price || vehicle.price || vehicle.regular_price;
         const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
 
         // Get mileage - ensure it's not zero/empty
