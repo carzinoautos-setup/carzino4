@@ -546,9 +546,9 @@ function MySQLVehiclesOriginalStyleInner() {
                     <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
-                      isFavorited={!!favorites[vehicle.id]}
-                      onToggleFavorite={() => toggleFavorite(vehicle)}
-                      keeperMessage={keeperMessage === vehicle.id}
+                      favorites={favorites}
+                      onToggleFavorite={toggleFavorite}
+                      keeperMessage={keeperMessage}
                     />
                   ))}
                 </div>
