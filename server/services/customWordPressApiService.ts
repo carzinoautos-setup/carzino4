@@ -13,31 +13,27 @@ export class CustomWordPressApiService {
     try {
       const url = `${VEHICLES_ENDPOINT}?per_page=${pagination.pageSize}&page=${pagination.page}`;
       console.log("🔗 Fetching from new vehicles API:", url);
-      
-      const response = await fetch(WP_API_URL);
+
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`API responded with status: ${response.status}`);
       }
-      
+
       const apiResponse = await response.json();
-      console.log("📦 API Response structure:", {
+      console.log("📦 New API Response structure:", {
         hasSuccess: 'success' in apiResponse,
         hasData: 'data' in apiResponse,
-        dataType: Array.isArray(apiResponse.data) ? 'array' : typeof apiResponse.data,
-        dataLength: Array.isArray(apiResponse.data) ? apiResponse.data.length : 'N/A'
+        hasPagination: 'pagination' in apiResponse,
+        dataLength: Array.isArray(apiResponse.data) ? apiResponse.data.length : 'N/A',
+        totalRecords: apiResponse.pagination?.total
       });
-      
-      // Extract vehicles array from API response
-      const allVehicles = apiResponse.success ? apiResponse.data : apiResponse;
-      
-      if (!Array.isArray(allVehicles)) {
-        throw new Error("API did not return an array of vehicles");
+
+      if (!apiResponse.success || !Array.isArray(apiResponse.data)) {
+        throw new Error("API did not return expected format");
       }
-      
-      // Apply basic pagination
-      const startIndex = (pagination.page - 1) * pagination.pageSize;
-      const endIndex = startIndex + pagination.pageSize;
-      const paginatedVehicles = allVehicles.slice(startIndex, endIndex);
+
+      // Use vehicles directly from API (already paginated)
+      const vehicles = apiResponse.data;
       
       // Transform vehicles to expected format
       const transformedVehicles = paginatedVehicles.map(vehicle => ({
