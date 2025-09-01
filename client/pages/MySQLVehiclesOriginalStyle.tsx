@@ -668,12 +668,11 @@ function MySQLVehiclesOriginalStyleInner() {
       };
 
       if (import.meta.env.DEV) {
-        console.log("🚀 COMBINED API Response:", {
+        console.log("🚀 WORDPRESS API Response:", {
           success: data.success,
           vehiclesCount: data.data?.vehicles?.length,
           filtersCount: Object.keys(data.data?.filters || {}).length,
-          dealersCount: data.data?.dealers?.length,
-          meta: data.data?.meta
+          totalRecords: data.data?.meta?.totalRecords || 0
         });
       }
 
@@ -702,14 +701,14 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
 
         if (import.meta.env.DEV) {
-          console.log("✅ COMBINED: Successfully loaded all data in one call", {
+          console.log("✅ WORDPRESS: Successfully loaded all data from fast WordPress API", {
             vehiclesCount: data.data.vehicles?.length || 0,
             totalRecords: data.data.meta?.totalRecords || 0,
             filtersCount: Object.keys(data.data.filters || {}).length
           });
         }
       } else {
-        throw new Error(response.message || "Combined API returned error");
+        throw new Error(responseData.message || "WordPress API returned error");
       }
 
       PerformanceMonitor.endMeasure('fetchCombinedData');
@@ -717,7 +716,7 @@ function MySQLVehiclesOriginalStyleInner() {
       cleanup();
 
       if (abortControllerRef.current !== requestController || !isMountedRef.current) {
-        console.log("🚫 Ignoring combined error from superseded request");
+        console.log("🚫 Ignoring WordPress API error from superseded request");
         return;
       }
 
@@ -746,7 +745,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Retry logic for network failures
       if (err instanceof TypeError && err.message.includes("Failed to fetch") && retryCount < 2) {
         if (import.meta.env.DEV) {
-          console.log(`🔄 Retrying combined request (attempt ${retryCount + 1}/3)...`);
+          console.log(`🔄 Retrying WordPress API request (attempt ${retryCount + 1}/3)...`);
         }
         const delay = Math.pow(2, retryCount) * 1000;
         setTimeout(() => {
@@ -759,9 +758,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Set error state
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
-        setError("Unable to connect to vehicle database. Check your internet connection and try refreshing the page.");
+        setError("Unable to connect to WordPress vehicle database. Check your internet connection and try refreshing the page.");
       } else {
-        setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data.");
+        setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data from WordPress.");
       }
 
       // Set empty state
