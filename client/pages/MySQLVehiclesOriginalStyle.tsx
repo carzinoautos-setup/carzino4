@@ -416,36 +416,31 @@ function MySQLVehiclesOriginalStyleInner() {
     }));
   };
 
-  // Get conditional data - filter based on selections
+  // Get conditional data - WordPress API already returns conditional filters, use directly
   const getAvailableModels = () => {
-    if (!filterOptions.models || appliedFilters.make.length === 0) {
+    // If no makes are selected, don't show any models
+    if (appliedFilters.make.length === 0) {
       return [];
     }
 
-    // Filter models based on selected makes
-    return filterOptions.models.filter(model =>
-      appliedFilters.make.some(selectedMake =>
-        model.name.toLowerCase().includes(selectedMake.toLowerCase()) ||
-        model.make === selectedMake
-      )
-    );
+    // WordPress API returns conditional models based on selected makes
+    // No need for client-side filtering - use the conditional data directly
+    return filterOptions.models || [];
   };
 
   const getAvailableTrims = () => {
-    if (!filterOptions.trims || appliedFilters.model.length === 0) {
+    // If no models are selected, don't show any trims
+    if (appliedFilters.model.length === 0) {
       return [];
     }
 
-    // Filter trims based on selected models
-    return filterOptions.trims.filter(trim =>
-      appliedFilters.model.some(selectedModel =>
-        trim.model === selectedModel ||
-        trim.name.toLowerCase().includes(selectedModel.toLowerCase())
-      )
-    );
+    // WordPress API returns conditional trims based on selected models
+    // No need for client-side filtering - use the conditional data directly
+    return filterOptions.trims || [];
   };
 
   const getAvailableBodyTypes = () => {
+    // WordPress API returns conditional body types based on all applied filters
     return filterOptions.vehicleTypes || [];
   };
 
