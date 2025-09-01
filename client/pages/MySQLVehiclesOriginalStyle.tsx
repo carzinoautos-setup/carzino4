@@ -1658,6 +1658,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     appliedFilters.vehicleType.length +
                     appliedFilters.driveType.length +
                     appliedFilters.exteriorColor.length +
+                    appliedFilters.sellerType.length +
                     (appliedFilters.mileage ? 1 : 0) +
                     (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
                     (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0)) > 0 && (
@@ -1669,6 +1670,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         appliedFilters.vehicleType.length +
                         appliedFilters.driveType.length +
                         appliedFilters.exteriorColor.length +
+                        appliedFilters.sellerType.length +
                         (appliedFilters.mileage ? 1 : 0) +
                         (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
                         (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0)}
