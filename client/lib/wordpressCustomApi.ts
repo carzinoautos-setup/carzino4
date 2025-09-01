@@ -123,9 +123,11 @@ export class WordPressCustomApiClient {
 
       const response = await fetch(url, {
         method: 'GET',
+        mode: 'cors', // Explicitly set CORS mode
+        credentials: 'omit', // Don't send credentials for public API
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'User-Agent': 'Builder.io-Vehicle-App/1.0'
         },
         signal: controller.signal
       });
@@ -134,7 +136,21 @@ export class WordPressCustomApiClient {
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
-        throw new Error(`WordPress API Error: ${response.status} ${response.statusText} - ${errorText}`);
+
+        // Provide specific error messages for common issues
+        let errorMessage = `WordPress API Error: ${response.status} ${response.statusText}`;
+
+        if (response.status === 404) {
+          errorMessage = `API endpoint not found (404). The custom endpoint '/wp-json/custom/v1/vehicles' may not be implemented yet.`;
+        } else if (response.status === 403) {
+          errorMessage = `Access forbidden (403). The API endpoint may require authentication or permissions.`;
+        } else if (response.status === 500) {
+          errorMessage = `WordPress server error (500). Check WordPress error logs for details.`;
+        } else if (response.status === 0) {
+          errorMessage = `Network error (CORS). WordPress site may not allow cross-origin requests.`;
+        }
+
+        throw new Error(`${errorMessage} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -152,6 +168,19 @@ export class WordPressCustomApiClient {
       if (error.name === 'AbortError') {
         throw new Error(`Request timeout after 15 seconds for: ${endpoint}`);
       }
+
+      // Enhanced error handling for different types of failures
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        // This is likely a CORS or network connectivity issue
+        throw new Error(`Network/CORS Error: Cannot connect to WordPress site. This could be due to:
+1. CORS policy blocking cross-origin requests
+2. WordPress site is down or unreachable
+3. SSL/HTTPS certificate issues
+4. Network connectivity problems
+
+Original error: ${error.message}`);
+      }
+
       console.error(`❌ WordPress Custom API Error: ${url}`, error);
       throw error;
     }
