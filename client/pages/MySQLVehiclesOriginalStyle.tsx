@@ -366,22 +366,22 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Get conditional data
   const getAvailableModels = () => {
-    return filterOptions.models;
+    return filterOptions.models || [];
   };
 
   const getAvailableTrims = () => {
-    return filterOptions.trims;
+    return filterOptions.trims || [];
   };
 
   const getAvailableBodyTypes = () => {
-    return filterOptions.vehicleTypes;
+    return filterOptions.vehicleTypes || [];
   };
 
   const availableModels = getAvailableModels();
   const availableTrims = getAvailableTrims();
   const availableBodyTypes = getAvailableBodyTypes();
 
-  const displayedMakes = showMoreMakes ? filterOptions.makes : filterOptions.makes.slice(0, 8);
+  const displayedMakes = showMoreMakes ? (filterOptions.makes || []) : (filterOptions.makes || []).slice(0, 8);
   const displayedModels = showMoreModels ? availableModels : availableModels.slice(0, 8);
   const displayedTrims = showMoreTrims ? availableTrims : availableTrims.slice(0, 8);
 
