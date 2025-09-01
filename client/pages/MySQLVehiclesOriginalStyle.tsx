@@ -2884,7 +2884,7 @@ function MySQLVehiclesOriginalStyleInner() {
                           className="mr-2"
                           checked={appliedFilters.make.includes(makeOption.name)}
                           onChange={(e) => {
-                          console.log("�� Make filter clicked:", makeOption.name, "checked:", e.target.checked);
+                          console.log("🔧 FIXED: Make filter clicked:", makeOption.name, "checked:", e.target.checked);
                           console.log("🔧 Current applied makes:", appliedFilters.make);
                           e.stopPropagation();
                           try {
