@@ -468,89 +468,82 @@ function MySQLVehiclesOriginalStyleInner() {
       const serverApiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
       serverApiUrl.searchParams.set('page', currentPage.toString());
       serverApiUrl.searchParams.set('pageSize', resultsPerPage.toString());
-      // Add search term
-      if (debouncedSearchTerm.trim()) {
-        wpFilters.search = debouncedSearchTerm.trim();
+      // Add sorting
+      if (sortBy !== "relevance") {
+        serverApiUrl.searchParams.set('sortBy', sortBy);
       }
 
-      // Add sorting (WordPress API format)
-      if (sortBy !== "relevance") {
-        wpFilters.orderby = sortBy;
+      // Add search term
+      if (debouncedSearchTerm.trim()) {
+        serverApiUrl.searchParams.set('search', debouncedSearchTerm.trim());
+      }
+
+      // Add location filters
+      if (appliedLocation && appliedRadius !== "nationwide") {
+        serverApiUrl.searchParams.set('lat', appliedLocation.lat.toString());
+        serverApiUrl.searchParams.set('lng', appliedLocation.lng.toString());
+        serverApiUrl.searchParams.set('radius', appliedRadius);
       }
 
       // Add applied filters
       if (debouncedAppliedFilters) {
         if (debouncedAppliedFilters.make.length > 0) {
-          wpFilters.make = debouncedAppliedFilters.make.join(',');
+          serverApiUrl.searchParams.set('make', debouncedAppliedFilters.make.join(','));
         }
         if (debouncedAppliedFilters.model.length > 0) {
-          wpFilters.model = debouncedAppliedFilters.model.join(',');
+          serverApiUrl.searchParams.set('model', debouncedAppliedFilters.model.join(','));
         }
         if (debouncedAppliedFilters.trim.length > 0) {
-          wpFilters.trim = debouncedAppliedFilters.trim.join(',');
+          serverApiUrl.searchParams.set('trim', debouncedAppliedFilters.trim.join(','));
         }
         if (debouncedAppliedFilters.condition.length > 0) {
-          wpFilters.condition = debouncedAppliedFilters.condition.join(',');
+          serverApiUrl.searchParams.set('condition', debouncedAppliedFilters.condition.join(','));
         }
         if (debouncedAppliedFilters.vehicleType.length > 0) {
-          wpFilters.body_type = debouncedAppliedFilters.vehicleType.join(',');
+          serverApiUrl.searchParams.set('body_type', debouncedAppliedFilters.vehicleType.join(','));
         }
         if (debouncedAppliedFilters.driveType.length > 0) {
-          wpFilters.drive_type = debouncedAppliedFilters.driveType.join(',');
+          serverApiUrl.searchParams.set('driveType', debouncedAppliedFilters.driveType.join(','));
         }
         if (debouncedAppliedFilters.transmission.length > 0) {
-          wpFilters.transmission = debouncedAppliedFilters.transmission.join(',');
+          serverApiUrl.searchParams.set('transmission', debouncedAppliedFilters.transmission.join(','));
         }
         if (debouncedAppliedFilters.exteriorColor.length > 0) {
-          wpFilters.exterior_color = debouncedAppliedFilters.exteriorColor.join(',');
-        }
-        if (debouncedAppliedFilters.interiorColor.length > 0) {
-          wpFilters.interior_color = debouncedAppliedFilters.interiorColor.join(',');
+          serverApiUrl.searchParams.set('exteriorColor', debouncedAppliedFilters.exteriorColor.join(','));
         }
         if (debouncedAppliedFilters.sellerType.length > 0) {
-          wpFilters.seller_type = debouncedAppliedFilters.sellerType.join(',');
+          serverApiUrl.searchParams.set('sellerType', debouncedAppliedFilters.sellerType.join(','));
         }
         if (debouncedAppliedFilters.dealer.length > 0) {
-          wpFilters.dealer = debouncedAppliedFilters.dealer.join(',');
-        }
-        if (debouncedAppliedFilters.state.length > 0) {
-          wpFilters.state = debouncedAppliedFilters.state.join(',');
-        }
-        if (debouncedAppliedFilters.city.length > 0) {
-          wpFilters.city = debouncedAppliedFilters.city.join(',');
+          serverApiUrl.searchParams.set('dealer', debouncedAppliedFilters.dealer.join(','));
         }
         if (debouncedAppliedFilters.mileage) {
-          wpFilters.max_mileage = parseInt(debouncedAppliedFilters.mileage.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('mileage', debouncedAppliedFilters.mileage);
         }
         if (debouncedAppliedFilters.priceMin) {
-          wpFilters.min_price = parseInt(debouncedAppliedFilters.priceMin.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('priceMin', debouncedAppliedFilters.priceMin);
         }
         if (debouncedAppliedFilters.priceMax) {
-          wpFilters.max_price = parseInt(debouncedAppliedFilters.priceMax.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('priceMax', debouncedAppliedFilters.priceMax);
         }
         if (debouncedAppliedFilters.paymentMin) {
-          wpFilters.min_payment = parseInt(debouncedAppliedFilters.paymentMin.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('paymentMin', debouncedAppliedFilters.paymentMin);
         }
         if (debouncedAppliedFilters.paymentMax) {
-          wpFilters.max_payment = parseInt(debouncedAppliedFilters.paymentMax.replace(/[^\d]/g, ''));
+          serverApiUrl.searchParams.set('paymentMax', debouncedAppliedFilters.paymentMax);
         }
       }
 
-      // Add location filters
-      if (appliedLocation && appliedRadius !== "nationwide") {
-        wpFilters.lat = appliedLocation.lat;
-        wpFilters.lng = appliedLocation.lng;
-        wpFilters.radius = parseInt(appliedRadius);
-      }
+      console.log("📡 EMERGENCY REVERT: Using working server API:", serverApiUrl.toString());
 
-      console.log("📡 FIXED: Calling your FAST WordPress API with filters:", wpFilters);
-
-      // Use WordPress custom API instead of slow server API
-      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
-        currentPage,
-        resultsPerPage,
-        wpFilters
-      );
+      const response = await fetch(serverApiUrl.toString(), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        signal: requestController.signal
+      });
 
       // WordPress API already returns structured data
       const responseData = response;
