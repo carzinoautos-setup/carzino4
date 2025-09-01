@@ -880,7 +880,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Crossovers": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "Crossover/SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "SUV / Crossover": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
-      "SUV/Crossover": "������",
+      "SUV/Crossover": "����",
       "Sport Utility Vehicle": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
 
       // Trucks
@@ -1016,16 +1016,64 @@ function MySQLVehiclesOriginalStyleInner() {
       setVehicleTypes(updatedFilterOptions.vehicleTypes);
       setAvailableDealers(updatedFilterOptions.dealers);
 
-      console.log("✅ CONDITIONAL: Filter options updated", {
+      console.log("✅ CONDITIONAL: Server filter options applied", {
         makes: updatedFilterOptions.makes.length,
         models: updatedFilterOptions.models.length,
         trims: updatedFilterOptions.trims.length,
         transmissions: updatedFilterOptions.transmissions.length
       });
     } catch (error) {
-      console.error("❌ Error updating conditional filters:", error);
+      console.error("❌ Error updating conditional filters from server API:", error);
+
+      // Fallback to basic client-side filtering if server fails
+      const fallbackOptions = {
+        makes: Array.from(new Set(vehicles.map(v => v.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: vehicles.filter(v => v.make === make).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        models: Array.from(new Set(vehicles.map(v => v.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: vehicles.filter(v => v.model === model).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        trims: Array.from(new Set(vehicles.map(v => v.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: vehicles.filter(v => v.trim === trim).length }))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })),
+        conditions: Array.from(new Set(vehicles.map(v => v.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: vehicles.filter(v => v.condition === condition).length }))
+          .sort((a, b) => b.count - a.count),
+        vehicleTypes: Array.from(new Set(vehicles.map(v => v.body_style).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicles.filter(v => v.body_style === type).length }))
+          .sort((a, b) => b.count - a.count),
+        driveTypes: Array.from(new Set(vehicles.map(v => v.drivetrain).filter(Boolean)))
+          .map(drive => ({ name: drive!, count: vehicles.filter(v => v.drivetrain === drive).length }))
+          .sort((a, b) => b.count - a.count),
+        transmissions: Array.from(new Set(vehicles.map(v => v.transmission).filter(Boolean)))
+          .map(trans => ({ name: trans!, count: vehicles.filter(v => v.transmission === trans).length }))
+          .sort((a, b) => b.count - a.count),
+        exteriorColors: Array.from(new Set(vehicles.map(v => v.exterior_color_generic).filter(Boolean)))
+          .map(color => ({ name: color!, count: vehicles.filter(v => v.exterior_color_generic === color).length }))
+          .sort((a, b) => b.count - a.count),
+        interiorColors: Array.from(new Set(vehicles.map(v => v.interior_color_generic).filter(Boolean)))
+          .map(color => ({ name: color!, count: vehicles.filter(v => v.interior_color_generic === color).length }))
+          .sort((a, b) => b.count - a.count),
+        sellerTypes: Array.from(new Set(vehicles.map(v => v.seller_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicles.filter(v => v.seller_type === type).length }))
+          .sort((a, b) => b.count - a.count),
+        dealers: Array.from(new Set(vehicles.map(v => v.dealer).filter(Boolean)))
+          .map(dealer => ({ name: dealer!, count: vehicles.filter(v => v.dealer === dealer).length }))
+          .sort((a, b) => b.count - a.count),
+        states: Array.from(new Set(vehicles.map(v => v.state_seller).filter(Boolean)))
+          .map(state => ({ name: state!, count: vehicles.filter(v => v.state_seller === state).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        cities: Array.from(new Set(vehicles.map(v => v.city_seller).filter(Boolean)))
+          .map(city => ({ name: city!, count: vehicles.filter(v => v.city_seller === city).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        totalVehicles: vehicles.length
+      };
+
+      setFilterOptions(fallbackOptions);
+      setVehicleTypes(fallbackOptions.vehicleTypes);
+      setAvailableDealers(fallbackOptions.dealers);
     }
-  }, [appliedFilters]);
+  }, [appliedFilters, vehicles]);
 
   // Load initial data on component mount with conditional filtering
   useEffect(() => {
