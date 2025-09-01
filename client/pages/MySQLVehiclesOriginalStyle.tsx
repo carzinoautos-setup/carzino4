@@ -13,7 +13,7 @@ import {
   Loader,
   AlertTriangle,
 } from "lucide-react";
-import { VehicleCard } from "@/components/VehicleCard";
+import { MySQLVehicleCard } from "@/components/MySQLVehicleCard";
 import { FilterSection } from "@/components/FilterSection";
 import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
