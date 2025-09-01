@@ -2134,41 +2134,72 @@ function MySQLVehiclesOriginalStyleInner() {
         .carzino-vehicle-type-count { font-size: var(--carzino-vehicle-type-count) !important; font-weight: 400 !important; color: #6B7280 !important; }
         .carzino-show-more { font-size: var(--carzino-show-more) !important; font-weight: 500 !important; }
 
+        /* FIXED: Enhanced checkbox styling for consistent red background and white checkmark */
         input[type="checkbox"] {
-          appearance: none;
-          width: 16px;
-          height: 16px;
-          border: 1px solid #d1d5db;
-          border-radius: 3px;
-          background-color: white;
-          position: relative;
-          cursor: pointer;
+          appearance: none !important;
+          -webkit-appearance: none !important;
+          -moz-appearance: none !important;
+          width: 16px !important;
+          height: 16px !important;
+          border: 2px solid #d1d5db !important;
+          border-radius: 3px !important;
+          background-color: white !important;
+          position: relative !important;
+          cursor: pointer !important;
+          flex-shrink: 0 !important;
+          transition: all 0.2s ease !important;
         }
 
         input[type="checkbox"]:hover {
-          border-color: #6b7280;
-          background-color: #f9fafb;
+          border-color: #6b7280 !important;
+          background-color: #f9fafb !important;
+          transform: scale(1.05) !important;
         }
 
         input[type="checkbox"]:checked {
           background-color: #dc2626 !important;
           border-color: #dc2626 !important;
+          background-image: none !important;
         }
 
-        input[type="checkbox"]:checked::after {
+        input[type="checkbox"]:checked::before {
           content: '✓' !important;
-          position: absolute;
+          position: absolute !important;
           color: white !important;
           font-size: 12px !important;
-          top: -2px;
-          left: 2px;
           font-weight: bold !important;
+          top: -1px !important;
+          left: 1px !important;
+          line-height: 1 !important;
+          display: block !important;
+          z-index: 1 !important;
         }
 
-        /* Ensure checkbox visual state is properly maintained */
+        /* Alternative checkmark using unicode for better compatibility */
+        input[type="checkbox"]:checked::after {
+          content: '' !important;
+          position: absolute !important;
+          left: 4px !important;
+          top: 1px !important;
+          width: 6px !important;
+          height: 10px !important;
+          border: solid white !important;
+          border-width: 0 2px 2px 0 !important;
+          transform: rotate(45deg) !important;
+          display: block !important;
+        }
+
+        /* Focus state for accessibility */
         input[type="checkbox"]:focus {
-          outline: 2px solid #dc2626;
-          outline-offset: 2px;
+          outline: 2px solid #dc2626 !important;
+          outline-offset: 2px !important;
+          box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+        }
+
+        /* Ensure consistent styling across browsers */
+        input[type="checkbox"]:indeterminate {
+          background-color: #dc2626 !important;
+          border-color: #dc2626 !important;
         }
 
         @media (max-width: 639px) {
