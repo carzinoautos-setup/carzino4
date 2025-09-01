@@ -246,25 +246,14 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               </div>
             </>
           ) : (
-            <>
-              <div className="text-center">
-                <div className="carzino-price-label text-gray-500 mb-0">
-                  No Sale Price Listed
-                </div>
-                <div className="carzino-price-value text-gray-900">
-                  Call for Price
-                </div>
+            <div className="text-center w-full">
+              <div className="carzino-price-label text-gray-500 mb-0">
+                No Sale Price Listed
               </div>
-              <div className="w-px h-12 bg-gray-200"></div>
-              <div className="text-center">
-                <div className="carzino-price-label text-gray-500 mb-0">
-                  Payments
-                </div>
-                <div className="carzino-price-value text-red-600">
-                  Call for Price
-                </div>
+              <div className="carzino-price-value text-gray-900">
+                Call for Price
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
