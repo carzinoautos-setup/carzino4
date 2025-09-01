@@ -110,6 +110,7 @@ export class WordPressCustomApiClient {
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_WP_URL || "https://env-uploadbackup62225-czdev.kinsta.cloud";
+    console.log(`🔗 WordPress API Base URL: ${this.baseUrl}`);
   }
 
   /**
