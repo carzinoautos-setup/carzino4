@@ -346,6 +346,8 @@ export default function WordPressVehicles() {
           .carzino-filter-option { font-size: var(--carzino-filter-option) !important; font-weight: 400 !important; }
           .carzino-filter-count { font-size: var(--carzino-filter-count) !important; font-weight: 400 !important; color: #6B7280 !important; }
           .carzino-search-input { font-size: var(--carzino-search-input) !important; font-weight: 400 !important; }
+          .carzino-location-label { font-size: var(--carzino-location-label) !important; font-weight: 500 !important; }
+          .carzino-dropdown-option { font-size: var(--carzino-dropdown-option) !important; font-weight: 400 !important; }
 
           input[type="checkbox"] {
             appearance: none;
