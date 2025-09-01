@@ -292,6 +292,16 @@ function MySQLVehiclesOriginalStyleInner() {
   const [interestRate, setInterestRate] = useState("5");
   const [downPayment, setDownPayment] = useState("2000");
 
+  // CRITICAL DEBUG: Track every render and current state (always log)
+  console.log("🔍 RENDER STATE:", {
+    renderTime: new Date().toISOString(),
+    loading,
+    vehiclesLength: vehicles.length,
+    totalResults,
+    hasError: !!error,
+    hasApiResponse: !!apiResponse
+  });
+
   // Performance monitoring (only in development)
   if (import.meta.env.DEV && Math.random() < 0.1) { // Log only 10% of renders
     console.log("📊 MySQL Vehicles Tab - WordPress API State:", {
