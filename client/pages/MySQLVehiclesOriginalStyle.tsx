@@ -521,7 +521,13 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (!response.success) {
-        throw new Error(`WordPress API error: ${response.message || 'Unknown error'}`);
+        // Check if this is mock data due to API failure
+        if (response.message && response.message.includes('Mock data generated')) {
+          console.log('🎭 Using mock data due to WordPress API issues');
+          // Continue with mock data - don't throw error
+        } else {
+          throw new Error(`WordPress API error: ${response.message || 'Unknown error'}`);
+        }
       }
 
       const data = {
@@ -4018,7 +4024,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }
                         className="ml-1 text-white"
                       >
-                        ×
+                        ��
                       </button>
                     </span>
                   )}
