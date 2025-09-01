@@ -590,6 +590,12 @@ function MySQLVehiclesOriginalStyleInner() {
         success: responseData.success
       });
 
+      console.log("🔍 DEBUG: Raw response data sample:", {
+        firstVehicle: responseData.data?.[0],
+        hasData: !!responseData.data,
+        dataLength: responseData.data?.length
+      });
+
       // Transform WordPress vehicles to our format
       const transformVehicle = (wpVehicle: WordPressVehicle): any => {
         const acf = wpVehicle.acf;
@@ -1231,7 +1237,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // FIXED: Real-time inventory refresh with conditional filtering
   useEffect(() => {
     if (isMountedRef.current) {
-      console.log("🚗 CRITICAL: Filters changed - refreshing inventory", {
+      console.log("��� CRITICAL: Filters changed - refreshing inventory", {
         makes: appliedFilters.make,
         models: appliedFilters.model,
         trims: appliedFilters.trim,
