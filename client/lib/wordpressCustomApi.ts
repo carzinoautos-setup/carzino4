@@ -182,14 +182,14 @@ export class WordPressCustomApiClient {
       }
 
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        console.error(`🌐 WordPress API Network Error: ${error.message}`);
-        throw new Error(`Network/CORS Error: Cannot connect to WordPress site (${this.baseUrl}). Issues:
-• Site may be down or unreachable
-• CORS policy blocking requests
-• SSL/certificate problems
-• Network connectivity issues
+        // This is likely a CORS or network connectivity issue
+        throw new Error(`Network/CORS Error: Cannot connect to WordPress site. This could be due to:
+1. CORS policy blocking cross-origin requests
+2. WordPress site is down or unreachable
+3. SSL/HTTPS certificate issues
+4. Network connectivity problems
 
-Trying fallback data...`);
+Original error: ${error.message}`);
       }
 
       console.error(`❌ WordPress Custom API Error: ${url}`, error);
