@@ -674,7 +674,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Retry logic for network failures
       if (err instanceof TypeError && err.message.includes("Failed to fetch") && retryCount < 2) {
         if (import.meta.env.DEV) {
-          console.log(`🔄 Retrying WordPress API request (attempt ${retryCount + 1}/3)...`);
+          console.log(`🔄 Retrying server API request (attempt ${retryCount + 1}/3)...`);
         }
         const delay = Math.pow(2, retryCount) * 1000;
         setTimeout(() => {
@@ -3477,7 +3477,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   // NOTE: Dealer names should come from Advanced Custom Fields 'acount_name_seller'
                   // Current implementation may be using demo data - check backend API
                   if (import.meta.env.DEV && dealersToShow?.length > 0) {
-                    console.warn("���� DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
+                    console.warn("������ DEALER FILTER: This should use 'acount_name_seller' from ACF, not demo data");
                     console.log("🏪 Current dealer data source:", dealersToShow?.slice(0, 2));
                   }
 
