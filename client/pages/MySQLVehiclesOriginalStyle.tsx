@@ -614,6 +614,19 @@ function MySQLVehiclesOriginalStyleInner() {
         const numericPrice = typeof rawPrice === 'string' ? parseFloat(rawPrice) : (rawPrice || 0);
         const formattedPrice = numericPrice > 0 ? `$${numericPrice.toLocaleString()}` : null;
 
+        // Debug logging for problematic prices
+        if (import.meta.env.DEV && numericPrice > 1000000) {
+          console.log("🚨 PRICE DEBUG - Vehicle with high price:", {
+            name: wpVehicle.name,
+            rawPrice,
+            numericPrice,
+            wpVehicle_price: wpVehicle.price,
+            wpVehicle_sale_price: wpVehicle.sale_price,
+            acf_price: acf?.price,
+            acf_sale_price: acf?.sale_price
+          });
+        }
+
         // Calculate payment if not provided or if provided payment is 0
         let paymentAmount = acf?.payment && acf.payment > 0 ? acf.payment : null;
         if (!paymentAmount && numericPrice > 0) {
@@ -842,7 +855,7 @@ function MySQLVehiclesOriginalStyleInner() {
     isMountedRef.current = true;
     return () => {
       if (import.meta.env.DEV) {
-        console.log("���� Component unmounting - cleaning up requests");
+        console.log("�� Component unmounting - cleaning up requests");
       }
       isMountedRef.current = false;
 
