@@ -131,21 +131,22 @@ export class WordPressCustomApiClient {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Reduced to 10 seconds
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
+      console.log(`📡 Attempting fetch to: ${url}`);
       const response = await fetch(url, {
         method: 'GET',
-        mode: 'cors',
-        credentials: 'omit',
+        mode: 'cors', // Explicitly set CORS mode
+        credentials: 'omit', // Don't send credentials for public API
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
         },
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
+      console.log(`📡 Response received: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
