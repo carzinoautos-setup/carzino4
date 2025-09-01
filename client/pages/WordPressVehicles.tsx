@@ -513,16 +513,20 @@ export default function WordPressVehicles() {
                 </div>
               )}
 
-              {/* Vehicle Grid */}
+              {/* Vehicle Grid - Professional automotive dealership layout */}
               {!loading && !error && vehicles.length > 0 && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                  <div className="vehicle-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {vehicles.map((vehicle) => (
-                      <MySQLVehicleCard
+                      <VehicleCard
                         key={vehicle.id}
                         vehicle={vehicle}
-                        onFavoriteToggle={() => handleToggleFavorite(vehicle.id)}
-                        isFavorite={!!favorites[vehicle.id]}
+                        favorites={favorites}
+                        onToggleFavorite={toggleFavorite}
+                        keeperMessage={keeperMessage}
+                        termLength={termLength}
+                        interestRate={interestRate}
+                        downPayment={downPayment}
                       />
                     ))}
                   </div>
