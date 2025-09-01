@@ -634,7 +634,12 @@ function MySQLVehiclesOriginalStyleInner() {
               appliedFilters.vehicleType.length > 0 ||
               appliedFilters.driveType.length > 0 ||
               appliedFilters.exteriorColor.length > 0 ||
+              appliedFilters.interiorColor.length > 0 ||
               appliedFilters.sellerType.length > 0 ||
+              appliedFilters.transmission.length > 0 ||
+              appliedFilters.dealer.length > 0 ||
+              appliedFilters.city.length > 0 ||
+              appliedFilters.state.length > 0 ||
               appliedFilters.mileage ||
               appliedFilters.priceMin ||
               appliedFilters.priceMax ||
