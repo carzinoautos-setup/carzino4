@@ -279,11 +279,12 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Performance monitoring (only in development)
   if (import.meta.env.DEV && Math.random() < 0.1) { // Log only 10% of renders
-    console.log("📊 Render State:", {
+    console.log("📊 MySQL Vehicles Tab - Server API State:", {
       vehiclesCount: vehicles.length,
       totalResults,
       loading,
-      error
+      error,
+      apiEndpoint: "/api/simple-vehicles/combined"
     });
   }
 
