@@ -12,6 +12,7 @@ import { IconDemo } from "./pages/IconDemo";
 import { PaymentCalculatorDemo } from "./pages/PaymentCalculatorDemo";
 import { WooCommerceVehicles } from "./pages/WooCommerceVehicles";
 import WordPressApiTest from "./pages/WordPressApiTest";
+import WordPressVehicles from "./pages/WordPressVehicles";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
