@@ -142,11 +142,16 @@ export class CustomWordPressApiService {
 
   async getVehicleById(id: number) {
     try {
-      const response = await fetch(WP_API_URL);
+      // For individual vehicle, we'll search through a small page of vehicles
+      // In production, you might want a dedicated /vehicles/{id} endpoint
+      const url = `${VEHICLES_ENDPOINT}?per_page=100&page=1`;
+      const response = await fetch(url);
       const apiResponse = await response.json();
-      const allVehicles = apiResponse.success ? apiResponse.data : apiResponse;
-      
-      return allVehicles.find(v => v.id === id);
+
+      if (apiResponse.success && Array.isArray(apiResponse.data)) {
+        return apiResponse.data.find(v => v.id === id);
+      }
+      return null;
     } catch (error) {
       console.error("❌ Error fetching vehicle by ID:", error);
       return null;
@@ -155,17 +160,19 @@ export class CustomWordPressApiService {
 
   async getDealers() {
     try {
-      const response = await fetch(WP_API_URL);
+      // Use filters endpoint to get dealer information
+      const response = await fetch(FILTERS_ENDPOINT);
       const apiResponse = await response.json();
-      const allVehicles = apiResponse.success ? apiResponse.data : apiResponse;
-      
-      const dealers = [...new Set(allVehicles.map(v => v.acf?.account_name_seller).filter(Boolean))]
-        .map(dealer => ({ name: dealer, count: allVehicles.filter(v => v.acf?.account_name_seller === dealer).length }));
-      
-      return {
-        success: true,
-        data: dealers
-      };
+
+      if (apiResponse.success && apiResponse.filters) {
+        const dealers = apiResponse.filters.account_name_seller || [];
+        return {
+          success: true,
+          data: dealers
+        };
+      }
+
+      return { success: true, data: [] };
     } catch (error) {
       console.error("❌ Error fetching dealers:", error);
       return { success: true, data: [] };
@@ -174,17 +181,19 @@ export class CustomWordPressApiService {
 
   async getVehicleTypeCounts() {
     try {
-      const response = await fetch(WP_API_URL);
+      // Use filters endpoint to get body style information
+      const response = await fetch(FILTERS_ENDPOINT);
       const apiResponse = await response.json();
-      const allVehicles = apiResponse.success ? apiResponse.data : apiResponse;
-      
-      const vehicleTypes = [...new Set(allVehicles.map(v => v.acf?.body_type).filter(Boolean))]
-        .map(type => ({ name: type, count: allVehicles.filter(v => v.acf?.body_type === type).length }));
-      
-      return {
-        success: true,
-        data: vehicleTypes
-      };
+
+      if (apiResponse.success && apiResponse.filters) {
+        const vehicleTypes = apiResponse.filters.body_style || [];
+        return {
+          success: true,
+          data: vehicleTypes
+        };
+      }
+
+      return { success: true, data: [] };
     } catch (error) {
       console.error("❌ Error fetching vehicle types:", error);
       return { success: true, data: [] };
