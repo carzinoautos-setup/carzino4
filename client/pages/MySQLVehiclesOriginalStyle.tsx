@@ -978,14 +978,14 @@ function MySQLVehiclesOriginalStyleInner() {
       "Sport Utility Vehicle": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
 
       // Trucks
-      "Truck": "🚚",
-      "Trucks": "🚚",
-      "Pickup": "🚚",
-      "Pickup Truck": "🚚",
-      "Crew Cab Truck": "🚚",
+      "Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
+      "Trucks": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
+      "Pickup": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
+      "Pickup Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
+      "Crew Cab Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Regular Cab Truck": "��",
-      "Extended Cab Truck": "🚚",
-      "Full Size Truck": "🚚",
+      "Extended Cab Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
+      "Full Size Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Compact Truck": "��",
 
       // Sports Cars and Coupes
@@ -4414,7 +4414,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     />
                   )) : (
                     <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
-                      ���� No vehicles found matching current filters.<br/>
+                      🚗 No vehicles found matching current filters.<br/>
                       <small>Total vehicles loaded: {vehicles.length}</small>
                     </div>
                   )}
