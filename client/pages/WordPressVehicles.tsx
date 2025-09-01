@@ -69,6 +69,11 @@ export default function WordPressVehicles() {
   const [collapsedFilters, setCollapsedFilters] = useState<{ [key: string]: boolean }>({});
   const [keeperMessage, setKeeperMessage] = useState<number | null>(null);
 
+  // Financing states (for VehicleCard component)
+  const [termLength, setTermLength] = useState("60");
+  const [interestRate, setInterestRate] = useState("5");
+  const [downPayment, setDownPayment] = useState("2000");
+
   // Filter options from API
   const [filterOptions, setFilterOptions] = useState({
     makes: [] as Array<{ name: string; count: number }>,
