@@ -47,9 +47,10 @@ export class CustomWordPressApiService {
       if (filters.sellerType && filters.sellerType.length > 0) {
         url.searchParams.set('seller_type', filters.sellerType.join(','));
       }
-      if (filters.dealer && filters.dealer.length > 0) {
-        url.searchParams.set('dealer_name', filters.dealer.join(','));
-      }
+      // Note: We'll handle dealer filtering client-side since it needs to map dealer names to account IDs
+      // if (filters.dealer && filters.dealer.length > 0) {
+      //   url.searchParams.set('dealer_name', filters.dealer.join(','));
+      // }
       if (filters.city && filters.city.length > 0) {
         url.searchParams.set('city_seller', filters.city.join(','));
       }
