@@ -880,7 +880,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Crossovers": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "Crossover/SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "SUV / Crossover": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
-      "SUV/Crossover": "����",
+      "SUV/Crossover": "������",
       "Sport Utility Vehicle": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
 
       // Trucks
@@ -987,174 +987,29 @@ function MySQLVehiclesOriginalStyleInner() {
         console.warn("❌ Filter API returned error:", filterData.message);
         return;
       }
-      console.log(`🚗 CONDITIONAL: ${allVehicles.length} total vehicles available`);
+      console.log(`🚗 CONDITIONAL: Server returned filter options:`, {
+        makes: filterData.data?.makes?.length || 0,
+        models: filterData.data?.models?.length || 0,
+        trims: filterData.data?.trims?.length || 0,
+        transmissions: filterData.data?.transmissions?.length || 0
+      });
 
-      // ALWAYS show ALL makes (never filter makes)
-      const allMakes = Array.from(new Set(allVehicles.map(v => v.acf?.make).filter(Boolean)))
-        .map(make => ({
-          name: make!,
-          count: allVehicles.filter(v => v.acf?.make === make).length
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      // CONDITIONAL: Models filtered by selected makes ONLY
-      let conditionalModels = [];
-      if (currentFilters.make && currentFilters.make.length > 0) {
-        const vehiclesWithSelectedMakes = allVehicles.filter(v =>
-          v.acf?.make && currentFilters.make.includes(v.acf.make)
-        );
-
-        conditionalModels = Array.from(new Set(vehiclesWithSelectedMakes.map(v => v.acf?.model).filter(Boolean)))
-          .map(model => ({
-            name: model!,
-            count: vehiclesWithSelectedMakes.filter(v => v.acf?.model === model).length
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        console.log(`🔄 CONDITIONAL: ${currentFilters.make.length} makes → ${conditionalModels.length} models`);
-      } else {
-        // No makes selected = show all models
-        conditionalModels = Array.from(new Set(allVehicles.map(v => v.acf?.model).filter(Boolean)))
-          .map(model => ({
-            name: model!,
-            count: allVehicles.filter(v => v.acf?.model === model).length
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name));
-      }
-
-      // CONDITIONAL: Trims filtered by selected makes AND models
-      let conditionalTrims = [];
-      let trimsBaseVehicles = allVehicles;
-
-      // Apply make filter first
-      if (currentFilters.make && currentFilters.make.length > 0) {
-        trimsBaseVehicles = trimsBaseVehicles.filter(v =>
-          v.acf?.make && currentFilters.make.includes(v.acf.make)
-        );
-      }
-
-      // Apply model filter second
-      if (currentFilters.model && currentFilters.model.length > 0) {
-        trimsBaseVehicles = trimsBaseVehicles.filter(v =>
-          v.acf?.model && currentFilters.model.includes(v.acf.model)
-        );
-        console.log(`🔄 CONDITIONAL: ${currentFilters.model.length} models → ${trimsBaseVehicles.length} vehicles for trims`);
-      }
-
-      conditionalTrims = Array.from(new Set(trimsBaseVehicles.map(v => v.acf?.trim).filter(Boolean)))
-        .map(trim => ({
-          name: trim!,
-          count: trimsBaseVehicles.filter(v => v.acf?.trim === trim).length
-        }))
-        .sort((a, b) => {
-          // FIXED: Proper alphanumeric sorting for trims
-          return a.name.localeCompare(b.name, undefined, {
-            numeric: true,
-            sensitivity: 'base',
-            caseFirst: 'lower'
-          });
-        });
-
-      // FIXED: Transmission filter - normalize to remove duplicates
-      const conditionalTransmissions = (() => {
-        const transmissionMap = new Map();
-        trimsBaseVehicles.forEach(v => {
-          if (v.acf?.transmission) {
-            let normalized = String(v.acf.transmission).trim();
-            const lower = normalized.toLowerCase();
-
-            // FIXED: Proper transmission normalization
-            if (lower.includes('auto') || lower === 'a' || lower === 'at' || lower === 'automatic') {
-              normalized = 'Automatic';
-            } else if (lower.includes('manual') || lower.includes('stick') || lower === 'm' || lower === 'mt' || lower === 'stick shift') {
-              normalized = 'Manual';
-            } else if (lower.includes('cvt') || lower === 'continuously variable') {
-              normalized = 'CVT';
-            } else {
-              // Keep original if it doesn't match common patterns
-              normalized = normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
-            }
-
-            const current = transmissionMap.get(normalized) || 0;
-            transmissionMap.set(normalized, current + 1);
-          }
-        });
-
-        return Array.from(transmissionMap.entries())
-          .map(([name, count]) => ({ name, count }))
-          .filter(item => item.count > 0)
-          .sort((a, b) => {
-            // Sort by name, with Automatic first
-            if (a.name === 'Automatic') return -1;
-            if (b.name === 'Automatic') return 1;
-            return a.name.localeCompare(b.name);
-          });
-      })();
-
-      console.log('🔧 FIXED: Transmission options:', conditionalTransmissions);
-
-      // FIXED: Seller type counts with proper data handling
-      const conditionalSellerTypes = (() => {
-        const sellerTypeMap = new Map();
-        allVehicles.forEach(v => {
-          if (v.acf?.account_type_seller) {
-            const type = String(v.acf.account_type_seller).trim();
-            if (type && type !== '' && type !== 'null' && type !== 'undefined') {
-              const current = sellerTypeMap.get(type) || 0;
-              sellerTypeMap.set(type, current + 1);
-            }
-          }
-        });
-
-        const result = Array.from(sellerTypeMap.entries())
-          .map(([name, count]) => ({ name, count }))
-          .filter(type => type.count > 0)
-          .sort((a, b) => b.count - a.count);
-
-        console.log('🔧 FIXED: Seller type counts:', result);
-        return result;
-      })();
-
+      // Use the server-provided filter options (already conditionally filtered)
       const updatedFilterOptions = {
-        makes: allMakes,
-        models: conditionalModels,
-        trims: conditionalTrims,
-        transmissions: conditionalTransmissions,
-        conditions: Array.from(new Set(['Used', 'New', 'Certified', ...allVehicles.map(v => v.acf?.condition).filter(Boolean)]))
-          .map(condition => {
-            let count = 0;
-            if (condition === 'Used') {
-              count = allVehicles.filter(v => !v.acf?.condition || v.acf?.condition.toLowerCase() === 'used').length;
-            } else {
-              count = allVehicles.filter(v => v.acf?.condition === condition).length;
-            }
-            return { name: condition!, count };
-          })
-          .filter(c => c.count > 0)
-          .sort((a, b) => a.name === 'Used' ? -1 : b.name === 'Used' ? 1 : b.count - a.count),
-        vehicleTypes: Array.from(new Set(allVehicles.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
-          .map(type => ({ name: type!, count: allVehicles.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length }))
-          .sort((a, b) => b.count - a.count),
-        driveTypes: Array.from(new Set(allVehicles.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
-          .map(drive => ({ name: drive!, count: allVehicles.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length }))
-          .sort((a, b) => b.count - a.count),
-        exteriorColors: Array.from(new Set(allVehicles.map(v => v.acf?.exterior_color).filter(Boolean)))
-          .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.exterior_color === color).length }))
-          .sort((a, b) => b.count - a.count),
-        interiorColors: Array.from(new Set(allVehicles.map(v => v.acf?.interior_color).filter(Boolean)))
-          .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.interior_color === color).length }))
-          .sort((a, b) => b.count - a.count),
-        sellerTypes: conditionalSellerTypes,
-        dealers: Array.from(new Set(allVehicles.map(v => v.acf?.account_name_seller).filter(Boolean)))
-          .map(dealer => ({ name: dealer!, count: allVehicles.filter(v => v.acf?.account_name_seller === dealer).length }))
-          .sort((a, b) => b.count - a.count),
-        states: Array.from(new Set(allVehicles.map(v => v.acf?.state_seller).filter(Boolean)))
-          .map(state => ({ name: state!, count: allVehicles.filter(v => v.acf?.state_seller === state).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)),
-        cities: Array.from(new Set(allVehicles.map(v => v.acf?.city_seller).filter(Boolean)))
-          .map(city => ({ name: city!, count: allVehicles.filter(v => v.acf?.city_seller === city).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)),
-        totalVehicles: allVehicles.length
+        makes: filterData.data?.makes || [],
+        models: filterData.data?.models || [],
+        trims: filterData.data?.trims || [],
+        transmissions: filterData.data?.transmissions || [],
+        conditions: filterData.data?.conditions || [],
+        vehicleTypes: filterData.data?.vehicleTypes || [],
+        driveTypes: filterData.data?.driveTypes || [],
+        exteriorColors: filterData.data?.exteriorColors || [],
+        interiorColors: filterData.data?.interiorColors || [],
+        sellerTypes: filterData.data?.sellerTypes || [],
+        dealers: filterData.data?.dealers || [],
+        states: filterData.data?.states || [],
+        cities: filterData.data?.cities || [],
+        totalVehicles: filterData.data?.totalVehicles || 0
       };
 
       setFilterOptions(updatedFilterOptions);
