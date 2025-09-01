@@ -107,6 +107,14 @@ export default function WordPressVehicles() {
     conditions: [] as Array<{ name: string; count: number }>,
   });
 
+  // Collapsed filters state - matching MySQL page
+  const [collapsedFilters, setCollapsedFilters] = useState({
+    make: false,
+    model: true,
+    trim: true,
+    price: false,
+  });
+
   const location = useLocation();
   const navigate = useNavigate();
 
