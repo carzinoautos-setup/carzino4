@@ -549,13 +549,21 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       console.log("📡 FIXED: Calling your FAST WordPress API with filters:", wpFilters);
+      console.log("📡 DEBUG: wordpressCustomApi object:", wordpressCustomApi);
 
-      // Use WordPress custom API instead of slow server API
-      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
-        currentPage,
-        resultsPerPage,
-        wpFilters
-      );
+      try {
+        // Use WordPress custom API instead of slow server API
+        console.log("📡 DEBUG: About to call wordpressCustomApi.getVehicles...");
+        const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+          currentPage,
+          resultsPerPage,
+          wpFilters
+        );
+        console.log("📡 DEBUG: WordPress API response received:", response);
+      } catch (apiError) {
+        console.error("❌ DEBUG: WordPress API call failed:", apiError);
+        throw apiError;
+      }
 
       // WordPress API already returns structured data
       const responseData = response;
