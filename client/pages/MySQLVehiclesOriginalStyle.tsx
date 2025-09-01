@@ -1388,7 +1388,20 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        onChange={() => {}}
+                        checked={appliedFilters.interiorColor.includes(color.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: [...prev.interiorColor, color.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: prev.interiorColor.filter(item => item !== color.name)
+                            }));
+                          }
+                        }}
                       />
                       <span className="carzino-filter-option">{color.name}</span>
                       <span className="carzino-filter-count ml-1">({color.count})</span>
@@ -1400,7 +1413,20 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        onChange={() => {}}
+                        checked={appliedFilters.interiorColor.includes(color)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: [...prev.interiorColor, color]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: prev.interiorColor.filter(item => item !== color)
+                            }));
+                          }
+                        }}
                       />
                       <span className="carzino-filter-option">{color}</span>
                     </label>
