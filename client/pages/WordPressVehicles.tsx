@@ -527,5 +527,3 @@ export default function WordPressVehicles() {
     </ErrorBoundary>
   );
 }
-
-export default WordPressVehicles;
