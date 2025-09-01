@@ -146,17 +146,7 @@ export class CustomWordPressApiService {
           payment = `$${Math.round(parseInt(price) / 60)}/mo*`;
         }
 
-        // Debug price/payment detection for first few vehicles
-        if (vehicles.indexOf(vehicle) < 3) {
-          console.log(`🔍 Price/Payment Debug for vehicle ${vehicle.id}:`, {
-            acf_price: vehicle.acf?.price,
-            acf_payment: vehicle.acf?.payment,
-            finalPrice: price,
-            formattedPrice: formattedPrice,
-            finalPayment: payment,
-            availableAcfFields: vehicle.acf ? Object.keys(vehicle.acf) : 'no ACF'
-          });
-        }
+        // Clean debugging removed - price and payment logic is working correctly
 
         // Get mileage - ensure it's not zero/empty
         const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
