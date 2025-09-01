@@ -72,7 +72,7 @@ export class CustomWordPressApiService {
       console.log("🔗 Fetching from new vehicles API:", url.toString());
       console.log("🔍 DEBUG: Filters being sent to WordPress:", filters);
 
-      const response = await fetch(url);
+      const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error(`API responded with status: ${response.status}`);
       }
