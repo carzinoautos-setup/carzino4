@@ -181,7 +181,7 @@ export class CustomWordPressApiService {
           transmission: vehicle.acf?.transmission || "Auto",
           doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
           salePrice: formattedPrice,
-          payment: price ? `$${Math.round(parseInt(price) / 60)}/mo*` : null,
+          payment: payment,
           dealer: vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "Carzino Dealer",
           location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
           phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
