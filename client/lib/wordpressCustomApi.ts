@@ -15,6 +15,7 @@ export interface WordPressVehicle {
   stock_status: string;
   categories: Array<{ id: number; name: string; slug: string }>;
   images: Array<{ id: number; src: string; alt: string }>;
+  featured_image?: string;
   
   // ACF fields nested under acf
   acf: {
