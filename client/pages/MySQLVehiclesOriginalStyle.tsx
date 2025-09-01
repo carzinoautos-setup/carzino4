@@ -3006,8 +3006,23 @@ function MySQLVehiclesOriginalStyleInner() {
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
-                              console.log("🔧 Removing model filter:", modelOption.name);
-                              removeAppliedFilter("model", modelOption.name);
+                              const newFilters = {
+                                ...appliedFilters,
+                                model: appliedFilters.model.filter(item => item !== modelOption.name),
+                                // CRITICAL: Clear trims when model selection changes
+                                trim: [],
+                              };
+                              console.log("🔧 FIXED: Removing model filter. Clearing trims:", newFilters);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                              setCurrentPage(1);
+
+                              // FIXED: Trigger conditional filtering update for trims
+                              setTimeout(() => {
+                                if (isMountedRef.current) {
+                                  fetchFilterOptions(newFilters, true);
+                                }
+                              }, 100);
                             }
                           } catch (error) {
                             console.error("❌ Error in model filter handler:", error);
@@ -4354,7 +4369,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   {import.meta.env.DEV && (
                     <div className="text-xs text-gray-400 mt-4 p-4 bg-gray-50 rounded">
                       <div>Debug Info:</div>
-                      <div>• Total vehicles: {vehicles.length}</div>
+                      <div>�� Total vehicles: {vehicles.length}</div>
                       <div>• Current page: {currentPage}</div>
                       <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
                       <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
