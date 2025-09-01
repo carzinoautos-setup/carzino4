@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { SimpleMockVehicleService } from "../services/simpleMockVehicleService.js";
+import { WordPressVehicleService } from "../services/wordpressVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Using clean, fast SimpleMockVehicleService as requested
-console.log("🚀 Using SimpleMockVehicleService - clean and fast");
-const vehicleService = new SimpleMockVehicleService();
+// Using your real WordPress database with actual vehicle data
+console.log("🚀 Using WordPressVehicleService - your real vehicle data");
+const vehicleService = new WordPressVehicleService();
 
 /**
  * GET /api/simple-vehicles
