@@ -932,38 +932,7 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </div>
 
-            {/* Condition Filter */}
-            <FilterSection
-              title="Condition"
-              isCollapsed={collapsedFilters.condition}
-              onToggle={() => toggleFilter("condition")}
-            >
-              <div className="space-y-1">
-                {["New", "Used", "Certified"].map((condition) => (
-                  <label key={condition} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.condition.includes(condition)}
-                      onChange={(e) => {
-                        setCurrentPage(1); // Reset to first page when filters change
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            condition: [...prev.condition, condition]
-                          }));
-                        } else {
-                          removeAppliedFilter("condition", condition);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{condition}</span>
-                  </label>
-                ))}
-              </div>
-            </FilterSection>
-
-            {/* Make Filter */}
+            {/* Make Filter - moved to be first main filter after Distance */}
             <FilterSection
               title="Make"
               isCollapsed={collapsedFilters.make}
