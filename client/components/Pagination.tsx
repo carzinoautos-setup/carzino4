@@ -16,8 +16,14 @@ export const Pagination: React.FC<PaginationProps> = ({
   resultsPerPage,
   onPageChange,
 }) => {
-  const startResult = (currentPage - 1) * resultsPerPage + 1;
-  const endResult = Math.min(currentPage * resultsPerPage, totalResults);
+  // Defensive programming: Ensure all values are valid numbers
+  const safeCurrentPage = Math.max(1, isNaN(currentPage) ? 1 : currentPage);
+  const safeTotalPages = Math.max(1, isNaN(totalPages) ? 1 : totalPages);
+  const safeTotalResults = Math.max(0, isNaN(totalResults) ? 0 : totalResults);
+  const safeResultsPerPage = Math.max(1, isNaN(resultsPerPage) ? 20 : resultsPerPage);
+
+  const startResult = (safeCurrentPage - 1) * safeResultsPerPage + 1;
+  const endResult = Math.min(safeCurrentPage * safeResultsPerPage, safeTotalResults);
 
   const getPaginationPages = () => {
     const pages = [];
