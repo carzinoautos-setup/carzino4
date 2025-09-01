@@ -254,7 +254,7 @@ function MySQLVehiclesOriginalStyleInner() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, resultsPerPage, sortBy, appliedFilters]);
+  }, [currentPage, resultsPerPage, sortBy, appliedFilters, zipCode, radius, priceMin, priceMax, paymentMin, paymentMax, termLength, interestRate, downPayment]);
 
   // Effects
   useEffect(() => {
