@@ -206,6 +206,21 @@ function MySQLVehiclesOriginalStyleInner() {
       if (appliedFilters.sellerType.length > 0) {
         apiUrl.searchParams.set('sellerType', appliedFilters.sellerType.join(','));
       }
+      if (appliedFilters.transmission.length > 0) {
+        apiUrl.searchParams.set('transmission', appliedFilters.transmission.join(','));
+      }
+      if (appliedFilters.interiorColor.length > 0) {
+        apiUrl.searchParams.set('interiorColor', appliedFilters.interiorColor.join(','));
+      }
+      if (appliedFilters.dealer.length > 0) {
+        apiUrl.searchParams.set('dealer', appliedFilters.dealer.join(','));
+      }
+      if (appliedFilters.city.length > 0) {
+        apiUrl.searchParams.set('city', appliedFilters.city.join(','));
+      }
+      if (appliedFilters.state.length > 0) {
+        apiUrl.searchParams.set('state', appliedFilters.state.join(','));
+      }
       if (appliedFilters.mileage) {
         apiUrl.searchParams.set('mileage', appliedFilters.mileage);
       }
