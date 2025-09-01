@@ -2665,7 +2665,11 @@ export default function Index() {
                   </button>
                 )}
 
-                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white">
+                <select
+                  className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
                   <option value="relevance">Sort by Relevance</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
