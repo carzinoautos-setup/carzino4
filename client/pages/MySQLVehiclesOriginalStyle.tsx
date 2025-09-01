@@ -127,14 +127,6 @@ const normalizeFilterValue = (value: string) => {
 function MySQLVehiclesOriginalStyleInner() {
   console.log("🚀 COMPONENT: MySQLVehiclesOriginalStyleInner rendering");
 
-  // CRITICAL DEBUG: Track every render and current state
-  console.log("🔍 RENDER STATE:", {
-    renderTime: new Date().toISOString(),
-    loading: typeof loading !== 'undefined' ? loading : 'undefined-yet',
-    vehiclesLength: typeof vehicles !== 'undefined' ? vehicles.length : 'undefined-yet',
-    totalResults: typeof totalResults !== 'undefined' ? totalResults : 'undefined-yet'
-  });
-
   // TEMPORARY: Force a visible render to test
   const FORCE_TEST_RENDER = false; // Component works, now debug the main logic
   if (FORCE_TEST_RENDER) {
