@@ -176,12 +176,51 @@ function MySQLVehiclesOriginalStyleInner() {
         apiUrl.searchParams.set('sortBy', sortBy);
       }
 
-      // Add filters
+      // Add ALL filters to API call
       if (appliedFilters.make.length > 0) {
         apiUrl.searchParams.set('make', appliedFilters.make.join(','));
       }
       if (appliedFilters.condition.length > 0) {
         apiUrl.searchParams.set('condition', appliedFilters.condition.join(','));
+      }
+      if (appliedFilters.model.length > 0) {
+        apiUrl.searchParams.set('model', appliedFilters.model.join(','));
+      }
+      if (appliedFilters.trim.length > 0) {
+        apiUrl.searchParams.set('trim', appliedFilters.trim.join(','));
+      }
+      if (appliedFilters.vehicleType.length > 0) {
+        apiUrl.searchParams.set('vehicleType', appliedFilters.vehicleType.join(','));
+      }
+      if (appliedFilters.driveType.length > 0) {
+        apiUrl.searchParams.set('driveType', appliedFilters.driveType.join(','));
+      }
+      if (appliedFilters.exteriorColor.length > 0) {
+        apiUrl.searchParams.set('exteriorColor', appliedFilters.exteriorColor.join(','));
+      }
+      if (appliedFilters.sellerType.length > 0) {
+        apiUrl.searchParams.set('sellerType', appliedFilters.sellerType.join(','));
+      }
+      if (appliedFilters.mileage) {
+        apiUrl.searchParams.set('mileage', appliedFilters.mileage);
+      }
+      if (appliedFilters.priceMin) {
+        apiUrl.searchParams.set('priceMin', appliedFilters.priceMin);
+      }
+      if (appliedFilters.priceMax) {
+        apiUrl.searchParams.set('priceMax', appliedFilters.priceMax);
+      }
+      if (appliedFilters.paymentMin) {
+        apiUrl.searchParams.set('paymentMin', appliedFilters.paymentMin);
+      }
+      if (appliedFilters.paymentMax) {
+        apiUrl.searchParams.set('paymentMax', appliedFilters.paymentMax);
+      }
+      if (zipCode) {
+        apiUrl.searchParams.set('zipCode', zipCode);
+      }
+      if (radius !== "10") {
+        apiUrl.searchParams.set('radius', radius);
       }
 
       console.log("🔗 API URL:", apiUrl.toString());
