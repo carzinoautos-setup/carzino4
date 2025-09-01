@@ -565,12 +565,22 @@ function MySQLVehiclesOriginalStyleInner() {
               }
             }
 
+            // TEMPORARY: Add mock prices for testing if no real price data
+            if (vehiclePrice === 0) {
+              vehiclePrice = 15000 + (wpVehicle.id % 10) * 5000; // Mock prices between $15k-$60k
+            }
+            if (vehiclePayment === 0) {
+              vehiclePayment = Math.round(vehiclePrice / 60); // Mock payment based on price
+            }
+
             if (import.meta.env.DEV) {
               console.log('💰 Price conversion:', {
                 rawPrice,
                 vehiclePrice,
                 rawPayment: acf?.payment,
-                vehiclePayment
+                vehiclePayment,
+                finalPrice: vehiclePrice,
+                finalPayment: vehiclePayment
               });
             }
 
@@ -2700,7 +2710,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 trim: [...appliedFilters.trim, trimOption.name],
                               };
-                              console.log("�� Adding trim filter:", newFilters);
+                              console.log("🔧 Adding trim filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
