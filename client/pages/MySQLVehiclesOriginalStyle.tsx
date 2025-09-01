@@ -606,7 +606,7 @@ function MySQLVehiclesOriginalStyleInner() {
               interest_rate: acf?.interest_rate || 5.0,
               down_payment: acf?.down_payment || 2000,
               loan_term: acf?.loan_term || 60,
-              payments: acf?.payment || 0,
+              payments: vehiclePayment,
               featured: acf?.is_featured === true || acf?.is_featured === '1',
               viewed: false,
               images: vehicleImages,
@@ -2700,7 +2700,7 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 trim: [...appliedFilters.trim, trimOption.name],
                               };
-                              console.log("🔧 Adding trim filter:", newFilters);
+                              console.log("�� Adding trim filter:", newFilters);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
                             } else {
