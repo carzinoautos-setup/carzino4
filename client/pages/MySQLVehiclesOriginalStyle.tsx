@@ -1688,6 +1688,8 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
+                    totalResults={totalResults}
+                    resultsPerPage={resultsPerPage}
                     onPageChange={(page) => {
                       setCurrentPage(page);
                       window.scrollTo({ top: 0, behavior: "smooth" });
