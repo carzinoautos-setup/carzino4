@@ -1548,7 +1548,20 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        onChange={() => {}}
+                        checked={appliedFilters.state.includes(state.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              state: [...prev.state, state.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              state: prev.state.filter(item => item !== state.name)
+                            }));
+                          }
+                        }}
                       />
                       <span className="carzino-filter-option">{state.name}</span>
                       <span className="carzino-filter-count ml-1">({state.count})</span>
