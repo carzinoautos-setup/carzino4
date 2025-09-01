@@ -448,9 +448,10 @@ export default function WordPressVehicles() {
   // Refetch when filters change (debounced)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      console.log(`🔄 Refetching vehicles due to filter change`);
       setCurrentPage(1);
       fetchVehicles(1);
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [appliedFilters, searchTerm, appliedLocation, appliedRadius, sortBy]);
@@ -496,7 +497,13 @@ export default function WordPressVehicles() {
   };
 
   // Handle filter update with refetch
-  const updateFilter = (filterType: string, value: string, checked: boolean) => {
+  const updateFilter = (filterType: string, value: string, checked: boolean, event?: React.ChangeEvent<HTMLInputElement>) => {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    console.log(`🔄 Filter update: ${filterType} = ${value}, checked = ${checked}`);
+
     setAppliedFilters(prev => {
       const currentValues = prev[filterType as keyof typeof prev] as string[];
       let newValues;
@@ -508,14 +515,9 @@ export default function WordPressVehicles() {
       }
 
       const newFilters = { ...prev, [filterType]: newValues };
+      console.log(`🔄 New filters:`, newFilters);
       return newFilters;
     });
-
-    // Trigger refetch immediately
-    setTimeout(() => {
-      setCurrentPage(1);
-      fetchVehicles(1);
-    }, 50);
   };
 
   // Helper functions for price formatting
@@ -876,7 +878,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.vehicleType.includes(type.name)}
-                          onChange={(e) => updateFilter("vehicleType", type.name, e.target.checked)}
+                          onChange={(e) => updateFilter("vehicleType", type.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{type.name}</span>
                         <span className="carzino-filter-count">({type.count})</span>
@@ -908,7 +910,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.condition.includes(condition.name)}
-                          onChange={(e) => updateFilter("condition", condition.name, e.target.checked)}
+                          onChange={(e) => updateFilter("condition", condition.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{condition.name}</span>
                         <span className="carzino-filter-count">({condition.count})</span>
@@ -979,7 +981,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.make.includes(makeOption.name)}
-                          onChange={(e) => updateFilter("make", makeOption.name, e.target.checked)}
+                          onChange={(e) => updateFilter("make", makeOption.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{makeOption.name}</span>
                         <span className="carzino-filter-count">({makeOption.count})</span>
