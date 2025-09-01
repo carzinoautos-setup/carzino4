@@ -16,7 +16,7 @@ export class CustomWordPressApiService {
       url.searchParams.set('per_page', pagination.pageSize.toString());
       url.searchParams.set('page', pagination.page.toString());
 
-      // Add all filter parameters
+      // Add all filter parameters using CLEAN field names per WordPress API spec
       if (filters.make && filters.make.length > 0) {
         url.searchParams.set('make', filters.make.join(','));
       }
@@ -30,7 +30,7 @@ export class CustomWordPressApiService {
         url.searchParams.set('condition', filters.condition.join(','));
       }
       if (filters.vehicleType && filters.vehicleType.length > 0) {
-        url.searchParams.set('body_type', filters.vehicleType.join(','));
+        url.searchParams.set('body_style', filters.vehicleType.join(','));
       }
       if (filters.driveType && filters.driveType.length > 0) {
         url.searchParams.set('drivetrain', filters.driveType.join(','));
@@ -41,11 +41,14 @@ export class CustomWordPressApiService {
       if (filters.exteriorColor && filters.exteriorColor.length > 0) {
         url.searchParams.set('exterior_color', filters.exteriorColor.join(','));
       }
+      if (filters.interiorColor && filters.interiorColor.length > 0) {
+        url.searchParams.set('interior_color', filters.interiorColor.join(','));
+      }
       if (filters.sellerType && filters.sellerType.length > 0) {
-        url.searchParams.set('account_type_seller', filters.sellerType.join(','));
+        url.searchParams.set('seller_type', filters.sellerType.join(','));
       }
       if (filters.dealer && filters.dealer.length > 0) {
-        url.searchParams.set('account_name_seller', filters.dealer.join(','));
+        url.searchParams.set('dealer_name', filters.dealer.join(','));
       }
       if (filters.city && filters.city.length > 0) {
         url.searchParams.set('city_seller', filters.city.join(','));
@@ -69,7 +72,7 @@ export class CustomWordPressApiService {
         url.searchParams.set('orderby', sortBy);
       }
 
-      console.log("🔗 Fetching from new vehicles API:", url.toString());
+      console.log("🔗 Fetching from vehicles API with clean field names:", url.toString());
       console.log("🔍 DEBUG: Filters being sent to WordPress:", filters);
 
       const response = await fetch(url.toString());
@@ -78,7 +81,7 @@ export class CustomWordPressApiService {
       }
 
       const apiResponse = await response.json();
-      console.log("📦 New API Response structure:", {
+      console.log("📦 Vehicles API Response structure:", {
         hasSuccess: 'success' in apiResponse,
         hasData: 'data' in apiResponse,
         hasPagination: 'pagination' in apiResponse,
@@ -112,10 +115,10 @@ export class CustomWordPressApiService {
         doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
         salePrice: vehicle.price ? `$${parseInt(vehicle.price).toLocaleString()}` : null,
         payment: vehicle.price ? `$${Math.round(parseInt(vehicle.price) / 60)}/mo*` : null,
-        dealer: vehicle.acf?.account_name_seller || "Carzino Dealer",
+        dealer: vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "Carzino Dealer",
         location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
         phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
-        seller_type: vehicle.acf?.account_type_seller || "Dealer"
+        seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer"
       }));
 
       // Use pagination info from API response
@@ -144,7 +147,7 @@ export class CustomWordPressApiService {
 
   async getFilterOptions(filters: SimpleVehicleFilters = {}) {
     try {
-      // Build URL with applied filters for conditional filtering
+      // Build URL with applied filters for conditional filtering using CLEAN field names
       const url = new URL(FILTERS_ENDPOINT);
 
       // Add all applied filter parameters to get conditional filter options
@@ -161,7 +164,7 @@ export class CustomWordPressApiService {
         url.searchParams.set('condition', filters.condition.join(','));
       }
       if (filters.vehicleType && filters.vehicleType.length > 0) {
-        url.searchParams.set('body_type', filters.vehicleType.join(','));
+        url.searchParams.set('body_style', filters.vehicleType.join(','));
       }
       if (filters.driveType && filters.driveType.length > 0) {
         url.searchParams.set('drivetrain', filters.driveType.join(','));
@@ -172,11 +175,14 @@ export class CustomWordPressApiService {
       if (filters.exteriorColor && filters.exteriorColor.length > 0) {
         url.searchParams.set('exterior_color', filters.exteriorColor.join(','));
       }
+      if (filters.interiorColor && filters.interiorColor.length > 0) {
+        url.searchParams.set('interior_color', filters.interiorColor.join(','));
+      }
       if (filters.sellerType && filters.sellerType.length > 0) {
-        url.searchParams.set('account_type_seller', filters.sellerType.join(','));
+        url.searchParams.set('seller_type', filters.sellerType.join(','));
       }
       if (filters.dealer && filters.dealer.length > 0) {
-        url.searchParams.set('account_name_seller', filters.dealer.join(','));
+        url.searchParams.set('dealer_name', filters.dealer.join(','));
       }
       if (filters.city && filters.city.length > 0) {
         url.searchParams.set('city_seller', filters.city.join(','));
@@ -197,7 +203,7 @@ export class CustomWordPressApiService {
         url.searchParams.set('search', filters.search);
       }
 
-      console.log("🎛 Fetching conditional filters from API:", url.toString());
+      console.log("🎛 Fetching conditional filters with clean field names:", url.toString());
       console.log("🔍 DEBUG: Applied filters for conditional filtering:", filters);
 
       const response = await fetch(url.toString());
@@ -211,7 +217,8 @@ export class CustomWordPressApiService {
         hasFilters: 'filters' in apiResponse,
         cached: apiResponse.cached || false,
         appliedFilters: Object.keys(filters).length,
-        isConditional: Object.keys(filters).length > 0
+        isConditional: Object.keys(filters).length > 0,
+        hasRanges: !!(apiResponse.filters?.price_range || apiResponse.filters?.year_range || apiResponse.filters?.mileage_range)
       });
 
       if (!apiResponse.success || !apiResponse.filters) {
@@ -221,22 +228,41 @@ export class CustomWordPressApiService {
       // Use pre-computed filters from API (cached for performance)
       const filtersData = apiResponse.filters;
 
+      // Extract range data from the new API response format
+      const priceRange = filtersData.price_range || { min: 0, max: 100000 };
+      const yearRange = filtersData.year_range || { min: 2000, max: 2025 };
+      const mileageRange = filtersData.mileage_range || { min: 0, max: 200000 };
+
+      console.log("📊 Range filters from WordPress API:", {
+        priceRange,
+        yearRange,
+        mileageRange
+      });
+
       return {
         success: true,
         data: {
+          // Standard filter options
           makes: filtersData.make || [],
           models: filtersData.model || [],
           trims: filtersData.trim || [],
           conditions: filtersData.condition || [],
           driveTypes: filtersData.drivetrain || [],
-          sellerTypes: filtersData.account_type_seller || [],
-          bodyStyles: filtersData.body_style || [],
+          sellerTypes: filtersData.seller_type || [],
+          bodyStyles: filtersData.body_style || [], // Now using clean field name
           fuelTypes: filtersData.fuel_type || [],
           transmissions: filtersData.transmission || [],
+          exteriorColors: filtersData.exterior_color || [],
+          interiorColors: filtersData.interior_color || [],
           years: filtersData.year || [],
-          priceRange: filtersData.price_range || { min: 0, max: 100000 },
-          mileageRange: filtersData.mileage_range || { min: 0, max: 200000 },
-          yearRange: filtersData.year_range || { min: 2000, max: 2025 }
+          
+          // Range filters - now properly extracted from WordPress API
+          priceRange,
+          mileageRange,
+          yearRange,
+          
+          // Additional metadata
+          totalVehicles: filtersData.total_vehicles || 0
         }
       };
       
@@ -250,7 +276,17 @@ export class CustomWordPressApiService {
           trims: [],
           conditions: [],
           driveTypes: [],
-          sellerTypes: []
+          sellerTypes: [],
+          bodyStyles: [],
+          fuelTypes: [],
+          transmissions: [],
+          exteriorColors: [],
+          interiorColors: [],
+          years: [],
+          priceRange: { min: 0, max: 100000 },
+          mileageRange: { min: 0, max: 200000 },
+          yearRange: { min: 2000, max: 2025 },
+          totalVehicles: 0
         }
       };
     }
@@ -276,12 +312,12 @@ export class CustomWordPressApiService {
 
   async getDealers() {
     try {
-      // Use filters endpoint to get dealer information
+      // Use filters endpoint to get dealer information with clean field name
       const response = await fetch(FILTERS_ENDPOINT);
       const apiResponse = await response.json();
 
       if (apiResponse.success && apiResponse.filters) {
-        const dealers = apiResponse.filters.account_name_seller || [];
+        const dealers = apiResponse.filters.dealer_name || apiResponse.filters.account_name_seller || [];
         return {
           success: true,
           data: dealers
@@ -297,7 +333,7 @@ export class CustomWordPressApiService {
 
   async getVehicleTypeCounts() {
     try {
-      // Use filters endpoint to get body style information
+      // Use filters endpoint to get body style information with clean field name
       const response = await fetch(FILTERS_ENDPOINT);
       const apiResponse = await response.json();
 
