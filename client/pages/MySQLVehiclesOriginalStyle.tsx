@@ -127,14 +127,14 @@ const normalizeFilterValue = (value: string) => {
 function MySQLVehiclesOriginalStyleInner() {
   console.log("🚀 COMPONENT: MySQLVehiclesOriginalStyleInner rendering");
 
-  // TEMPORARY: Test if component can render at all
-  if (Math.random() < 0.01) { // 1% chance for debugging
+  // TEMPORARY: Force a visible render to test
+  const FORCE_TEST_RENDER = false; // Set to true to test
+  if (FORCE_TEST_RENDER) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">COMPONENT TEST</h1>
-          <p className="text-gray-600">Component is rendering successfully!</p>
-          <p className="text-sm text-gray-500 mt-2">API Status: Working (254 vehicles)</p>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">MYSQL VEHICLES TEST</h1>
+          <p className="text-gray-600">Component is rendering! API working: 254 vehicles</p>
         </div>
       </div>
     );
@@ -2925,7 +2925,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       placeholder="2,000"
                       value={paymentMax}
                       onChange={(e) => {
-                        console.log("�� Payment max changed:", e.target.value);
+                        console.log("💰 Payment max changed:", e.target.value);
                         setPaymentMax(e.target.value);
                       }}
                       onBlur={(e) => {
