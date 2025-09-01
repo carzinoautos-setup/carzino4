@@ -150,7 +150,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = apiResponse?.meta?.totalPages || 1;
   const totalResults = apiResponse?.meta?.totalRecords || 0;
-  const resultsPerPage = 20;
+  const [resultsPerPage, setResultsPerPage] = useState(20);
 
   // Filter states - exactly like original
   const [searchTerm, setSearchTerm] = useState("");
@@ -463,6 +463,11 @@ function MySQLVehiclesOriginalStyleInner() {
         per_page: resultsPerPage,
       };
 
+      // Add sorting
+      if (sortBy !== "relevance") {
+        wpFilters.orderby = sortBy;
+      }
+
       // Add filters from URL params
       if (debouncedSearchTerm.trim()) {
         // WordPress API doesn't have search yet, skip for now
@@ -470,13 +475,13 @@ function MySQLVehiclesOriginalStyleInner() {
 
       if (debouncedAppliedFilters) {
         if (debouncedAppliedFilters.make.length > 0) {
-          wpFilters.make = debouncedAppliedFilters.make[0];
+          wpFilters.make = debouncedAppliedFilters.make.join(',');
         }
         if (debouncedAppliedFilters.model.length > 0) {
-          wpFilters.model = debouncedAppliedFilters.model[0];
+          wpFilters.model = debouncedAppliedFilters.model.join(',');
         }
         if (debouncedAppliedFilters.condition.length > 0) {
-          wpFilters.condition = debouncedAppliedFilters.condition[0];
+          wpFilters.condition = debouncedAppliedFilters.condition.join(',');
         }
         if (debouncedAppliedFilters.priceMin) {
           wpFilters.min_price = parseInt(debouncedAppliedFilters.priceMin.replace(/[^\d]/g, ''));
@@ -1095,7 +1100,7 @@ function MySQLVehiclesOriginalStyleInner() {
           .sort((a, b) => b.count - a.count),
         trims: Array.from(new Set(allVehicles.map(v => v.acf?.trim).filter(Boolean)))
           .map(trim => ({ name: trim!, count: allVehicles.filter(v => v.acf?.trim === trim).length }))
-          .sort((a, b) => b.count - a.count),
+          .sort((a, b) => a.name.localeCompare(b.name)),
         conditions: Array.from(new Set(allVehicles.map(v => v.acf?.condition).filter(Boolean)))
           .map(condition => ({ name: condition!, count: allVehicles.filter(v => v.acf?.condition === condition).length }))
           .sort((a, b) => b.count - a.count),
