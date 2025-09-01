@@ -180,18 +180,30 @@ export class WordPressCustomApiClient {
     } catch (error) {
       if (error.name === 'AbortError') {
         console.warn(`⏰ WordPress API timeout for: ${endpoint}`);
-        throw new Error(`Request timeout after 10 seconds for: ${endpoint}`);
+        throw new Error(`Request timeout after 15 seconds for: ${endpoint}`);
       }
 
+      // Enhanced error handling for different types of failures
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        console.error(`🌐 WordPress API Network Error:`, {
+          url,
+          baseUrl: this.baseUrl,
+          endpoint,
+          error: error.message,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString()
+        });
+
         // This is likely a CORS or network connectivity issue
-        throw new Error(`Network/CORS Error: Cannot connect to WordPress site. This could be due to:
+        throw new Error(`Network/CORS Error: Cannot connect to WordPress site (${this.baseUrl}). This could be due to:
 1. CORS policy blocking cross-origin requests
 2. WordPress site is down or unreachable
 3. SSL/HTTPS certificate issues
 4. Network connectivity problems
+5. WordPress REST API is disabled
 
-Original error: ${error.message}`);
+Original error: ${error.message}
+URL attempted: ${url}`);
       }
 
       console.error(`❌ WordPress Custom API Error: ${url}`, error);
