@@ -119,11 +119,33 @@ export class CustomWordPressApiService {
 
       // Transform vehicles to expected format using new ACF structure
       const transformedVehicles = vehicles.map(vehicle => {
-        // Get price from ACF custom field using rebuilt WordPress API
-        const price = vehicle.acf?.price || vehicle.price || vehicle.regular_price;
-        // Treat 0 or empty string as no price available
-        const formattedPrice = (price && parseInt(price) > 0) ? `$${parseInt(price).toLocaleString()}` : null;
+        // Get price from multiple possible fields with better logic
+        const priceFields = [
+          vehicle.acf?.price,
+          vehicle.acf?.sale_price,
+          vehicle.acf?.listing_price,
+          vehicle.price,
+          vehicle.regular_price,
+          vehicle.acf?.vehicle_price,
+          vehicle.acf?.asking_price
+        ];
 
+        // Find first valid price that's not null, undefined, empty string, or "0"
+        const price = priceFields.find(p => p && p !== "" && p !== "0" && parseInt(p) > 0);
+        const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
+
+        // Debug price detection for first few vehicles
+        if (vehicles.indexOf(vehicle) < 3) {
+          console.log(`🔍 Price Debug for vehicle ${vehicle.id}:`, {
+            acf_price: vehicle.acf?.price,
+            acf_sale_price: vehicle.acf?.sale_price,
+            price: vehicle.price,
+            regular_price: vehicle.regular_price,
+            finalPrice: price,
+            formattedPrice: formattedPrice,
+            availableAcfFields: vehicle.acf ? Object.keys(vehicle.acf) : 'no ACF'
+          });
+        }
 
         // Get mileage - ensure it's not zero/empty
         const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
