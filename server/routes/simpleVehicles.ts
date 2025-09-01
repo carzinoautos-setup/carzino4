@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { WordPressVehicleService } from "../services/wordpressVehicleService.js";
+import { CustomWordPressApiService } from "../services/customWordPressApiService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Using database queries for MySQL vehicles page
-console.log("🚀 Using WordPressVehicleService - database queries");
-const vehicleService = new WordPressVehicleService();
+// Using your custom WordPress API for faster response times
+console.log("🚀 Using CustomWordPressApiService - your custom API endpoint");
+const vehicleService = new CustomWordPressApiService();
 
 /**
  * GET /api/simple-vehicles
