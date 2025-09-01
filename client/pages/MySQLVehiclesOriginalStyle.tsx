@@ -4080,15 +4080,12 @@ function MySQLVehiclesOriginalStyleInner() {
                 <div>
                   <div className="vehicle-grid grid grid-cols-1 gap-4 mb-8">
                     {displayedVehicles.map((vehicle) => (
-                      <VehicleCard
+                      <MySQLVehicleCard
                         key={vehicle.id}
                         vehicle={vehicle}
-                        favorites={favorites}
-                        onToggleFavorite={toggleFavorite}
-                        keeperMessage={keeperMessage}
-                        termLength={termLength}
-                        interestRate={interestRate}
-                        downPayment={downPayment}
+                        onFavoriteToggle={(vehicleId) => toggleFavorite(vehicle)}
+                        isFavorite={isFavorited(vehicle.id)}
+                        className="h-full"
                       />
                     ))}
                   </div>
