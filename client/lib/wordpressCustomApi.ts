@@ -309,28 +309,42 @@ URL attempted: ${url}`);
   async testWordPressSite(): Promise<{ success: boolean; message: string; data?: any }> {
     try {
       console.log("🔍 Testing WordPress site basic connectivity...");
+      console.log(`Testing URL: ${this.baseUrl}`);
 
-      // Try to fetch the main WordPress site
+      // Try to fetch the main WordPress site with a timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(this.baseUrl, {
-        method: 'HEAD', // Just check if site is reachable
-        mode: 'no-cors', // Bypass CORS for basic connectivity test
+        method: 'GET',
+        mode: 'cors', // Try CORS first
+        credentials: 'omit',
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       return {
-        success: true,
-        message: "WordPress site is reachable",
+        success: response.ok,
+        message: response.ok
+          ? "WordPress site is reachable and responding"
+          : `WordPress site responded with ${response.status} ${response.statusText}`,
         data: {
           url: this.baseUrl,
-          status: "Site accessible"
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries())
         }
       };
     } catch (error) {
+      console.error("WordPress site connectivity test failed:", error);
       return {
         success: false,
         message: `WordPress site unreachable: ${error.message}`,
         data: {
           url: this.baseUrl,
-          error: error.message
+          error: error.message,
+          errorType: error.name
         }
       };
     }
