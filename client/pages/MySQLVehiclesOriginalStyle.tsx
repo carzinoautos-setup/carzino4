@@ -599,14 +599,6 @@ function MySQLVehiclesOriginalStyleInner() {
       // Transform WordPress vehicles to our format
       const transformVehicle = (wpVehicle: WordPressVehicle): any => {
         const acf = wpVehicle.acf;
-
-        // Simple price handling
-        const price = wpVehicle.price || 0;
-        const salePrice = price > 0 ? `$${price.toLocaleString()}` : null;
-
-        // Simple payment - always show something so payment section appears
-        const payment = acf?.payment > 0 ? `$${acf.payment}/mo*` : "$Call/mo*";
-
         return {
           id: wpVehicle.id,
           featured: acf?.is_featured === "1" || acf?.is_featured === true,
@@ -622,8 +614,8 @@ function MySQLVehiclesOriginalStyleInner() {
           mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
           transmission: acf?.transmission || "Auto",
           doors: acf?.doors ? `${acf.doors}` : "4",
-          salePrice: salePrice,
-          payment: payment,
+          salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
+          payment: acf?.payment ? `$${acf.payment}/mo*` : "Call for Payment",
           dealer: acf?.account_name_seller || "Dealer Account #1000821",
           location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
           phone: acf?.phone_number_seller || "(253) 555-0100",
@@ -631,7 +623,6 @@ function MySQLVehiclesOriginalStyleInner() {
           city_seller: acf?.city_seller,
           state_seller: acf?.state_seller,
           zip_seller: acf?.zip_seller,
-          seller_account_number: acf?.account_name_seller || "#1000821",
           // Add missing fields for filtering
           make: acf?.make,
           model: acf?.model,
