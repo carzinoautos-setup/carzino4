@@ -127,14 +127,18 @@ const normalizeFilterValue = (value: string) => {
 function MySQLVehiclesOriginalStyleInner() {
   console.log("🚀 COMPONENT: MySQLVehiclesOriginalStyleInner rendering");
 
-  // TEMPORARY: Force a visible render to test
-  const FORCE_TEST_RENDER = false; // Component works, now debug the main logic
+  // EMERGENCY: Force a simple test render to debug
+  const FORCE_TEST_RENDER = true; // Enable test render to see if component loads
   if (FORCE_TEST_RENDER) {
+    console.log("🚨 EMERGENCY: Test render active");
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">MYSQL VEHICLES TEST</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">🚨 MYSQL VEHICLES EMERGENCY TEST</h1>
           <p className="text-gray-600">Component is rendering! API working: 254 vehicles</p>
+          <div className="mt-4 text-sm text-gray-500">
+            Time: {new Date().toLocaleTimeString()}
+          </div>
         </div>
       </div>
     );
