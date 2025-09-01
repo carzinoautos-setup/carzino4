@@ -4265,7 +4265,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles) - Status: ${(error || apiResponse?.message?.includes('Mock data')) ? 'Offline (Using Demo Data)' : 'Online'}`}
+                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles)`}
                   </div>
                   {import.meta.env.DEV && (
                     <button
