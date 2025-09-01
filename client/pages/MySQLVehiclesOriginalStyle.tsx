@@ -280,12 +280,12 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Performance monitoring (only in development)
   if (import.meta.env.DEV && Math.random() < 0.1) { // Log only 10% of renders
-    console.log("📊 MySQL Vehicles Tab - Server API State:", {
+    console.log("📊 MySQL Vehicles Tab - WordPress API State:", {
       vehiclesCount: vehicles.length,
       totalResults,
       loading,
       error,
-      apiEndpoint: "/api/simple-vehicles/combined"
+      apiEndpoint: "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles"
     });
   }
 
