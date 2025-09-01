@@ -57,6 +57,9 @@ export interface SimpleVehicleFilters {
   priceMax?: string;
   paymentMin?: string;
   paymentMax?: string;
+  termLength?: string;
+  interestRate?: string;
+  downPayment?: string;
 }
 
 export interface SimpleVehiclesApiResponse {
