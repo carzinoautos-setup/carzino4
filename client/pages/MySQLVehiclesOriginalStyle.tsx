@@ -1114,7 +1114,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // FIXED: Separate effect for results per page changes
   useEffect(() => {
     if (isMountedRef.current && resultsPerPage !== 20) {
-      console.log(`��� FIXED: Results per page changed to ${resultsPerPage} - refreshing...`);
+      console.log(`📊 FIXED: Results per page changed to ${resultsPerPage} - refreshing...`);
       setCurrentPage(1); // Reset to first page when changing page size
       fetchCombinedData();
     }
@@ -4196,7 +4196,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       <div>Debug Info:</div>
                       <div>�� Total vehicles: {vehicles.length}</div>
                       <div>• Current page: {currentPage}</div>
-                      <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
+                      <div>• API URL: Server-side Node.js API (/api/simple-vehicles/combined)</div>
                       <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
                     </div>
                   )}
