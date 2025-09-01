@@ -1013,20 +1013,20 @@ function MySQLVehiclesOriginalStyleInner() {
       "Passenger Van": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
 
       // Wagons
-      "Wagon": "🚗",
-      "Wagons": "🚗",
-      "Station Wagon": "🚗",
+      "Wagon": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
+      "Wagons": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
+      "Station Wagon": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
 
       // Motorcycles
-      "Motorcycle": "🏍️",
-      "Motorcycles": "🏍️",
-      "Bike": "🏍️",
+      "Motorcycle": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&crop=center",
+      "Motorcycles": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&crop=center",
+      "Bike": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&crop=center",
 
       // RVs and Large Vehicles
-      "RV": "🚐",
-      "RVs": "🚐",
-      "Motorhome": "🚐",
-      "Recreational Vehicle": "🚐"
+      "RV": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "RVs": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&center",
+      "Motorhome": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Recreational Vehicle": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center"
     };
 
     console.log("🖼️ Setting up vehicle type images mapping...");
