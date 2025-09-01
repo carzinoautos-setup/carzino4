@@ -1012,23 +1012,26 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
             {/* Price Filter */}
-            <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3">
-              <label className="carzino-location-label block mb-2">Filter by Price</label>
+            <FilterSection
+              title="Filter by Price"
+              isCollapsed={collapsedFilters.price}
+              onToggle={() => toggleFilter("price")}
+            >
               <div className="space-y-2">
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <input
                     type="text"
                     placeholder="$10,000"
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
                   />
                   <input
                     type="text"
                     placeholder="$100,000"
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
                   />
                 </div>
                 <button
@@ -1045,7 +1048,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   Apply Price Filter
                 </button>
               </div>
-            </div>
+            </FilterSection>
 
             {/* Trim Filter */}
             <FilterSection
