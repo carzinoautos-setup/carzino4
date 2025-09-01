@@ -612,6 +612,7 @@ function MySQLVehiclesOriginalStyleInner() {
               down_payment: acf?.down_payment || 2000,
               loan_term: acf?.loan_term || 60,
               payments: vehiclePayment,
+              payment: vehiclePayment > 0 ? `$${vehiclePayment}/mo*` : null,
               featured: acf?.is_featured === true || acf?.is_featured === '1',
               viewed: false,
               images: vehicleImages,
@@ -979,7 +980,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Vans and Minivans
       "Van": "🚐",
       "Vans": "🚐",
-      "Minivan": "���",
+      "Minivan": "🚐",
       "Minivans": "🚐",
       "Van / Minivan": "🚐",
       "Cargo Van": "🚐",
