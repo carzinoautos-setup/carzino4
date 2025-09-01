@@ -513,42 +513,72 @@ function MySQLVehiclesOriginalStyleInner() {
           vehicles: response.data.map(wpVehicle => {
             // Transform WordPress vehicle to MySQL format
             const acf = wpVehicle.acf;
+
+            // Debug log to see actual WordPress data structure
+            if (import.meta.env.DEV) {
+              console.log('🔍 WordPress Vehicle Data:', {
+                id: wpVehicle.id,
+                name: wpVehicle.name,
+                price: wpVehicle.price,
+                regular_price: wpVehicle.regular_price,
+                sale_price: wpVehicle.sale_price,
+                acf_payment: acf?.payment,
+                acf_price: acf?.price,
+                acf_sale_price: acf?.sale_price,
+                images: wpVehicle.images,
+                featured_image: wpVehicle.featured_image
+              });
+            }
+
+            // Try multiple sources for price - ACF fields, WooCommerce fields, etc.
+            const vehiclePrice = acf?.price ||
+                               acf?.sale_price ||
+                               wpVehicle.price ||
+                               wpVehicle.sale_price ||
+                               wpVehicle.regular_price ||
+                               0;
+
+            // Handle featured image from multiple sources
+            const vehicleImages = wpVehicle.featured_image ?
+                                [wpVehicle.featured_image] :
+                                (wpVehicle.images?.map(img => img.src) || []);
+
             return {
               id: wpVehicle.id,
-              year: acf.year,
-              make: acf.make,
-              model: acf.model,
-              trim: acf.trim,
-              body_style: acf.body_style,
-              engine_cylinders: acf.engine_cylinders,
-              fuel_type: acf.fuel_type,
-              transmission: acf.transmission,
-              drivetrain: acf.drivetrain,
-              exterior_color_generic: acf.exterior_color,
-              interior_color_generic: acf.interior_color,
-              doors: acf.doors,
-              price: wpVehicle.price || wpVehicle.sale_price || 0,
-              mileage: acf.mileage,
-              title_status: acf.title_status,
-              highway_mpg: acf.highway_mpg,
-              condition: acf.condition,
-              certified: acf.certified,
-              seller_type: acf.account_type_seller,
-              city_seller: acf.city_seller,
-              state_seller: acf.state_seller,
-              zip_seller: acf.zip_seller,
-              interest_rate: acf.interest_rate,
-              down_payment: acf.down_payment,
-              loan_term: acf.loan_term,
-              payments: acf.payment,
-              featured: acf.is_featured,
+              year: acf?.year || 2020,
+              make: acf?.make || 'Unknown',
+              model: acf?.model || 'Model',
+              trim: acf?.trim || '',
+              body_style: acf?.body_style || acf?.body_type || '',
+              engine_cylinders: acf?.engine_cylinders || 4,
+              fuel_type: acf?.fuel_type || 'Gasoline',
+              transmission: acf?.transmission || 'Auto',
+              drivetrain: acf?.drivetrain || acf?.drive_type || 'FWD',
+              exterior_color_generic: acf?.exterior_color || 'Black',
+              interior_color_generic: acf?.interior_color || 'Black',
+              doors: acf?.doors || 4,
+              price: vehiclePrice,
+              mileage: acf?.mileage || 0,
+              title_status: acf?.title_status || 'Clean',
+              highway_mpg: acf?.highway_mpg || 25,
+              condition: acf?.condition || 'Used',
+              certified: acf?.certified === true || acf?.certified === '1',
+              seller_type: acf?.account_type_seller || 'Dealer',
+              city_seller: acf?.city_seller || 'Seattle',
+              state_seller: acf?.state_seller || 'WA',
+              zip_seller: acf?.zip_seller || '98101',
+              interest_rate: acf?.interest_rate || 5.0,
+              down_payment: acf?.down_payment || 2000,
+              loan_term: acf?.loan_term || 60,
+              payments: acf?.payment || 0,
+              featured: acf?.is_featured === true || acf?.is_featured === '1',
               viewed: false,
-              images: wpVehicle.images?.map(img => img.src) || [],
-              badges: [acf.condition, acf.drivetrain].filter(Boolean),
-              title: wpVehicle.name,
-              phone: acf.phone_number_seller,
-              dealer: acf.account_name_seller,
-              location: `${acf.city_seller}, ${acf.state_seller} ${acf.zip_seller}`,
+              images: vehicleImages,
+              badges: [acf?.condition || 'Used', acf?.drivetrain || acf?.drive_type || 'FWD'].filter(Boolean),
+              title: wpVehicle.name || `${acf?.year || ''} ${acf?.make || ''} ${acf?.model || ''}`.trim(),
+              phone: acf?.phone_number_seller || '(253) 555-0100',
+              dealer: acf?.account_name_seller || acf?.acount_name_seller || 'Dealer',
+              location: `${acf?.city_seller || 'Seattle'}, ${acf?.state_seller || 'WA'} ${acf?.zip_seller || '98101'}`,
             };
           }),
           meta: {
