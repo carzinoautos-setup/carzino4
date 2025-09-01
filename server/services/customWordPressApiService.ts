@@ -8,10 +8,11 @@ const VEHICLES_ENDPOINT = `${WP_BASE_URL}/vehicles`;
 const FILTERS_ENDPOINT = `${WP_BASE_URL}/filters`;
 
 export class CustomWordPressApiService {
-  
+
   async getVehicles(pagination: SimplePaginationParams, filters: SimpleVehicleFilters = {}, sortBy: string = "relevance") {
     try {
-      console.log("🔗 Fetching from custom WordPress API:", WP_API_URL);
+      const url = `${VEHICLES_ENDPOINT}?per_page=${pagination.pageSize}&page=${pagination.page}`;
+      console.log("🔗 Fetching from new vehicles API:", url);
       
       const response = await fetch(WP_API_URL);
       if (!response.ok) {
