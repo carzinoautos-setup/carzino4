@@ -1284,9 +1284,9 @@ function MySQLVehiclesOriginalStyleInner() {
               >
                 <option value="">Any Mileage</option>
                 <option value="Under 15,000">Under 15,000</option>
-                <option value="15,000 - 30,000">15,000 - 30,000</option>
-                <option value="30,000 - 60,000">30,000 - 60,000</option>
-                <option value="60,000 - 100,000">60,000 - 100,000</option>
+                <option value="15,000 – 30,000">15,000 – 30,000</option>
+                <option value="30,000 – 60,000">30,000 – 60,000</option>
+                <option value="60,000 – 100,000">60,000 – 100,000</option>
                 <option value="Over 100,000">Over 100,000</option>
               </select>
             </FilterSection>
