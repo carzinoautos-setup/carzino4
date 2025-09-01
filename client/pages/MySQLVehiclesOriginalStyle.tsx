@@ -551,10 +551,11 @@ function MySQLVehiclesOriginalStyleInner() {
       console.log("📡 FIXED: Calling your FAST WordPress API with filters:", wpFilters);
       console.log("📡 DEBUG: wordpressCustomApi object:", wordpressCustomApi);
 
+      // Use WordPress custom API instead of slow server API
+      console.log("📡 DEBUG: About to call wordpressCustomApi.getVehicles...");
+      let response: WordPressVehiclesResponse;
       try {
-        // Use WordPress custom API instead of slow server API
-        console.log("📡 DEBUG: About to call wordpressCustomApi.getVehicles...");
-        const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+        response = await wordpressCustomApi.getVehicles(
           currentPage,
           resultsPerPage,
           wpFilters
