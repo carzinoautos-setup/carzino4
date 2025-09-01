@@ -3,7 +3,9 @@ import {
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-const WP_API_URL = "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles";
+const WP_BASE_URL = "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1";
+const VEHICLES_ENDPOINT = `${WP_BASE_URL}/vehicles`;
+const FILTERS_ENDPOINT = `${WP_BASE_URL}/filters`;
 
 export class CustomWordPressApiService {
   
