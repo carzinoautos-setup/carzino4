@@ -105,6 +105,19 @@ export class CustomWordPressApiService {
         // Treat 0 or empty string as no price available
         const formattedPrice = (price && parseInt(price) > 0) ? `$${parseInt(price).toLocaleString()}` : null;
 
+        // DETAILED DEBUG: Show all ACF field names and values for first vehicle to identify correct price field
+        if (vehicles.indexOf(vehicle) === 0 && vehicle.acf) {
+          console.log(`🔍 FULL ACF DEBUG for Vehicle ID ${vehicle.id}:`, vehicle.acf);
+          console.log(`🔍 Looking for price fields:`, {
+            'acf.price': vehicle.acf.price,
+            'acf._price': vehicle.acf._price,
+            'acf.vehicle_price': vehicle.acf.vehicle_price,
+            'acf.sale_price': vehicle.acf.sale_price,
+            'acf.msrp': vehicle.acf.msrp,
+            'top_level_price': vehicle.price
+          });
+        }
+
 
         // Get mileage - ensure it's not zero/empty
         const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
