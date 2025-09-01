@@ -7,6 +7,7 @@ export default function WordPressApiTest() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cacheStats, setCacheStats] = useState({ entries: 0, size: '0 KB' });
+  const [manualUrl, setManualUrl] = useState('');
 
   // Test API connection and fetch sample data
   useEffect(() => {
