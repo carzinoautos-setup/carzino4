@@ -60,6 +60,7 @@ export interface SimpleVehicleFilters {
   termLength?: string;
   interestRate?: string;
   downPayment?: string;
+  search?: string;
 }
 
 export interface SimpleVehiclesApiResponse {
