@@ -681,6 +681,42 @@ export default function WordPressVehicles() {
             background: transparent;
             color: #6b7280;
           }
+
+          @media (max-width: 1024px) {
+            .mobile-filter-overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0, 0, 0, 0.5);
+              z-index: 40;
+              opacity: 0;
+              visibility: hidden;
+              transition: all 0.3s ease;
+            }
+
+            .mobile-filter-overlay.open {
+              opacity: 1;
+              visibility: visible;
+            }
+
+            .mobile-filter-sidebar {
+              position: fixed;
+              top: 0;
+              left: -280px;
+              width: 280px;
+              height: 100vh;
+              background: white;
+              z-index: 50;
+              transition: left 0.3s ease;
+              overflow-y: auto;
+            }
+
+            .mobile-filter-sidebar.open {
+              left: 0;
+            }
+          }
         `}</style>
 
         <div className="flex flex-col lg:flex-row min-h-screen max-w-[1325px] mx-auto">
