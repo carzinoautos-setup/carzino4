@@ -631,9 +631,7 @@ function MySQLVehiclesOriginalStyleInner() {
       };
 
       // Convert WordPress format to our expected format
-      console.log("🔍 DEBUG: About to transform vehicles, count:", responseData.data?.length || 0);
       const transformedVehicles = (responseData.data || []).map(transformVehicle);
-      console.log("🔍 DEBUG: Transformed vehicles, count:", transformedVehicles.length);
 
       // Extract filter options from WordPress data
       const extractFilterOptions = (vehicles: any[]) => {
