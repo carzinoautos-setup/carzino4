@@ -47,14 +47,14 @@ interface Vehicle {
 
 export default function WordPressVehicles() {
   // State management
-  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
   const [pageSize] = useState(20);
-  
+
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
@@ -62,11 +62,12 @@ export default function WordPressVehicles() {
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState<string>("");
   const [priceMax, setPriceMax] = useState<string>("");
-  
+
   // UI states
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [favorites, setFavorites] = useState<{ [key: number]: VehicleRecord }>({});
+  const [favorites, setFavorites] = useState<{ [key: number]: Vehicle }>({});
   const [collapsedFilters, setCollapsedFilters] = useState<{ [key: string]: boolean }>({});
+  const [keeperMessage, setKeeperMessage] = useState<number | null>(null);
 
   // Filter options from API
   const [filterOptions, setFilterOptions] = useState({
