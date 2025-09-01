@@ -431,7 +431,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (import.meta.env.DEV && retryCount === 0) {
-        console.log("🚀 COMBINED FETCH: Calling WordPress API");
+        console.log("��� COMBINED FETCH: Calling WordPress API");
       }
 
       // Set timeout for request
@@ -1131,11 +1131,38 @@ function MySQLVehiclesOriginalStyleInner() {
           .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
         trims: Array.from(new Set(filteredTrims.map(v => v.acf?.trim).filter(Boolean)))
           .map(trim => ({ name: trim!, count: filteredTrims.filter(v => v.acf?.trim === trim).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
-        conditions: Array.from(new Set(['New', 'Used', 'Certified', ...allVehicles.map(v => v.acf?.condition).filter(Boolean)]))
-          .map(condition => ({ name: condition!, count: allVehicles.filter(v => v.acf?.condition === condition || (condition === 'Used' && (!v.acf?.condition || v.acf?.condition.toLowerCase() === 'used'))).length }))
-          .filter(condition => condition.count > 0)
-          .sort((a, b) => b.count - a.count),
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })), // Proper alphabetical sorting
+        conditions: (() => {
+          // Ensure 'Used' is always included as primary condition
+          const conditionSet = new Set(['Used', 'New', 'Certified']);
+          allVehicles.forEach(v => {
+            if (v.acf?.condition) {
+              conditionSet.add(v.acf.condition);
+            }
+          });
+          return Array.from(conditionSet)
+            .map(condition => {
+              let count = 0;
+              if (condition === 'Used') {
+                // Count vehicles that are explicitly 'Used' OR have no condition (default to Used)
+                count = allVehicles.filter(v =>
+                  !v.acf?.condition ||
+                  v.acf?.condition.toLowerCase() === 'used' ||
+                  v.acf?.condition === 'Used'
+                ).length;
+              } else {
+                count = allVehicles.filter(v => v.acf?.condition === condition).length;
+              }
+              return { name: condition, count };
+            })
+            .filter(condition => condition.count > 0)
+            .sort((a, b) => {
+              // Sort: Used first, then by count
+              if (a.name === 'Used') return -1;
+              if (b.name === 'Used') return 1;
+              return b.count - a.count;
+            });
+        })(),
         vehicleTypes: Array.from(new Set(allVehicles.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
           .map(type => ({ name: type!, count: allVehicles.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length }))
           .sort((a, b) => b.count - a.count),
@@ -2134,7 +2161,7 @@ function MySQLVehiclesOriginalStyleInner() {
             overflow-x: hidden;
             display: block !important;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 120px !important; /* Extra space for fixed action buttons */
+            padding-bottom: 140px !important; /* Extra space for fixed action buttons */
           }
 
           .mobile-action-buttons {
@@ -2143,15 +2170,16 @@ function MySQLVehiclesOriginalStyleInner() {
             bottom: 0 !important;
             left: 0 !important;
             right: 0 !important;
-            z-index: 60 !important;
+            z-index: 999 !important;
             background: white !important;
             padding: 16px !important;
             padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
-            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.15) !important;
-            border-top: 1px solid #e5e7eb !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+            border-top: 2px solid #e5e7eb !important;
             -webkit-transform: translateZ(0) !important;
             transform: translateZ(0) !important;
-            min-height: 80px !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
           }
 
           .mobile-filter-sidebar.open {
@@ -3729,13 +3757,12 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Mobile Filter Action Buttons - Sticky at Bottom */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 mobile-action-buttons">
-              <div className="flex gap-3 max-w-md mx-auto">
+            {/* Mobile Filter Action Buttons - Properly Sticky at Bottom */}
+            <div className="lg:hidden mobile-action-buttons">
+              <div className="flex gap-3">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors touch-manipulation"
-                  style={{ minHeight: '48px' }}
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -3744,8 +3771,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     setMobileFiltersOpen(false);
                     // Filters are already applied in real-time, so just close the panel
                   }}
-                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors touch-manipulation"
-                  style={{ minHeight: '48px' }}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors"
                 >
                   Apply Filters
                 </button>
@@ -4428,8 +4454,13 @@ function MySQLVehiclesOriginalStyleInner() {
                   value={resultsPerPage}
                   onChange={(e) => {
                     const newValue = parseInt(e.target.value);
+                    console.log('📊 View count changed:', resultsPerPage, '->', newValue);
                     setResultsPerPage(newValue);
                     setCurrentPage(1); // Reset to first page when changing view count
+                    // Force immediate refresh of vehicles with new page size
+                    if (isMountedRef.current) {
+                      fetchCombinedData();
+                    }
                   }}
                   className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white"
                 >
