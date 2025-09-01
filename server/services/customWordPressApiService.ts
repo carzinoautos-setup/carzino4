@@ -258,28 +258,43 @@ export class CustomWordPressApiService {
         mileageRange
       });
 
+      // Helper function to sort filter options alphabetically
+      const sortFilterOptions = (options: any[]) => {
+        if (!Array.isArray(options)) return [];
+        return options.sort((a, b) => {
+          const nameA = (a.name || a).toString().toLowerCase();
+          const nameB = (b.name || b).toString().toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+      };
+
       return {
         success: true,
         data: {
-          // Standard filter options
-          makes: filtersData.make || [],
-          models: filtersData.model || [],
-          trims: filtersData.trim || [],
-          conditions: filtersData.condition || [],
-          driveTypes: filtersData.drivetrain || [],
-          sellerTypes: filtersData.seller_type || [],
-          bodyStyles: filtersData.body_style || [], // Now using clean field name
-          fuelTypes: filtersData.fuel_type || [],
-          transmissions: filtersData.transmission || [],
-          exteriorColors: filtersData.exterior_color || [],
-          interiorColors: filtersData.interior_color || [],
-          years: filtersData.year || [],
-          
+          // Standard filter options - ALL SORTED ALPHABETICALLY
+          makes: sortFilterOptions(filtersData.make || []),
+          models: sortFilterOptions(filtersData.model || []),
+          trims: sortFilterOptions(filtersData.trim || []),
+          conditions: sortFilterOptions(filtersData.condition || []),
+          driveTypes: sortFilterOptions(filtersData.drivetrain || []),
+          sellerTypes: sortFilterOptions(filtersData.seller_type || []),
+          vehicleTypes: sortFilterOptions(filtersData.body_style || []), // Using correct field mapping
+          fuelTypes: sortFilterOptions(filtersData.fuel_type || []),
+          transmissions: sortFilterOptions(filtersData.transmission || []),
+          exteriorColors: sortFilterOptions(filtersData.exterior_color || []),
+          interiorColors: sortFilterOptions(filtersData.interior_color || []),
+          years: sortFilterOptions(filtersData.year || []),
+
+          // Location and dealer filters with correct field mapping
+          dealers: sortFilterOptions(filtersData.dealer_name || filtersData.account_name_seller || []),
+          cities: sortFilterOptions(filtersData.city_seller || []),
+          states: sortFilterOptions(filtersData.state_seller || []),
+
           // Range filters - now properly extracted from WordPress API
           priceRange,
           mileageRange,
           yearRange,
-          
+
           // Additional metadata
           totalVehicles: filtersData.total_vehicles || 0
         }
