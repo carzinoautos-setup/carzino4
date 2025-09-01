@@ -373,6 +373,7 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const handleModelChange = (modelName: string, isChecked: boolean) => {
+    setCurrentPage(1); // Reset to first page when filters change
     setAppliedFilters((prev) => {
       const newModels = isChecked
         ? [...prev.model, modelName]
@@ -387,6 +388,7 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const handleTrimChange = (trimName: string, isChecked: boolean) => {
+    setCurrentPage(1); // Reset to first page when filters change
     setAppliedFilters((prev) => ({
       ...prev,
       trim: isChecked
@@ -396,6 +398,7 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const handleVehicleTypeToggle = (vehicleType: string) => {
+    setCurrentPage(1); // Reset to first page when filters change
     setAppliedFilters((prev) => ({
       ...prev,
       vehicleType: prev.vehicleType.includes(vehicleType)
@@ -954,6 +957,7 @@ function MySQLVehiclesOriginalStyleInner() {
                 </div>
                 <button
                   onClick={() => {
+                    setCurrentPage(1); // Reset to first page when filters change
                     setAppliedFilters(prev => ({
                       ...prev,
                       priceMin: priceMin,
@@ -1120,6 +1124,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
                 <button
                   onClick={() => {
+                    setCurrentPage(1); // Reset to first page when filters change
                     setAppliedFilters(prev => ({
                       ...prev,
                       paymentMin: paymentMin,
