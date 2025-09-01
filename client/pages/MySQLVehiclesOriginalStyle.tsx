@@ -590,12 +590,6 @@ function MySQLVehiclesOriginalStyleInner() {
         success: responseData.success
       });
 
-      console.log("🔍 DEBUG: Raw response data sample:", {
-        firstVehicle: responseData.data?.[0],
-        hasData: !!responseData.data,
-        dataLength: responseData.data?.length
-      });
-
       // Transform WordPress vehicles to our format
       const transformVehicle = (wpVehicle: WordPressVehicle): any => {
         const acf = wpVehicle.acf;
