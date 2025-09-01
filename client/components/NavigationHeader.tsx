@@ -86,6 +86,7 @@ export function NavigationHeader() {
             {isActive("/mysql-vehicles") && "MySQL Vehicles (50k)"}
             {isActive("/wordpress-vehicles") && "WordPress API"}
             {isActive("/wordpress-api-test") && "API Test"}
+            {isActive("/wordpress-diagnostic") && "API Diagnostic"}
             {isActive("/") && "Original Demo"}
           </div>
         </div>
