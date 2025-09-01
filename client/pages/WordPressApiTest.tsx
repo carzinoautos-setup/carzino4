@@ -439,6 +439,77 @@ export default function WordPressApiTest() {
             </ul>
           </div>
         )}
+
+        {/* Troubleshooting Guide */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-blue-900 mb-4">🔧 Troubleshooting Guide</h2>
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-blue-800">1. CORS Issues (Most Common)</h3>
+              <p className="text-blue-700 text-sm mb-2">If you see "Failed to fetch" errors, add this to your WordPress theme's functions.php:</p>
+              <pre className="bg-blue-100 p-3 rounded text-xs overflow-x-auto">
+{`// Add CORS headers for API requests
+add_action('rest_api_init', function() {
+    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
+    add_filter('rest_pre_serve_request', function($value) {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        return $value;
+    });
+});`}
+              </pre>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-blue-800">2. Create Custom API Endpoint</h3>
+              <p className="text-blue-700 text-sm mb-2">Add this to your WordPress theme's functions.php to create the custom endpoint:</p>
+              <pre className="bg-blue-100 p-3 rounded text-xs overflow-x-auto">
+{`// Register custom API endpoint
+add_action('rest_api_init', function () {
+    register_rest_route('custom/v1', '/vehicles', array(
+        'methods' => 'GET',
+        'callback' => 'get_vehicles_api',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+function get_vehicles_api($request) {
+    // Your API logic here
+    return new WP_REST_Response(array(
+        'success' => true,
+        'data' => array(),
+        'pagination' => array(
+            'total' => 0,
+            'page' => 1,
+            'per_page' => 20,
+            'total_pages' => 0
+        )
+    ));
+}`}
+              </pre>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-blue-800">3. Check WordPress Settings</h3>
+              <ul className="list-disc list-inside text-blue-700 text-sm space-y-1">
+                <li>Go to Settings → Permalinks and save (refreshes rewrite rules)</li>
+                <li>Ensure REST API is enabled (should be by default)</li>
+                <li>Check if any security plugins are blocking REST API requests</li>
+                <li>Test the WP REST API: <code>/wp-json</code> should return JSON</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-blue-800">4. Environment Variables</h3>
+              <p className="text-blue-700 text-sm mb-2">Create a <code>.env</code> file in your React project root:</p>
+              <pre className="bg-blue-100 p-3 rounded text-xs overflow-x-auto">
+{`VITE_WP_URL=https://env-uploadbackup62225-czdev.kinsta.cloud`}
+              </pre>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
