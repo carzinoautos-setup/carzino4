@@ -167,7 +167,7 @@ function MySQLVehiclesOriginalStyleInner() {
       setLoading(true);
       setError(null);
 
-      // Build API URL
+      // Build API URL - call our backend that properly handles filters
       const apiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
       apiUrl.searchParams.set('page', currentPage.toString());
       apiUrl.searchParams.set('pageSize', resultsPerPage.toString());
