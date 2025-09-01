@@ -129,6 +129,33 @@ export default function WordPressApiTest() {
             </button>
           </div>
 
+          {/* Manual URL Override */}
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <h4 className="font-medium text-yellow-800 mb-2">🛠️ Quick URL Test</h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="https://your-wordpress-site.com"
+                value={manualUrl}
+                onChange={(e) => setManualUrl(e.target.value)}
+                className="flex-1 px-3 py-1 border border-yellow-300 rounded text-sm"
+              />
+              <button
+                onClick={() => {
+                  if (manualUrl) {
+                    const testUrl = `${manualUrl}/wp-json/custom/v1/vehicles`;
+                    window.open(testUrl, '_blank');
+                  }
+                }}
+                disabled={!manualUrl}
+                className="px-3 py-1 bg-yellow-600 text-white rounded text-sm hover:bg-yellow-700 disabled:opacity-50"
+              >
+                Test URL
+              </button>
+            </div>
+            <p className="text-xs text-yellow-700 mt-1">Enter a WordPress URL to test the custom endpoint directly in your browser</p>
+          </div>
+
           {/* Cache Stats */}
           <div className="mt-4 text-sm text-gray-600">
             Cache: {cacheStats.entries} entries, {cacheStats.size}
