@@ -30,6 +30,7 @@ import {
   testDatabaseConnection,
 } from "./db/connection.js";
 import { testWordPressConnection } from "./routes/testConnection.js";
+import { testWordPressApiCall } from "./routes/testWordPressApi.js";
 import {
   calculatePayment,
   calculateBulkPayments,
