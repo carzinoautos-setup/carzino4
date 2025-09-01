@@ -642,11 +642,16 @@ function MySQLVehiclesOriginalStyleInner() {
           setAvailableDealers(data.data.dealers || []);
           setVehicleTypes(data.data.filters?.vehicleTypes || []);
 
-          // Force update of totalResults and loading state
+          // CRITICAL: Force loading state to false
+          console.log("✅ CRITICAL: Setting loading to false with data:", {
+            vehiclesCount: data.data.vehicles?.length || 0,
+            totalRecords: data.data.meta?.totalRecords || 0
+          });
           setLoading(false);
         } catch (transformError) {
           console.error("❌ Error in data transformation:", transformError);
-          // Still set basic data to show something
+          // Still set basic data and clear loading
+          console.log("⚠️ TRANSFORM ERROR: Still setting vehicles and clearing loading");
           setVehicles(data.data.vehicles || []);
           setLoading(false);
         }
@@ -840,39 +845,52 @@ function MySQLVehiclesOriginalStyleInner() {
     [navigate, location.pathname],
   );
 
-  // Initial data fetch on component mount
+  // SIMPLIFIED: Single effect for all data fetching with better dependency management
   useEffect(() => {
-    console.log("🚀 INITIAL MOUNT: Triggering data fetch");
-    if (!isMountedRef.current) return;
+    if (!isMountedRef.current) {
+      console.log("🚫 Component not mounted, skipping fetch");
+      return;
+    }
 
-    // Force initial data fetch regardless of dependencies
-    setTimeout(() => {
+    console.log("🚀 DATA FETCH: Starting with params:", {
+      page: currentPage,
+      pageSize: resultsPerPage,
+      hasFilters: Object.values(debouncedAppliedFilters).some(v => Array.isArray(v) ? v.length > 0 : !!v),
+      searchTerm: debouncedSearchTerm,
+      sortBy
+    });
+
+    // Reset loading state and fetch data
+    setLoading(true);
+    setError(null);
+
+    // Use a small delay to avoid rapid successive calls
+    const timeoutId = setTimeout(() => {
       if (isMountedRef.current) {
-        console.log("🚀 INITIAL MOUNT: Executing fetchCombinedData");
         fetchCombinedData();
       }
     }, 100);
-  }, []); // Empty dependency array - runs only on mount
 
-  // Performance: Fetch combined data when memoized parameters change
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, resultsPerPage, debouncedSearchTerm, sortBy, debouncedAppliedFilters, appliedLocation, appliedRadius]); // Direct dependencies instead of fetchCombinedData
+
+  // SIMPLIFIED: Safety mechanism with better logging
   useEffect(() => {
-    if (!isMountedRef.current) return;
+    if (!loading) return;
 
-    fetchCombinedData();
-  }, [fetchCombinedData]);
+    console.log("⏱️ SAFETY TIMER: Starting 10 second loading timeout");
+    const timeout = setTimeout(() => {
+      if (loading && isMountedRef.current) {
+        console.warn("⚠️ SAFETY TIMER: Force clearing loading state after 10 seconds");
+        setLoading(false);
+        setError("Loading took too long. Please try refreshing the page.");
+      }
+    }, 10000); // 10 second timeout
 
-  // Safety mechanism: Force clear loading state after 15 seconds on mobile
-  useEffect(() => {
-    if (loading) {
-      const timeout = setTimeout(() => {
-        if (loading && import.meta.env.DEV) {
-          console.warn("⚠️ Loading timeout - forcing loading state to false");
-          setLoading(false);
-        }
-      }, 15000); // 15 second timeout
-
-      return () => clearTimeout(timeout);
-    }
+    return () => {
+      console.log("⏱️ SAFETY TIMER: Clearing timeout");
+      clearTimeout(timeout);
+    };
   }, [loading]);
 
   // Cleanup effect to abort any pending requests on unmount
