@@ -598,6 +598,7 @@ function MySQLVehiclesOriginalStyleInner() {
               interior_color_generic: acf?.interior_color || 'Black',
               doors: acf?.doors || 4,
               price: vehiclePrice,
+              salePrice: vehiclePrice > 0 ? `$${vehiclePrice.toLocaleString()}` : null,
               mileage: acf?.mileage || 0,
               title_status: acf?.title_status || 'Clean',
               highway_mpg: acf?.highway_mpg || 25,
@@ -978,7 +979,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Vans and Minivans
       "Van": "🚐",
       "Vans": "🚐",
-      "Minivan": "🚐",
+      "Minivan": "���",
       "Minivans": "🚐",
       "Van / Minivan": "🚐",
       "Cargo Van": "🚐",
