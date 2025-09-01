@@ -409,25 +409,97 @@ export default function WordPressVehicles() {
             style={{ width: "280px" }}
           >
             <div className="p-4">
-              {/* Search Section - Desktop */}
-              <div className="mb-4 pb-4 border-b border-gray-200">
-                <form className="space-y-2">
+              {/* Desktop Search Section */}
+              <div className="hidden lg:block mb-4 pb-4 border-b border-gray-200">
+                <form onSubmit={handleUnifiedSearchSubmit}>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Search Cars For Sale"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="carzino-search-input w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-[10px] focus:outline-none focus:border-red-600"
+                      value={unifiedSearch}
+                      onChange={(e) => setUnifiedSearch(e.target.value)}
+                      className="carzino-search-input w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:border-red-600"
                     />
                     <button
-                      type="button"
+                      type="submit"
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 p-1"
                     >
-                      <Search className="w-5 h-5" />
+                      <Search className="w-4 h-4" />
                     </button>
                   </div>
                 </form>
+              </div>
+
+              {/* Distance */}
+              <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3">
+                <label className="carzino-location-label block mb-2">
+                  Distance
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your zip code"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  className={`carzino-search-input w-full px-3 py-2 border rounded-md focus:outline-none ${
+                    zipCode.trim() === ""
+                      ? "border-red-500 focus:border-red-600"
+                      : "border-gray-300 focus:border-red-600"
+                  }`}
+                />
+                <select
+                  value={radius}
+                  onChange={(e) => setRadius(e.target.value)}
+                  className="carzino-dropdown-option w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none mt-2"
+                >
+                  <option value="10">10 Miles</option>
+                  <option value="25">25 Miles</option>
+                  <option value="50">50 Miles</option>
+                  <option value="100">100 Miles</option>
+                  <option value="200">200 Miles</option>
+                  <option value="500">500 Miles</option>
+                  <option value="nationwide">Nationwide</option>
+                </select>
+
+                {/* Location Status */}
+                {isGeocodingLoading && (
+                  <div className="mt-2 text-sm text-gray-500 italic flex items-center gap-1">
+                    <Loader className="w-4 h-4 animate-spin" />
+                    Looking up location for ZIP {zipCode}...
+                  </div>
+                )}
+
+                {userLocation && !isGeocodingLoading && (
+                  <div className="mt-2 text-sm text-gray-600 flex items-center gap-1">
+                    <MapPin className="w-4 h-4 text-red-600" />
+                    {userLocation.city && userLocation.state
+                      ? `${userLocation.city}, ${userLocation.state}`
+                      : `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`}
+                    {userLocation.city === "Geographic Center" && (
+                      <span className="text-yellow-600 ml-1">(Offline mode)</span>
+                    )}
+                  </div>
+                )}
+
+                {!userLocation &&
+                  !isGeocodingLoading &&
+                  zipCode &&
+                  zipCode.length >= 5 && (
+                    <div className="mt-2 text-sm text-yellow-600 flex items-center gap-1">
+                      <AlertTriangle className="w-4 h-4" />
+                      Location service unavailable. Radius filtering disabled.
+                    </div>
+                  )}
+
+                {/* Apply Location Filters Button */}
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <button
+                    onClick={applyLocationFilters}
+                    disabled={!userLocation || isGeocodingLoading}
+                    className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Apply Location Filter
+                  </button>
+                </div>
               </div>
 
               {/* Make Filter */}
