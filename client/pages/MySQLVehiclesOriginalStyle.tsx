@@ -1,271 +1,126 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  Search,
-  Gauge,
-  Settings,
-  ChevronDown,
-  X,
-  Heart,
-  Sliders,
-  Check,
-  MapPin,
-  Loader,
-  AlertTriangle,
-} from "lucide-react";
-import { VehicleCard } from "@/components/VehicleCard";
-import { FilterSection } from "@/components/FilterSection";
-import { VehicleTypeCard } from "@/components/VehicleTypeCard";
-import { Pagination } from "@/components/Pagination";
+import { Search, Filter, SortAsc, Loader, AlertTriangle } from "lucide-react";
+import { MySQLVehicleCard, VehicleCardSkeleton } from "@/components/MySQLVehicleCard";
 import { NavigationHeader } from "@/components/NavigationHeader";
-import ErrorBoundary, { SimpleFallback } from "@/components/ErrorBoundary";
-import { useDebounce, apiCache, OptimizedApiClient, PerformanceMonitor } from "@/lib/performance";
+import { Pagination } from "@/components/Pagination";
+import { 
+  vehicleApi, 
+  VehicleRecord, 
+  VehicleFilters, 
+  FilterOptions,
+  VehiclesApiResponse 
+} from "@/lib/vehicleApi";
 
-console.log("🚀 FULL DESIGN: MySQLVehiclesOriginalStyle loading");
+export default function MySQLVehiclesOriginalStyle() {
+  console.log("🚀 MySQL Vehicles - Original Design Loading");
 
-// Vehicle interface for live data
-interface Vehicle {
-  id: number;
-  featured: boolean;
-  viewed: boolean;
-  images: string[];
-  badges: string[];
-  title: string;
-  mileage: string;
-  transmission: string;
-  doors: string;
-  salePrice: string | null;
-  payment: string | null;
-  dealer: string;
-  location: string;
-  phone: string;
-  seller_type: string;
-  city_seller?: string;
-  state_seller?: string;
-  zip_seller?: string;
-}
-
-// API types
-interface PaginationMeta {
-  totalRecords: number;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-}
-
-interface VehiclesApiResponse {
-  data: Vehicle[];
-  meta: PaginationMeta;
-  success: boolean;
-  message?: string;
-}
-
-function MySQLVehiclesOriginalStyleInner() {
-  console.log("🚀 FULL DESIGN: Component rendering");
-
-  // React Router hooks
   const location = useLocation();
   const navigate = useNavigate();
 
   // Core state
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [apiResponse, setApiResponse] = useState<VehiclesApiResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [resultsPerPage, setResultsPerPage] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+
+  // Filter state
+  const [filters, setFilters] = useState<VehicleFilters>({});
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    makes: [],
+    models: [],
+    conditions: [],
+    fuelTypes: [],
+    transmissions: [],
+    drivetrains: [],
+    bodyStyles: [],
+    sellerTypes: [],
+  });
 
   // UI state
-  const [favorites, setFavorites] = useState<{ [key: number]: Vehicle }>({});
-  const [keeperMessage, setKeeperMessage] = useState<number | null>(null);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"all" | "favorites">("all");
-  const [sortBy, setSortBy] = useState("relevance");
-  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
-
-  // Search and filter state
   const [searchTerm, setSearchTerm] = useState("");
-  const [unifiedSearch, setUnifiedSearch] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [radius, setRadius] = useState("200");
+  const [sortBy, setSortBy] = useState("id");
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
+  const [showFilters, setShowFilters] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
-  // Applied filters
-  const [appliedFilters, setAppliedFilters] = useState({
-    condition: [] as string[],
-    make: [] as string[],
-    model: [] as string[],
-    trim: [] as string[],
-    year: [] as string[],
-    bodyStyle: [] as string[],
-    vehicleType: [] as string[],
-    driveType: [] as string[],
-    transmission: [] as string[],
-    mileage: "",
-    exteriorColor: [] as string[],
-    interiorColor: [] as string[],
-    sellerType: [] as string[],
-    dealer: [] as string[],
-    state: [] as string[],
-    city: [] as string[],
-    priceMin: "",
-    priceMax: "",
-    paymentMin: "",
-    paymentMax: "",
-  });
-
-  // Filter options with counts
-  const [filterOptions, setFilterOptions] = useState<{
-    makes: { name: string; count: number }[];
-    models: { name: string; count: number }[];
-    trims: { name: string; count: number }[];
-    conditions: { name: string; count: number }[];
-    vehicleTypes: { name: string; count: number }[];
-    driveTypes: { name: string; count: number }[];
-    transmissions: { name: string; count: number }[];
-    exteriorColors: { name: string; count: number }[];
-    interiorColors: { name: string; count: number }[];
-    sellerTypes: { name: string; count: number }[];
-    dealers: { name: string; count: number }[];
-    states: { name: string; count: number }[];
-    cities: { name: string; count: number }[];
-    totalVehicles: number;
-  }>({
-    makes: [], models: [], trims: [], conditions: [],
-    vehicleTypes: [], driveTypes: [], transmissions: [],
-    exteriorColors: [], interiorColors: [], sellerTypes: [],
-    dealers: [], states: [], cities: [], totalVehicles: 0
-  });
-
-  // Filter UI state
-  const [collapsedFilters, setCollapsedFilters] = useState({
-    vehicleType: false,
-    condition: true,
-    mileage: true,
-    make: false,
-    model: true,
-    trim: true,
-    year: true,
-    price: false,
-    payment: true,
-    driveType: true,
-    transmission: true,
-    transmissionSpeed: true,
-    exteriorColor: true,
-    interiorColor: true,
-    sellerType: true,
-    dealer: true,
-    state: true,
-    city: true,
-  });
-
-  // Price and payment state
-  const [priceMin, setPriceMin] = useState("10000");
-  const [priceMax, setPriceMax] = useState("100000");
-  const [paymentMin, setPaymentMin] = useState("100");
-  const [paymentMax, setPaymentMax] = useState("2000");
-
-  // Location state
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-    city?: string;
-    state?: string;
-  } | null>(null);
-  const [appliedLocation, setAppliedLocation] = useState<{
-    lat: number;
-    lng: number;
-    city?: string;
-    state?: string;
-  } | null>(null);
-  const [appliedRadius, setAppliedRadius] = useState("200");
-
-  // Refs and performance
   const isMountedRef = useRef(true);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Debounced values
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const debouncedAppliedFilters = useDebounce(appliedFilters, 300);
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = JSON.parse(localStorage.getItem("vehicle_favorites") || "[]");
+    setFavorites(savedFavorites);
+  }, []);
 
-  // Calculated values
-  const totalPages = apiResponse?.meta?.totalPages || 1;
-  const totalResults = apiResponse?.meta?.totalRecords || 0;
-  const favoritesCount = Object.keys(favorites).length;
+  // Save favorites to localStorage
+  const saveFavorites = useCallback((newFavorites: number[]) => {
+    setFavorites(newFavorites);
+    localStorage.setItem("vehicle_favorites", JSON.stringify(newFavorites));
+  }, []);
 
-  console.log("🔍 FULL DESIGN: State initialized", {
-    loading,
-    vehiclesCount: vehicles.length,
-    totalResults,
-    currentPage
-  });
+  // Handle favorite toggle
+  const handleFavoriteToggle = useCallback((vehicleId: number) => {
+    const newFavorites = favorites.includes(vehicleId)
+      ? favorites.filter(id => id !== vehicleId)
+      : [...favorites, vehicleId];
+    saveFavorites(newFavorites);
+  }, [favorites, saveFavorites]);
 
-  // API fetch function
-  const fetchCombinedData = useCallback(async () => {
+  // Fetch vehicles
+  const fetchVehicles = useCallback(async () => {
     if (!isMountedRef.current) return;
 
-    console.log("🚀 FULL DESIGN: Fetching data");
-    
     try {
       setLoading(true);
       setError(null);
 
-      // Build API URL
-      const apiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
-      apiUrl.searchParams.set('page', currentPage.toString());
-      apiUrl.searchParams.set('pageSize', resultsPerPage.toString());
+      console.log("🔍 Fetching vehicles:", { currentPage, pageSize, filters, sortBy, sortOrder });
 
-      if (debouncedSearchTerm.trim()) {
-        apiUrl.searchParams.set('search', debouncedSearchTerm.trim());
-      }
+      const response = await vehicleApi.getVehicles(
+        currentPage,
+        pageSize,
+        filters,
+        sortBy,
+        sortOrder
+      );
 
-      if (sortBy !== "relevance") {
-        apiUrl.searchParams.set('sortBy', sortBy);
-      }
-
-      // Add filters
-      if (debouncedAppliedFilters.make.length > 0) {
-        apiUrl.searchParams.set('make', debouncedAppliedFilters.make.join(','));
-      }
-      if (debouncedAppliedFilters.condition.length > 0) {
-        apiUrl.searchParams.set('condition', debouncedAppliedFilters.condition.join(','));
-      }
-
-      console.log("🔗 FULL DESIGN: API URL:", apiUrl.toString());
-
-      const response = await fetch(apiUrl.toString());
-      const data = await response.json();
-
-      console.log("✅ FULL DESIGN: API Response:", {
-        success: data.success,
-        vehiclesCount: data.data?.vehicles?.length,
-        totalRecords: data.data?.meta?.totalRecords
+      console.log("✅ Vehicles fetched:", {
+        success: response.success,
+        count: response.data?.length,
+        total: response.meta?.totalRecords
       });
 
-      if (data.success) {
-        setVehicles(data.data.vehicles || []);
-        setApiResponse({
-          data: data.data.vehicles,
-          meta: data.data.meta,
-          success: true
-        });
-        setFilterOptions(data.data.filters || {
-          makes: [], models: [], trims: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: 0
-        });
+      if (response.success) {
+        setVehicles(response.data || []);
+        setTotalPages(response.meta?.totalPages || 1);
+        setTotalRecords(response.meta?.totalRecords || 0);
       } else {
-        setError(data.message || 'Failed to load vehicles');
+        setError(response.message || "Failed to load vehicles");
       }
     } catch (err) {
-      console.error("❌ FULL DESIGN: API Error:", err);
-      setError('Failed to fetch vehicles');
+      console.error("❌ Error fetching vehicles:", err);
+      setError("Failed to connect to vehicle database");
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
-  }, [currentPage, resultsPerPage, debouncedSearchTerm, sortBy, debouncedAppliedFilters]);
+  }, [currentPage, pageSize, filters, sortBy, sortOrder]);
+
+  // Fetch filter options
+  const fetchFilterOptions = useCallback(async () => {
+    try {
+      const response = await vehicleApi.getFilterOptions();
+      if (response.success) {
+        setFilterOptions(response.data);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching filter options:", err);
+    }
+  }, []);
 
   // Effects
   useEffect(() => {
@@ -276,459 +131,264 @@ function MySQLVehiclesOriginalStyleInner() {
   }, []);
 
   useEffect(() => {
-    const savedFavorites = JSON.parse(localStorage.getItem("carzino_favorites") || "{}");
-    setFavorites(savedFavorites);
-  }, []);
+    fetchFilterOptions();
+  }, [fetchFilterOptions]);
 
   useEffect(() => {
-    if (!isMountedRef.current) return;
-    console.log("🔄 FULL DESIGN: Triggering data fetch");
-    fetchCombinedData();
-  }, [fetchCombinedData]);
+    fetchVehicles();
+  }, [fetchVehicles]);
 
-  // Helper functions
-  const toggleFavorite = (vehicle: Vehicle) => {
-    const newFavorites = { ...favorites };
-    const wasAlreadyFavorited = !!newFavorites[vehicle.id];
-
-    if (wasAlreadyFavorited) {
-      delete newFavorites[vehicle.id];
-    } else {
-      newFavorites[vehicle.id] = vehicle;
-      setKeeperMessage(vehicle.id);
-      setTimeout(() => setKeeperMessage(null), 2000);
-    }
-    
-    setFavorites(newFavorites);
-    localStorage.setItem("carzino_favorites", JSON.stringify(newFavorites));
-  };
-
-  const getDisplayedVehicles = () => {
-    if (viewMode === "favorites") {
-      return Object.values(favorites);
-    }
-    return vehicles;
-  };
-
-  const clearAllFilters = () => {
-    setSearchTerm("");
-    setUnifiedSearch("");
-    setZipCode("");
-    setAppliedFilters({
-      condition: [], make: [], model: [], trim: [], year: [], bodyStyle: [],
-      vehicleType: [], driveType: [], transmission: [], mileage: "",
-      exteriorColor: [], interiorColor: [], sellerType: [], dealer: [],
-      state: [], city: [], priceMin: "", priceMax: "", paymentMin: "", paymentMax: ""
-    });
-    setCurrentPage(1);
-  };
-
-  const removeAppliedFilter = (category: string, value: string) => {
-    const newFilters = {
-      ...appliedFilters,
-      [category]: (appliedFilters[category as keyof typeof appliedFilters] as string[])
-        .filter((item: string) => item !== value),
-    };
-    setAppliedFilters(newFilters);
-  };
-
+  // Handlers
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const displayedVehicles = getDisplayedVehicles();
+  const handleFilterChange = (newFilters: Partial<VehicleFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
 
-  console.log("🎨 FULL DESIGN: About to render", {
-    loading,
-    vehiclesCount: displayedVehicles.length,
-    totalResults
-  });
+  const handleClearFilters = () => {
+    setFilters({});
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (newSortBy: string, newSortOrder: "ASC" | "DESC" = "DESC") => {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="min-h-screen bg-white main-container" style={{ fontFamily: "Albert Sans, sans-serif" }}>
-      <style>{`
-        :root {
-          --carzino-featured-badge: 12px;
-          --carzino-badge-label: 12px;
-          --carzino-vehicle-title: 16px;
-          --carzino-vehicle-details: 12px;
-          --carzino-price-label: 12px;
-          --carzino-price-value: 16px;
-          --carzino-dealer-info: 10px;
-          --carzino-image-counter: 12px;
-        }
-
-        @media (max-width: 768px) {
-          :root {
-            --carzino-vehicle-title: 17px;
-            --carzino-price-value: 17px;
-            --carzino-dealer-info: 11px;
-          }
-        }
-
-        @media (max-width: 640px) {
-          :root {
-            --carzino-featured-badge: 14px;
-            --carzino-badge-label: 14px;
-            --carzino-vehicle-title: 18px;
-            --carzino-vehicle-details: 13px;
-            --carzino-price-label: 14px;
-            --carzino-price-value: 18px;
-            --carzino-dealer-info: 12px;
-            --carzino-image-counter: 14px;
-          }
-        }
-
-        .carzino-featured-badge { font-size: var(--carzino-featured-badge) !important; font-weight: 500 !important; }
-        .carzino-badge-label { font-size: var(--carzino-badge-label) !important; font-weight: 500 !important; }
-        .carzino-vehicle-title { font-size: var(--carzino-vehicle-title) !important; font-weight: 600 !important; }
-        .carzino-vehicle-details { font-size: var(--carzino-vehicle-details) !important; font-weight: 400 !important; }
-        .carzino-price-label { font-size: var(--carzino-price-label) !important; font-weight: 400 !important; }
-        .carzino-price-value { font-size: var(--carzino-price-value) !important; font-weight: 700 !important; }
-        .carzino-dealer-info { font-size: var(--carzino-dealer-info) !important; font-weight: 500 !important; }
-        .carzino-image-counter { font-size: var(--carzino-image-counter) !important; font-weight: 400 !important; }
-
-        /* Enhanced checkbox styling */
-        input[type="checkbox"] {
-          appearance: none !important;
-          -webkit-appearance: none !important;
-          -moz-appearance: none !important;
-          width: 16px !important;
-          height: 16px !important;
-          border: 2px solid #d1d5db !important;
-          border-radius: 3px !important;
-          background-color: white !important;
-          position: relative !important;
-          cursor: pointer !important;
-          flex-shrink: 0 !important;
-          transition: all 0.2s ease !important;
-        }
-
-        input[type="checkbox"]:hover {
-          border-color: #6b7280 !important;
-          background-color: #f9fafb !important;
-          transform: scale(1.05) !important;
-        }
-
-        input[type="checkbox"]:checked {
-          background-color: #dc2626 !important;
-          border-color: #dc2626 !important;
-          background-image: none !important;
-        }
-
-        input[type="checkbox"]:checked::before {
-          content: '✓' !important;
-          position: absolute !important;
-          color: white !important;
-          font-size: 12px !important;
-          font-weight: bold !important;
-          top: -1px !important;
-          left: 1px !important;
-          line-height: 1 !important;
-          display: block !important;
-          z-index: 1 !important;
-        }
-
-        input[type="checkbox"]:focus {
-          outline: 2px solid #dc2626 !important;
-          outline-offset: 2px !important;
-        }
-      `}</style>
+    <div className="min-h-screen bg-gray-50">
       <NavigationHeader />
       
-      <div className="flex lg:space-x-6">
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block w-80 xl:w-96 flex-shrink-0">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">Find Your Perfect Vehicle</h2>
-            
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            MySQL Vehicles Database
+          </h1>
+          <p className="text-gray-600">
+            Browse our inventory of {totalRecords.toLocaleString()} vehicles
+          </p>
+        </div>
+
+        {/* Search and Filters Bar */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
-            <div className="mb-6">
+            <div className="flex-1">
               <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search vehicles..."
-                  value={unifiedSearch}
-                  onChange={(e) => setUnifiedSearch(e.target.value)}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:border-red-600"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
-                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
             </div>
 
-            {/* Applied Filters */}
-            {(appliedFilters.condition.length > 0 || appliedFilters.make.length > 0) && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Applied Filters</h3>
-                  <button
-                    onClick={clearAllFilters}
-                    className="bg-red-600 text-white px-3 py-1 rounded-full text-xs"
+            {/* Sort */}
+            <div className="flex gap-2">
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [newSortBy, newSortOrder] = e.target.value.split('-');
+                  handleSortChange(newSortBy, newSortOrder as "ASC" | "DESC");
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              >
+                <option value="id-DESC">Newest First</option>
+                <option value="id-ASC">Oldest First</option>
+                <option value="price-ASC">Price: Low to High</option>
+                <option value="price-DESC">Price: High to Low</option>
+                <option value="mileage-ASC">Mileage: Low to High</option>
+                <option value="mileage-DESC">Mileage: High to Low</option>
+                <option value="year-DESC">Year: Newest First</option>
+                <option value="year-ASC">Year: Oldest First</option>
+              </select>
+
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`px-4 py-2 rounded-md border transition-colors ${
+                  showFilters
+                    ? "bg-red-600 text-white border-red-600"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Make Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Make
+                  </label>
+                  <select
+                    value={filters.make || ""}
+                    onChange={(e) => handleFilterChange({ make: e.target.value || undefined })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
-                    Clear All
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {appliedFilters.condition.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button onClick={() => removeAppliedFilter("condition", item)} className="ml-1">×</button>
-                    </span>
-                  ))}
-                  {appliedFilters.make.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button onClick={() => removeAppliedFilter("make", item)} className="ml-1">×</button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Filter Sections */}
-            <div className="space-y-4">
-              {/* Condition Filter */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-semibold mb-3">Condition</h3>
-                <div className="space-y-2">
-                  {["New", "Used", "Certified"].map((condition) => (
-                    <label key={condition} className="flex items-center text-sm">
-                      <input
-                        type="checkbox"
-                        checked={appliedFilters.condition.includes(condition)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              condition: [...prev.condition, condition]
-                            }));
-                          } else {
-                            removeAppliedFilter("condition", condition);
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      {condition}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Make Filter */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-semibold mb-3">Make</h3>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {filterOptions.makes.slice(0, 10).map((make) => (
-                    <label key={make.name} className="flex items-center text-sm">
-                      <input
-                        type="checkbox"
-                        checked={appliedFilters.make.includes(make.name)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              make: [...prev.make, make.name]
-                            }));
-                          } else {
-                            removeAppliedFilter("make", make.name);
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      {make.name} ({make.count})
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          {/* Mobile Header */}
-          <div className="lg:hidden p-4 bg-white sticky top-0 z-40 border-b">
-            <h1 className="text-xl font-bold mb-3">
-              {viewMode === "favorites" ? "My Favorites" : "Vehicles for Sale"}
-            </h1>
-            
-            <div className="flex items-center justify-between">
-              <button
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium"
-                onClick={() => setMobileFiltersOpen(true)}
-              >
-                <Sliders className="w-4 h-4" />
-                Filter
-              </button>
-              
-              <button
-                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium ${viewMode === "favorites" ? "text-red-600" : ""}`}
-                onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
-              >
-                Favorites ({favoritesCount})
-              </button>
-            </div>
-          </div>
-
-          {/* Results */}
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-gray-600">
-                {viewMode === "favorites" 
-                  ? `${favoritesCount} Saved Vehicles`
-                  : `${totalResults} Vehicles Found`
-                }
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1"
-                >
-                  <option value="relevance">Sort by Relevance</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="miles-low">Miles: Low to High</option>
-                  <option value="year-newest">Year: Newest First</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Loading State */}
-            {loading ? (
-              <div className="text-center py-12">
-                <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
-                <div className="text-lg">Loading vehicles...</div>
-                <div className="text-sm text-gray-500 mt-2">Found {totalResults} vehicles</div>
-              </div>
-            ) : error ? (
-              <div className="text-center py-12">
-                <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <div className="text-red-600 mb-4">Error: {error}</div>
-                <button 
-                  onClick={fetchCombinedData}
-                  className="bg-red-600 text-white px-4 py-2 rounded"
-                >
-                  Try Again
-                </button>
-              </div>
-            ) : displayedVehicles.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-500">No vehicles found</div>
-              </div>
-            ) : (
-              <>
-                {/* Vehicle Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                  {displayedVehicles.map((vehicle) => (
-                    <VehicleCard
-                      key={vehicle.id}
-                      vehicle={vehicle}
-                      favorites={favorites}
-                      onToggleFavorite={toggleFavorite}
-                      keeperMessage={keeperMessage}
-                    />
-                  ))}
-                </div>
-
-                {/* Pagination */}
-                {viewMode === "all" && totalPages > 1 && (
-                  <div className="flex justify-center">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={handlePageChange}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Filters Modal */}
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-white overflow-y-auto">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">Filters</h2>
-                <button onClick={() => setMobileFiltersOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              
-              {/* Mobile filter content */}
-              <div className="space-y-4">
-                {/* Same filter content as desktop */}
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-semibold mb-3">Condition</h3>
-                  <div className="space-y-2">
-                    {["New", "Used", "Certified"].map((condition) => (
-                      <label key={condition} className="flex items-center text-sm">
-                        <input
-                          type="checkbox"
-                          checked={appliedFilters.condition.includes(condition)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setAppliedFilters(prev => ({
-                                ...prev,
-                                condition: [...prev.condition, condition]
-                              }));
-                            } else {
-                              removeAppliedFilter("condition", condition);
-                            }
-                          }}
-                          className="mr-2"
-                        />
-                        {condition}
-                      </label>
+                    <option value="">All Makes</option>
+                    {filterOptions.makes.map((make) => (
+                      <option key={make} value={make}>{make}</option>
                     ))}
-                  </div>
+                  </select>
+                </div>
+
+                {/* Condition Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Condition
+                  </label>
+                  <select
+                    value={filters.condition || ""}
+                    onChange={(e) => handleFilterChange({ condition: e.target.value || undefined })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">All Conditions</option>
+                    {filterOptions.conditions.map((condition) => (
+                      <option key={condition} value={condition}>{condition}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Min Price
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="$0"
+                    value={filters.minPrice || ""}
+                    onChange={(e) => handleFilterChange({ 
+                      minPrice: e.target.value ? parseInt(e.target.value) : undefined 
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Max Price
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Any"
+                    value={filters.maxPrice || ""}
+                    onChange={(e) => handleFilterChange({ 
+                      maxPrice: e.target.value ? parseInt(e.target.value) : undefined 
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
                 </div>
               </div>
-              
-              <div className="mt-6 space-y-3">
+
+              {/* Clear Filters */}
+              <div className="mt-4 flex justify-end">
                 <button
-                  onClick={() => setMobileFiltersOpen(false)}
-                  className="w-full bg-red-600 text-white py-2 rounded"
+                  onClick={handleClearFilters}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
                 >
-                  Apply Filters
-                </button>
-                <button
-                  onClick={() => {
-                    clearAllFilters();
-                    setMobileFiltersOpen(false);
-                  }}
-                  className="w-full border border-gray-300 py-2 rounded"
-                >
-                  Clear All
+                  Clear All Filters
                 </button>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* Results Summary */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-sm text-gray-600">
+            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords.toLocaleString()} vehicles
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Show:</label>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(parseInt(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="px-2 py-1 border border-gray-300 rounded text-sm"
+            >
+              <option value={20}>20</option>
+              <option value={40}>40</option>
+              <option value={60}>60</option>
+            </select>
+            <span className="text-sm text-gray-600">per page</span>
           </div>
         </div>
-      )}
-    </div>
-  );
-}
 
-// Error boundary wrapper
-export default function MySQLVehiclesOriginalStyle() {
-  return (
-    <ErrorBoundary fallback={SimpleFallback}>
-      <MySQLVehiclesOriginalStyleInner />
-    </ErrorBoundary>
+        {/* Loading State */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <VehicleCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Vehicles</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={fetchVehicles}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : vehicles.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">No vehicles found matching your criteria</div>
+            <button
+              onClick={handleClearFilters}
+              className="text-red-600 hover:text-red-700 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Vehicle Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+              {vehicles.map((vehicle) => (
+                <MySQLVehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  isFavorite={favorites.includes(vehicle.id)}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
   );
 }
