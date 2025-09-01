@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import { FilterSection } from "@/components/FilterSection";
-import { VehicleCard } from "@/components/VehicleCard";
+import { WordPressVehicleCard } from "@/components/WordPressVehicleCard";
 import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -584,6 +584,12 @@ export default function WordPressVehicles() {
         ? (prev[filterType] as string[]).filter(item => item !== value)
         : prev[filterType]
     }));
+
+    // Trigger refetch immediately
+    setTimeout(() => {
+      setCurrentPage(1);
+      fetchVehicles(1);
+    }, 50);
   };
 
   // Toggle filter section
@@ -1650,11 +1656,11 @@ export default function WordPressVehicles() {
                   
                   <div className="vehicle-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {displayedVehicles.map((vehicle) => (
-                      <VehicleCard
+                      <WordPressVehicleCard
                         key={vehicle.id}
                         vehicle={vehicle}
-                        favorites={favorites}
-                        onToggleFavorite={toggleFavorite}
+                        onFavoriteToggle={toggleFavorite}
+                        isFavorite={!!favorites[vehicle.id]}
                         keeperMessage={keeperMessage}
                         termLength={termLength}
                         interestRate={interestRate}
