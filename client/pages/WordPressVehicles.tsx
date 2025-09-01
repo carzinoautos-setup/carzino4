@@ -13,16 +13,37 @@ import {
 } from "lucide-react";
 import { NavigationHeader } from "@/components/NavigationHeader";
 import { FilterSection } from "@/components/FilterSection";
-import { MySQLVehicleCard } from "@/components/MySQLVehicleCard";
+import { VehicleCard } from "@/components/VehicleCard";
 import { Pagination } from "@/components/Pagination";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { VehicleRecord } from "../lib/vehicleApi";
 import {
   wordpressCustomApi,
   WordPressVehicle,
   WordPressVehiclesResponse,
   WordPressVehicleFilters
 } from "../lib/wordpressCustomApi";
+
+// Vehicle interface to match MySQL page design
+interface Vehicle {
+  id: number;
+  featured: boolean;
+  viewed: boolean;
+  images: string[];
+  badges: string[];
+  title: string;
+  mileage: string;
+  transmission: string;
+  doors: string;
+  salePrice: string | null;
+  payment: string | null;
+  dealer: string;
+  location: string;
+  phone: string;
+  seller_type: string;
+  city_seller?: string;
+  state_seller?: string;
+  zip_seller?: string;
+}
 
 export default function WordPressVehicles() {
   // State management
