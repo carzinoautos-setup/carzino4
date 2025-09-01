@@ -686,8 +686,11 @@ function MySQLVehiclesOriginalStyleInner() {
               .map(model => ({ name: model!, count: response.data.filter(v => v.acf?.model === model).length })),
             trims: Array.from(new Set(response.data.map(v => v.acf?.trim).filter(Boolean)))
               .map(trim => ({ name: trim!, count: response.data.filter(v => v.acf?.trim === trim).length })),
-            conditions: Array.from(new Set(response.data.map(v => v.acf?.condition).filter(Boolean)))
-              .map(condition => ({ name: condition!, count: response.data.filter(v => v.acf?.condition === condition).length })),
+            conditions: Array.from(new Set([
+              'Used', 'New', 'Certified',
+              ...response.data.map(v => v.acf?.condition).filter(Boolean)
+            ]))
+              .map(condition => ({ name: condition!, count: response.data.filter(v => v.acf?.condition === condition || (condition === 'Used' && (!v.acf?.condition || v.acf?.condition.toLowerCase() === 'used'))).length })),
             vehicleTypes: Array.from(new Set(response.data.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
               .map(type => ({ name: type!, count: response.data.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length })),
             driveTypes: Array.from(new Set(response.data.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
@@ -1434,7 +1437,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // Apply payment filters handler
   const applyPaymentFilters = useCallback(() => {
     if (import.meta.env.DEV) {
-      console.log("��� Applying payment filters:", {
+      console.log("💰 Applying payment filters:", {
         paymentMin,
         paymentMax,
         currentAppliedPaymentMin: appliedFilters.paymentMin,
