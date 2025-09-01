@@ -1,13 +1,87 @@
 import { RequestHandler } from "express";
-import { WordPressVehicleService } from "../services/wordpressVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Using your real WordPress database with actual vehicle data
-console.log("🚀 Using WordPressVehicleService - your real vehicle data");
-const vehicleService = new WordPressVehicleService();
+// Using your custom WordPress API endpoint
+console.log("🚀 Using custom WordPress API: /wp-json/custom/v1/vehicles");
+
+const WP_BASE_URL = "https://env-uploadbackup62225-czdev.kinsta.cloud";
+
+class CustomWordPressAPIService {
+  async getVehicles(pagination: SimplePaginationParams, filters: SimpleVehicleFilters = {}, sortBy: string = "relevance") {
+    try {
+      const url = `${WP_BASE_URL}/wp-json/custom/v1/vehicles`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      // Transform the API response to match expected format
+      const vehicles = data.slice(
+        (pagination.page - 1) * pagination.pageSize,
+        pagination.page * pagination.pageSize
+      );
+
+      return {
+        success: true,
+        data: vehicles,
+        meta: {
+          totalRecords: data.length,
+          totalPages: Math.ceil(data.length / pagination.pageSize),
+          currentPage: pagination.page,
+          pageSize: pagination.pageSize,
+          hasNextPage: pagination.page < Math.ceil(data.length / pagination.pageSize),
+          hasPreviousPage: pagination.page > 1
+        }
+      };
+    } catch (error) {
+      console.error("Error fetching from custom WordPress API:", error);
+      throw error;
+    }
+  }
+
+  async getFilterOptions(filters: SimpleVehicleFilters = {}) {
+    // Extract filter options from the API data
+    try {
+      const url = `${WP_BASE_URL}/wp-json/custom/v1/vehicles`;
+      const response = await fetch(url);
+      const vehicles = await response.json();
+
+      const makes = [...new Set(vehicles.map(v => v.make).filter(Boolean))].map(make => ({ name: make, count: vehicles.filter(v => v.make === make).length }));
+      const models = [...new Set(vehicles.map(v => v.model).filter(Boolean))].map(model => ({ name: model, count: vehicles.filter(v => v.model === model).length }));
+
+      return {
+        success: true,
+        data: { makes, models, trims: [], conditions: [], driveTypes: [], sellerTypes: [] }
+      };
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+      throw error;
+    }
+  }
+
+  async getDealers() {
+    return { success: true, data: [] };
+  }
+
+  async getVehicleById(id: number) {
+    try {
+      const url = `${WP_BASE_URL}/wp-json/custom/v1/vehicles`;
+      const response = await fetch(url);
+      const vehicles = await response.json();
+      return vehicles.find(v => v.id === id);
+    } catch (error) {
+      console.error("Error fetching vehicle by ID:", error);
+      throw error;
+    }
+  }
+
+  async getVehicleTypeCounts() {
+    return { success: true, data: [] };
+  }
+}
+
+const vehicleService = new CustomWordPressAPIService();
 
 /**
  * GET /api/simple-vehicles
