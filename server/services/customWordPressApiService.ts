@@ -99,27 +99,46 @@ export class CustomWordPressApiService {
       const vehicles = apiResponse.data;
 
       // Transform vehicles to expected format using new ACF structure
-      const transformedVehicles = vehicles.map(vehicle => ({
-        id: vehicle.id,
-        featured: vehicle.acf?.is_featured || false,
-        viewed: false,
-        images: vehicle.images?.slice(0, 3).map(img => img.src) || [vehicle.featured_image],
-        badges: [
-          vehicle.acf?.condition || "Used",
-          vehicle.acf?.drivetrain?.includes("4") ? "4WD" : "",
-          vehicle.acf?.is_featured ? "Featured!" : ""
-        ].filter(Boolean),
-        title: vehicle.name || `${vehicle.acf?.year} ${vehicle.acf?.make} ${vehicle.acf?.model}`.trim(),
-        mileage: vehicle.acf?.mileage ? `${parseInt(vehicle.acf.mileage).toLocaleString()}` : "0",
-        transmission: vehicle.acf?.transmission || "Auto",
-        doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
-        salePrice: vehicle.price ? `$${parseInt(vehicle.price).toLocaleString()}` : null,
-        payment: vehicle.price ? `$${Math.round(parseInt(vehicle.price) / 60)}/mo*` : null,
-        dealer: vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "Carzino Dealer",
-        location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
-        phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
-        seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer"
-      }));
+      const transformedVehicles = vehicles.map(vehicle => {
+        // Get price from ACF or WooCommerce price field
+        const price = vehicle.acf?.price || vehicle.price || vehicle.regular_price;
+        const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
+
+        // Get mileage - ensure it's not zero/empty
+        const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
+        const formattedMileage = mileage && parseInt(mileage) > 0 ?
+          `${parseInt(mileage).toLocaleString()}` : "0";
+
+        // Get drivetrain for badges - include actual drivetrain text
+        const drivetrain = vehicle.acf?.drivetrain || vehicle.acf?.drive_type;
+
+        return {
+          id: vehicle.id,
+          featured: vehicle.acf?.is_featured || false,
+          viewed: false,
+          images: vehicle.images?.slice(0, 3).map(img => img.src) || [vehicle.featured_image],
+          badges: [
+            vehicle.acf?.condition || "Used",
+            drivetrain || "", // Show actual drivetrain (FWD, AWD, 4WD, etc.)
+            vehicle.acf?.is_featured ? "Featured!" : ""
+          ].filter(Boolean),
+          title: vehicle.name || `${vehicle.acf?.year} ${vehicle.acf?.make} ${vehicle.acf?.model}`.trim(),
+          mileage: formattedMileage,
+          transmission: vehicle.acf?.transmission || "Auto",
+          doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
+          salePrice: formattedPrice,
+          payment: formattedPrice ? `$${Math.round(parseInt(price) / 60)}/mo*` : null,
+          dealer: vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "Carzino Dealer",
+          location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
+          phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
+          seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer",
+          seller_account_number: vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "",
+          // Add individual location fields for VehicleCard
+          city_seller: vehicle.acf?.city_seller,
+          state_seller: vehicle.acf?.state_seller,
+          zip_seller: vehicle.acf?.zip_seller || vehicle.acf?.zip_code_seller
+        };
+      });
 
       // Use pagination info from API response
       const paginationInfo = apiResponse.pagination;
