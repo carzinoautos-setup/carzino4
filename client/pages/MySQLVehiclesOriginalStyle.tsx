@@ -612,7 +612,8 @@ function MySQLVehiclesOriginalStyleInner() {
               down_payment: acf?.down_payment || 2000,
               loan_term: acf?.loan_term || 60,
               payments: vehiclePayment,
-              payment: vehiclePayment > 0 ? `$${vehiclePayment}/mo*` : null,
+              payment: vehiclePayment > 0 ? `$${vehiclePayment}/mo*` :
+                       (vehiclePrice > 0 ? `$${Math.round(vehiclePrice / 60)}/mo*` : null),
               featured: acf?.is_featured === true || acf?.is_featured === '1',
               viewed: false,
               images: vehicleImages,
