@@ -968,10 +968,10 @@ function MySQLVehiclesOriginalStyleInner() {
   // FIXED: Simplified conditional filtering - let fetchCombinedData handle everything
   // Remove separate fetchFilterOptions calls to prevent race conditions
 
-  // FIXED: Real-time inventory refresh with conditional filtering
+  // FIXED: Real-time inventory refresh via combined endpoint
   useEffect(() => {
     if (isMountedRef.current) {
-      console.log("🚗 CRITICAL: Filters changed - refreshing inventory", {
+      console.log("🚗 FILTERS: Filters changed - refreshing inventory via combined endpoint", {
         makes: appliedFilters.make,
         models: appliedFilters.model,
         trims: appliedFilters.trim,
@@ -979,13 +979,10 @@ function MySQLVehiclesOriginalStyleInner() {
         resultsPerPage
       });
 
-      // Update conditional filters immediately when make/model changes
-      updateConditionalFilters(appliedFilters);
-
-      // Then refresh vehicle inventory
+      // Combined endpoint handles both vehicles and filter options in one call
       fetchCombinedData();
     }
-  }, [appliedFilters, sortBy, currentPage, resultsPerPage, fetchCombinedData, updateConditionalFilters]);
+  }, [appliedFilters, sortBy, currentPage, resultsPerPage, fetchCombinedData]);
 
   // FIXED: Separate effect for results per page changes
   useEffect(() => {
@@ -1171,7 +1168,7 @@ function MySQLVehiclesOriginalStyleInner() {
         trim: [],  // Clear dependent filters
       };
 
-      console.log(`🔄 NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
+      console.log(`��� NEW FILTERS:`, { makes: newFilters.make, models: newFilters.model, trims: newFilters.trim });
 
       // Trigger conditional filter update immediately
       setTimeout(() => updateConditionalFilters(newFilters), 0);
