@@ -72,6 +72,8 @@ export function NavigationHeader() {
           {/* Stats/Info */}
           <div className="text-sm text-gray-500">
             {isActive("/mysql-vehicles") && "MySQL Vehicles (50k)"}
+            {isActive("/wordpress-vehicles") && "WordPress API"}
+            {isActive("/wordpress-api-test") && "API Test"}
             {isActive("/") && "Original Demo"}
           </div>
         </div>
