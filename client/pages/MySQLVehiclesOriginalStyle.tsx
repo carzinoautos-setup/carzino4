@@ -572,7 +572,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (!responseData.success) {
-        throw new Error(`Server API error: ${responseData.message || 'Unknown error'}`);
+        throw new Error(`WordPress API error: ${responseData.message || 'Unknown error'}`);
       }
 
       console.log("✅ FIXED: WordPress API Response received:", {
