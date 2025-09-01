@@ -45,6 +45,8 @@ export interface SimpleVehicleFilters {
   driveType?: string[];
   transmission?: string[];
   mileage?: string;
+  min_mileage?: string;
+  max_mileage?: string;
   exteriorColor?: string[];
   interiorColor?: string[];
   city?: string[];
