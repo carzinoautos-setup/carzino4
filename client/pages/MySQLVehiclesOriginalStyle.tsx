@@ -357,6 +357,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // Handle filter changes
   const handleMakeChange = (makeName: string, isChecked: boolean) => {
+    setCurrentPage(1); // Reset to first page when filters change
     setAppliedFilters((prev) => {
       const newMakes = isChecked
         ? [...prev.make, makeName]
