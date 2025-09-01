@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
@@ -59,9 +59,12 @@ interface VehiclesApiResponse {
 }
 
 function MySQLVehiclesOriginalStyleInner() {
+  console.log("🚀 MySQL Vehicles - Loading with original design");
+
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Core state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
@@ -71,7 +74,6 @@ function MySQLVehiclesOriginalStyleInner() {
   const [showMoreTrims, setShowMoreTrims] = useState(false);
   const [zipCode, setZipCode] = useState("");
   const [radius, setRadius] = useState("10");
-  const [vehicleImages, setVehicleImages] = useState<{ [key: string]: string }>({});
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState("relevance");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -85,15 +87,11 @@ function MySQLVehiclesOriginalStyleInner() {
   const [error, setError] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<VehiclesApiResponse | null>(null);
 
-  // Price range state
+  // Price and payment state
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
-
-  // Payment range state
   const [paymentMin, setPaymentMin] = useState("");
   const [paymentMax, setPaymentMax] = useState("");
-
-  // Payment calculator state
   const [termLength, setTermLength] = useState("72");
   const [interestRate, setInterestRate] = useState("8");
   const [downPayment, setDownPayment] = useState("2000");
@@ -157,7 +155,7 @@ function MySQLVehiclesOriginalStyleInner() {
     dealers: [], states: [], cities: [], totalVehicles: 0
   });
 
-  // Refs and performance
+  // Refs
   const isMountedRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -186,8 +184,12 @@ function MySQLVehiclesOriginalStyleInner() {
         apiUrl.searchParams.set('condition', appliedFilters.condition.join(','));
       }
 
+      console.log("🔗 API URL:", apiUrl.toString());
+
       const response = await fetch(apiUrl.toString());
       const data = await response.json();
+
+      console.log("✅ API Response:", { success: data.success, vehiclesCount: data.data?.vehicles?.length });
 
       if (data.success) {
         setVehicles(data.data.vehicles || []);
@@ -232,6 +234,7 @@ function MySQLVehiclesOriginalStyleInner() {
     fetchCombinedData();
   }, [fetchCombinedData]);
 
+  // Helper functions
   const saveFavorites = (newFavorites: { [key: number]: Vehicle }) => {
     setFavorites(newFavorites);
     localStorage.setItem("carzino_favorites", JSON.stringify(newFavorites));
@@ -256,37 +259,6 @@ function MySQLVehiclesOriginalStyleInner() {
       return Object.values(favorites);
     }
     return vehicles;
-  };
-
-  const displayedVehicles = getDisplayedVehicles();
-  const favoritesCount = Object.keys(favorites).length;
-
-  const toggleFilter = (filterName: string) => {
-    setCollapsedFilters((prev) => ({
-      ...prev,
-      [filterName]: !prev[filterName],
-    }));
-  };
-
-  const removeAppliedFilter = (category: string, value: string) => {
-    setAppliedFilters((prev) => {
-      const newFilters = {
-        ...prev,
-        [category]: (prev[category as keyof typeof prev] as string[]).filter(
-          (item: string) => item !== value,
-        ),
-      };
-
-      // Clear dependent filters when parent filter is removed
-      if (category === "make") {
-        newFilters.model = [];
-        newFilters.trim = [];
-      } else if (category === "model") {
-        newFilters.trim = [];
-      }
-
-      return newFilters;
-    });
   };
 
   const clearAllFilters = () => {
@@ -314,24 +286,49 @@ function MySQLVehiclesOriginalStyleInner() {
     setCurrentPage(1);
   };
 
-  // Handle make selection with cascading filter clearing
+  const removeAppliedFilter = (category: string, value: string) => {
+    setAppliedFilters((prev) => {
+      const newFilters = {
+        ...prev,
+        [category]: (prev[category as keyof typeof prev] as string[]).filter(
+          (item: string) => item !== value,
+        ),
+      };
+
+      if (category === "make") {
+        newFilters.model = [];
+        newFilters.trim = [];
+      } else if (category === "model") {
+        newFilters.trim = [];
+      }
+
+      return newFilters;
+    });
+  };
+
+  const toggleFilter = (filterName: string) => {
+    setCollapsedFilters((prev) => ({
+      ...prev,
+      [filterName]: !prev[filterName],
+    }));
+  };
+
+  // Handle filter changes
   const handleMakeChange = (makeName: string, isChecked: boolean) => {
     setAppliedFilters((prev) => {
       const newMakes = isChecked
         ? [...prev.make, makeName]
         : prev.make.filter((item) => item !== makeName);
 
-      // Clear dependent filters (models and trims) when make changes
       return {
         ...prev,
         make: newMakes,
-        model: [], // Clear all selected models when make changes
-        trim: [], // Clear all selected trims when make changes
+        model: [],
+        trim: [],
       };
     });
   };
 
-  // Handle model selection with trim clearing
   const handleModelChange = (modelName: string, isChecked: boolean) => {
     setAppliedFilters((prev) => {
       const newModels = isChecked
@@ -341,12 +338,11 @@ function MySQLVehiclesOriginalStyleInner() {
       return {
         ...prev,
         model: newModels,
-        trim: [], // Clear trims when model selection changes
+        trim: [],
       };
     });
   };
 
-  // Handle trim selection (no cascading needed)
   const handleTrimChange = (trimName: string, isChecked: boolean) => {
     setAppliedFilters((prev) => ({
       ...prev,
@@ -356,7 +352,6 @@ function MySQLVehiclesOriginalStyleInner() {
     }));
   };
 
-  // Handle vehicle type selection
   const handleVehicleTypeToggle = (vehicleType: string) => {
     setAppliedFilters((prev) => ({
       ...prev,
@@ -366,27 +361,17 @@ function MySQLVehiclesOriginalStyleInner() {
     }));
   };
 
-  // Get conditional models based on selected makes
+  // Get conditional data
   const getAvailableModels = () => {
-    if (appliedFilters.make.length === 0) {
-      return filterOptions.models;
-    }
-    return filterOptions.models; // Server handles conditional filtering
+    return filterOptions.models;
   };
 
-  // Get conditional trims based on selected makes and models
   const getAvailableTrims = () => {
-    if (appliedFilters.make.length === 0) {
-      return filterOptions.trims;
-    }
-    return filterOptions.trims; // Server handles conditional filtering
+    return filterOptions.trims;
   };
 
   const getAvailableBodyTypes = () => {
-    if (appliedFilters.make.length === 0) {
-      return filterOptions.vehicleTypes;
-    }
-    return filterOptions.vehicleTypes; // Server handles conditional filtering
+    return filterOptions.vehicleTypes;
   };
 
   const availableModels = getAvailableModels();
@@ -397,39 +382,8 @@ function MySQLVehiclesOriginalStyleInner() {
   const displayedModels = showMoreModels ? availableModels : availableModels.slice(0, 8);
   const displayedTrims = showMoreTrims ? availableTrims : availableTrims.slice(0, 8);
 
-  const ColorSwatch = ({
-    color,
-    name,
-    count,
-  }: {
-    color: string;
-    name: string;
-    count: number;
-  }) => (
-    <label className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-      <input
-        type="checkbox"
-        className="mr-2"
-        checked={appliedFilters.exteriorColor.includes(name)}
-        onChange={(e) => {
-          if (e.target.checked) {
-            setAppliedFilters(prev => ({
-              ...prev,
-              exteriorColor: [...prev.exteriorColor, name]
-            }));
-          } else {
-            removeAppliedFilter("exteriorColor", name);
-          }
-        }}
-      />
-      <div
-        className="w-4 h-4 rounded border border-gray-300 mr-2"
-        style={{ backgroundColor: color }}
-      ></div>
-      <span className="carzino-filter-option">{name}</span>
-      <span className="carzino-filter-count ml-1">({count})</span>
-    </label>
-  );
+  const displayedVehicles = getDisplayedVehicles();
+  const favoritesCount = Object.keys(favorites).length;
 
   return (
     <div
@@ -456,45 +410,6 @@ function MySQLVehiclesOriginalStyleInner() {
           --carzino-vehicle-type-name: 12px;
           --carzino-vehicle-type-count: 11px;
           --carzino-show-more: 14px;
-        }
-
-        @media (max-width: 768px) {
-          :root {
-            --carzino-vehicle-title: 17px;
-            --carzino-price-value: 17px;
-            --carzino-dealer-info: 11px;
-            --carzino-filter-title: 17px;
-            --carzino-filter-option: 15px;
-            --carzino-filter-count: 15px;
-            --carzino-search-input: 15px;
-            --carzino-location-label: 15px;
-            --carzino-dropdown-option: 15px;
-            --carzino-vehicle-type-name: 13px;
-            --carzino-vehicle-type-count: 12px;
-            --carzino-show-more: 15px;
-          }
-        }
-
-        @media (max-width: 640px) {
-          :root {
-            --carzino-featured-badge: 14px;
-            --carzino-badge-label: 14px;
-            --carzino-vehicle-title: 18px;
-            --carzino-vehicle-details: 13px;
-            --carzino-price-label: 14px;
-            --carzino-price-value: 18px;
-            --carzino-dealer-info: 12px;
-            --carzino-image-counter: 14px;
-            --carzino-filter-title: 18px;
-            --carzino-filter-option: 16px;
-            --carzino-filter-count: 16px;
-            --carzino-search-input: 16px;
-            --carzino-location-label: 16px;
-            --carzino-dropdown-option: 16px;
-            --carzino-vehicle-type-name: 14px;
-            --carzino-vehicle-type-count: 13px;
-            --carzino-show-more: 16px;
-          }
         }
 
         .carzino-featured-badge { font-size: var(--carzino-featured-badge) !important; font-weight: 500 !important; }
@@ -545,150 +460,51 @@ function MySQLVehiclesOriginalStyleInner() {
           left: 2px;
         }
 
-        @media (max-width: 639px) {
-          .vehicle-grid {
-            grid-template-columns: 1fr !important;
-            gap: 16px !important;
-          }
-          
-          .main-container {
-            padding: 0 !important;
-          }
-          
-          .vehicle-card {
-            border-radius: 8px !important;
-            margin: 0 12px !important;
-          }
+        .vehicle-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
         }
         
-        @media (min-width: 640px) and (max-width: 1023px) {
-          .vehicle-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 20px !important;
-          }
-        }
-        
-        @media (min-width: 1024px) {
-          .vehicle-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 24px !important;
-          }
-          
-          .main-container {
-            max-width: 1325px !important;
-            margin: 0 auto !important;
-          }
+        .main-container {
+          max-width: 1325px;
+          margin: 0 auto;
         }
 
         @media (max-width: 1023px) {
-          .mobile-filter-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 35;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+          .vehicle-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+          }
+        }
+
+        @media (max-width: 639px) {
+          .vehicle-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
           }
           
-          .mobile-filter-overlay.open {
-            opacity: 1;
-            visibility: visible;
-          }
-
-          .mobile-filter-sidebar {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            background: white;
-            z-index: 40;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            width: 100% !important;
-            max-width: 100% !important;
-            overflow-y: auto !important;
-            overflow-x: hidden;
-            display: block !important;
-            -webkit-overflow-scrolling: touch;
+          .main-container {
+            padding: 0;
           }
           
-          .mobile-filter-sidebar.open {
-            transform: translateX(0);
+          .vehicle-card {
+            border-radius: 8px;
+            margin: 0 12px;
           }
-          
-          .mobile-chevron {
-            width: 22px !important;
-            height: 22px !important;
-          }
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-          outline: none;
-          border-color: #dc2626;
-        }
-
-        .filter-tag {
-          background-color: white;
-          border: 1px solid #e5e7eb;
-          color: #374151;
-        }
-
-        .filter-tag:hover .remove-x {
-          color: #dc2626;
-        }
-
-        .view-switcher {
-          display: inline-flex;
-          background: white;
-          border: 1px solid #e5e7eb;
-          border-radius: 6px;
-          padding: 2px;
-        }
-
-        .view-switcher button {
-          padding: 6px 12px;
-          border-radius: 4px;
-          font-size: 14px;
-          font-weight: 500;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .view-switcher button.active {
-          background: #dc2626;
-          color: white;
-        }
-
-        .view-switcher button:not(.active) {
-          background: transparent;
-          color: #6b7280;
-        }
-
-        .view-switcher button:not(.active):hover {
-          color: #374151;
         }
       `}</style>
 
       <div className="flex flex-col lg:flex-row min-h-screen max-w-[1325px] mx-auto">
+        {/* Mobile Filter Overlay */}
         <div
-          className={`mobile-filter-overlay lg:hidden ${mobileFiltersOpen ? "open" : ""}`}
+          className={`fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden ${mobileFiltersOpen ? "" : "hidden"}`}
           onClick={() => setMobileFiltersOpen(false)}
         ></div>
 
-        {/* Sidebar - Hidden on mobile by default */}
+        {/* Sidebar */}
         <div
-          className={`bg-white border-r border-gray-200 mobile-filter-sidebar hidden lg:block ${mobileFiltersOpen ? "open" : ""}`}
-          style={{
-            width: "280px",
-          }}
+          className={`bg-white border-r border-gray-200 fixed inset-y-0 left-0 z-50 lg:relative lg:block ${mobileFiltersOpen ? "block" : "hidden"}`}
+          style={{ width: "280px" }}
         >
           <div className="lg:hidden flex justify-between items-center mb-4 pb-4 border-b px-4 pt-4">
             <h2 className="text-lg font-semibold">Filters</h2>
@@ -700,225 +516,8 @@ function MySQLVehiclesOriginalStyleInner() {
             </button>
           </div>
 
-          <div className="p-4">
-            {/* Search Section - Mobile Only */}
-            <div className="lg:hidden mb-4 pb-4 border-b border-gray-200">
-              <div className="relative mb-3">
-                <input
-                  type="text"
-                  placeholder="Search Vehicles"
-                  className="carzino-search-input w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:border-red-600"
-                />
-                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 p-1">
-                  <Search className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Applied Filters in Mobile Filter Panel */}
-              {(appliedFilters.condition.length > 0 ||
-                appliedFilters.make.length > 0 ||
-                appliedFilters.model.length > 0 ||
-                appliedFilters.trim.length > 0 ||
-                appliedFilters.driveType.length > 0 ||
-                appliedFilters.vehicleType.length > 0 ||
-                appliedFilters.mileage ||
-                appliedFilters.exteriorColor.length > 0 ||
-                appliedFilters.sellerType.length > 0 ||
-                appliedFilters.priceMin ||
-                appliedFilters.priceMax ||
-                appliedFilters.paymentMin ||
-                appliedFilters.paymentMax) && (
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={clearAllFilters}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded-full text-xs"
-                  >
-                    Clear All
-                  </button>
-                  {appliedFilters.condition.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("condition", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.make.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("make", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.model.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("model", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.trim.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("trim", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.vehicleType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("vehicleType", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.driveType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("driveType", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.exteriorColor.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item} Color
-                      <button
-                        onClick={() => removeAppliedFilter("exteriorColor", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.sellerType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("sellerType", item)}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.mileage && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />
-                      {appliedFilters.mileage === "100001"
-                        ? "100k+ miles"
-                        : `Under ${parseInt(appliedFilters.mileage).toLocaleString()} mi`}
-                      <button
-                        onClick={() =>
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            mileage: "",
-                          }))
-                        }
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {(appliedFilters.priceMin || appliedFilters.priceMax) && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />$
-                      {appliedFilters.priceMin || "0"} - $
-                      {appliedFilters.priceMax || "Any"}
-                      <button
-                        onClick={() => {
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            priceMin: "",
-                            priceMax: "",
-                          }));
-                          setPriceMin("");
-                          setPriceMax("");
-                        }}
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {(appliedFilters.paymentMin || appliedFilters.paymentMax) && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />$
-                      {appliedFilters.paymentMin || "0"}-$
-                      {appliedFilters.paymentMax || "Any"}/mo
-                      <button
-                        onClick={() =>
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            paymentMin: "",
-                            paymentMax: "",
-                          }))
-                        }
-                        className="ml-1 text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Desktop Search Section */}
+          <div className="p-4 h-full overflow-y-auto">
+            {/* Search Section */}
             <div className="hidden lg:block mb-4 pb-4 border-b border-gray-200">
               <div className="relative">
                 <input
@@ -932,21 +531,12 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </div>
 
-            {/* Desktop Applied Filters */}
+            {/* Applied Filters */}
             {(appliedFilters.condition.length > 0 ||
               appliedFilters.make.length > 0 ||
               appliedFilters.model.length > 0 ||
-              appliedFilters.trim.length > 0 ||
-              appliedFilters.driveType.length > 0 ||
-              appliedFilters.vehicleType.length > 0 ||
-              appliedFilters.mileage ||
-              appliedFilters.exteriorColor.length > 0 ||
-              appliedFilters.sellerType.length > 0 ||
-              appliedFilters.priceMin ||
-              appliedFilters.priceMax ||
-              appliedFilters.paymentMin ||
-              appliedFilters.paymentMax) && (
-              <div className="hidden lg:block mb-4 pb-4 border-b border-gray-200">
+              appliedFilters.trim.length > 0) && (
+              <div className="mb-4 pb-4 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="carzino-filter-title">Applied Filters</h3>
                   <button
@@ -987,164 +577,13 @@ function MySQLVehiclesOriginalStyleInner() {
                       </button>
                     </span>
                   ))}
-                  {appliedFilters.model.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("model", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.trim.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("trim", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.vehicleType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("vehicleType", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.driveType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("driveType", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.exteriorColor.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item} Color
-                      <button
-                        onClick={() => removeAppliedFilter("exteriorColor", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.sellerType.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs"
-                    >
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button
-                        onClick={() => removeAppliedFilter("sellerType", item)}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  {appliedFilters.mileage && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />
-                      {appliedFilters.mileage === "100001"
-                        ? "100k+ miles"
-                        : `Under ${parseInt(appliedFilters.mileage).toLocaleString()} mi`}
-                      <button
-                        onClick={() =>
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            mileage: "",
-                          }))
-                        }
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {(appliedFilters.priceMin || appliedFilters.priceMax) && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />$
-                      {appliedFilters.priceMin || "0"} - $
-                      {appliedFilters.priceMax || "Any"}
-                      <button
-                        onClick={() => {
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            priceMin: "",
-                            priceMax: "",
-                          }));
-                          setPriceMin("");
-                          setPriceMax("");
-                        }}
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {(appliedFilters.paymentMin || appliedFilters.paymentMax) && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />$
-                      {appliedFilters.paymentMin || "0"}-$
-                      {appliedFilters.paymentMax || "Any"}/mo
-                      <button
-                        onClick={() =>
-                          setAppliedFilters((prev) => ({
-                            ...prev,
-                            paymentMin: "",
-                            paymentMax: "",
-                          }))
-                        }
-                        className="ml-1 text-white hover:text-gray-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
                 </div>
               </div>
             )}
 
             {/* Distance */}
             <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3">
-              <label className="carzino-location-label block mb-2">
-                Distance
-              </label>
+              <label className="carzino-location-label block mb-2">Distance</label>
               <div className="space-y-2">
                 <input
                   type="text"
@@ -1169,55 +608,33 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </div>
 
-                {/* Condition Filter */}
+            {/* Condition Filter */}
             <FilterSection
               title="Condition"
               isCollapsed={collapsedFilters.condition}
               onToggle={() => toggleFilter("condition")}
             >
               <div className="space-y-1">
-                {filterOptions.conditions.length > 0 ? filterOptions.conditions.map((condition) => (
-                  <label key={condition.name} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                {["New", "Used", "Certified"].map((condition) => (
+                  <label key={condition} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                     <input
                       type="checkbox"
                       className="mr-2"
-                      checked={appliedFilters.condition.includes(condition.name)}
+                      checked={appliedFilters.condition.includes(condition)}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setAppliedFilters(prev => ({
                             ...prev,
-                            condition: [...prev.condition, condition.name]
+                            condition: [...prev.condition, condition]
                           }));
                         } else {
-                          removeAppliedFilter("condition", condition.name);
+                          removeAppliedFilter("condition", condition);
                         }
                       }}
                     />
-                    <span className="carzino-filter-option">{condition.name}</span>
-                    <span className="carzino-filter-count ml-1">({condition.count})</span>
+                    <span className="carzino-filter-option">{condition}</span>
                   </label>
-                )) : (
-                  ["New", "Used", "Certified"].map((condition) => (
-                    <label key={condition} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.condition.includes(condition)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              condition: [...prev.condition, condition]
-                            }));
-                          } else {
-                            removeAppliedFilter("condition", condition);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{condition}</span>
-                    </label>
-                  ))
-                )}
+                ))}
               </div>
             </FilterSection>
 
@@ -1243,9 +660,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       }}
                     />
                     <span className="carzino-filter-option">{make.name}</span>
-                    <span className="carzino-filter-count ml-1">
-                      ({make.count})
-                    </span>
+                    <span className="carzino-filter-count ml-1">({make.count})</span>
                   </label>
                 ))}
                 {filterOptions.makes.length > 8 && (
@@ -1280,64 +695,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     No models available for selected make(s)
                   </div>
                 ) : (
-                  <>
-                    {displayedModels.map((model, index) => (
-                      <label
-                        key={index}
-                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          className="mr-2"
-                          checked={appliedFilters.model.includes(model.name)}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            handleModelChange(model.name, e.target.checked);
-                          }}
-                        />
-                        <span className="carzino-filter-option">
-                          {model.name}
-                        </span>
-                        <span className="carzino-filter-count ml-1">
-                          ({model.count})
-                        </span>
-                      </label>
-                    ))}
-                    {availableModels.length > 8 && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setShowMoreModels(!showMoreModels);
-                        }}
-                        className="carzino-show-more text-red-600 hover:text-red-700 mt-1"
-                      >
-                        {showMoreModels ? "Show Less" : "Show More"}
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </FilterSection>
-
-            {/* Trim Filter */}
-            <FilterSection
-              title={`Trim ${appliedFilters.make.length > 0 ? `(${appliedFilters.make.join(", ")})` : ""}`}
-              isCollapsed={collapsedFilters.trim}
-              onToggle={() => toggleFilter("trim")}
-            >
-              <div className="space-y-1">
-                {appliedFilters.make.length === 0 ? (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    Select a make first to see available trims
-                  </div>
-                ) : displayedTrims.length === 0 ? (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    No trims available for selected make(s)
-                  </div>
-                ) : (
-                  displayedTrims.map((trim, index) => (
+                  displayedModels.map((model, index) => (
                     <label
                       key={index}
                       className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
@@ -1345,16 +703,14 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={appliedFilters.trim.includes(trim.name)}
+                        checked={appliedFilters.model.includes(model.name)}
                         onChange={(e) => {
                           e.stopPropagation();
-                          handleTrimChange(trim.name, e.target.checked);
+                          handleModelChange(model.name, e.target.checked);
                         }}
                       />
-                      <span className="carzino-filter-option">{trim.name}</span>
-                      <span className="carzino-filter-count ml-1">
-                        ({trim.count})
-                      </span>
+                      <span className="carzino-filter-option">{model.name}</span>
+                      <span className="carzino-filter-count ml-1">({model.count})</span>
                     </label>
                   ))
                 )}
@@ -1399,80 +755,6 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Payment Filter */}
-            <FilterSection
-              title="Filter by Payment"
-              isCollapsed={collapsedFilters.payment}
-              onToggle={() => toggleFilter("payment")}
-            >
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="$100"
-                    value={paymentMin}
-                    onChange={(e) => setPaymentMin(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                  <input
-                    type="text"
-                    placeholder="$2,000"
-                    value={paymentMax}
-                    onChange={(e) => setPaymentMax(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setAppliedFilters(prev => ({
-                      ...prev,
-                      paymentMin: paymentMin,
-                      paymentMax: paymentMax
-                    }));
-                  }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
-                >
-                  Apply Payment Filter
-                </button>
-              </div>
-            </FilterSection>
-
-            {/* Mileage Filter */}
-            <FilterSection
-              title="Mileage"
-              isCollapsed={collapsedFilters.mileage}
-              onToggle={() => toggleFilter("mileage")}
-            >
-              <div className="space-y-1">
-                {[
-                  { label: "Under 5,000 mi", value: "5000" },
-                  { label: "Under 10,000 mi", value: "10000" },
-                  { label: "Under 25,000 mi", value: "25000" },
-                  { label: "Under 50,000 mi", value: "50000" },
-                  { label: "Under 75,000 mi", value: "75000" },
-                  { label: "Under 100,000 mi", value: "100000" },
-                  { label: "100k+ mi", value: "100001" },
-                ].map((mileage) => (
-                  <label key={mileage.value} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="radio"
-                      name="mileage"
-                      value={mileage.value}
-                      checked={appliedFilters.mileage === mileage.value}
-                      onChange={(e) => {
-                        setAppliedFilters(prev => ({
-                          ...prev,
-                          mileage: e.target.value
-                        }));
-                      }}
-                      className="mr-2"
-                    />
-                    <span className="carzino-filter-option">{mileage.label}</span>
-                  </label>
-                ))}
-              </div>
-            </FilterSection>
-
             {/* Vehicle Type Filter */}
             <FilterSection
               title="Vehicle Type"
@@ -1480,159 +762,17 @@ function MySQLVehiclesOriginalStyleInner() {
               onToggle={() => toggleFilter("vehicleType")}
             >
               <div className="space-y-1">
-                {availableBodyTypes.length > 0 ? availableBodyTypes.map((bodyType) => (
-                  <label key={bodyType.name} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                {["SUV / Crossover", "Truck", "Sedan", "Coupe", "Convertible", "Hatchback", "Van / Minivan", "Wagon"].map((type) => (
+                  <label key={type} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                     <input
                       type="checkbox"
                       className="mr-2"
-                      checked={appliedFilters.vehicleType.includes(bodyType.name)}
-                      onChange={(e) => handleVehicleTypeToggle(bodyType.name)}
+                      checked={appliedFilters.vehicleType.includes(type)}
+                      onChange={(e) => handleVehicleTypeToggle(type)}
                     />
-                    <span className="carzino-filter-option">{bodyType.name}</span>
-                    <span className="carzino-filter-count ml-1">({bodyType.count})</span>
+                    <span className="carzino-filter-option">{type}</span>
                   </label>
-                )) : (
-                  ["SUV / Crossover", "Truck", "Sedan", "Coupe", "Convertible", "Hatchback", "Van / Minivan", "Wagon"].map((type) => (
-                    <label key={type} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.vehicleType.includes(type)}
-                        onChange={(e) => handleVehicleTypeToggle(type)}
-                      />
-                      <span className="carzino-filter-option">{type}</span>
-                    </label>
-                  ))
-                )}
-              </div>
-            </FilterSection>
-
-            {/* Drive Type Filter */}
-            <FilterSection
-              title="Drive Type"
-              isCollapsed={collapsedFilters.driveType}
-              onToggle={() => toggleFilter("driveType")}
-            >
-              <div className="space-y-1">
-                {filterOptions.driveTypes.length > 0 ? filterOptions.driveTypes.map((driveType) => (
-                  <label key={driveType.name} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.driveType.includes(driveType.name)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            driveType: [...prev.driveType, driveType.name]
-                          }));
-                        } else {
-                          removeAppliedFilter("driveType", driveType.name);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{driveType.name}</span>
-                    <span className="carzino-filter-count ml-1">({driveType.count})</span>
-                  </label>
-                )) : (
-                  ["AWD", "4WD", "FWD", "RWD"].map((driveType) => (
-                    <label key={driveType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.driveType.includes(driveType)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              driveType: [...prev.driveType, driveType]
-                            }));
-                          } else {
-                            removeAppliedFilter("driveType", driveType);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{driveType}</span>
-                    </label>
-                  ))
-                )}
-              </div>
-            </FilterSection>
-
-            {/* Exterior Color Filter */}
-            <FilterSection
-              title="Exterior Color"
-              isCollapsed={collapsedFilters.exteriorColor}
-              onToggle={() => toggleFilter("exteriorColor")}
-            >
-              <div className="space-y-1">
-                {[
-                  { name: "White", color: "#FFFFFF", count: 9427 },
-                  { name: "Black", color: "#000000", count: 8363 },
-                  { name: "Gray", color: "#808080", count: 7502 },
-                  { name: "Silver", color: "#C0C0C0", count: 5093 },
-                  { name: "Blue", color: "#0066CC", count: 4266 },
-                  { name: "Red", color: "#CC0000", count: 3436 },
-                ].map((color) => (
-                  <ColorSwatch
-                    key={color.name}
-                    color={color.color}
-                    name={color.name}
-                    count={color.count}
-                  />
                 ))}
-              </div>
-            </FilterSection>
-
-            {/* Seller Type Filter */}
-            <FilterSection
-              title="Seller Type"
-              isCollapsed={collapsedFilters.sellerType}
-              onToggle={() => toggleFilter("sellerType")}
-            >
-              <div className="space-y-1">
-                {filterOptions.sellerTypes.length > 0 ? filterOptions.sellerTypes.map((sellerType) => (
-                  <label key={sellerType.name} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.sellerType.includes(sellerType.name)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            sellerType: [...prev.sellerType, sellerType.name]
-                          }));
-                        } else {
-                          removeAppliedFilter("sellerType", sellerType.name);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{sellerType.name}</span>
-                    <span className="carzino-filter-count ml-1">({sellerType.count})</span>
-                  </label>
-                )) : (
-                  ["Dealer", "Private Seller"].map((sellerType) => (
-                    <label key={sellerType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.sellerType.includes(sellerType)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              sellerType: [...prev.sellerType, sellerType]
-                            }));
-                          } else {
-                            removeAppliedFilter("sellerType", sellerType);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{sellerType}</span>
-                    </label>
-                  ))
-                )}
               </div>
             </FilterSection>
 
@@ -1651,29 +791,9 @@ function MySQLVehiclesOriginalStyleInner() {
                 >
                   <Sliders className="w-4 h-4" />
                   Filter
-                  {(appliedFilters.condition.length +
-                    appliedFilters.make.length +
-                    appliedFilters.model.length +
-                    appliedFilters.trim.length +
-                    appliedFilters.vehicleType.length +
-                    appliedFilters.driveType.length +
-                    appliedFilters.exteriorColor.length +
-                    appliedFilters.sellerType.length +
-                    (appliedFilters.mileage ? 1 : 0) +
-                    (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
-                    (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0)) > 0 && (
+                  {(appliedFilters.condition.length + appliedFilters.make.length) > 0 && (
                     <span className="bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                      {appliedFilters.condition.length +
-                        appliedFilters.make.length +
-                        appliedFilters.model.length +
-                        appliedFilters.trim.length +
-                        appliedFilters.vehicleType.length +
-                        appliedFilters.driveType.length +
-                        appliedFilters.exteriorColor.length +
-                        appliedFilters.sellerType.length +
-                        (appliedFilters.mileage ? 1 : 0) +
-                        (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
-                        (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0)}
+                      {appliedFilters.condition.length + appliedFilters.make.length}
                     </span>
                   )}
                 </button>
@@ -1685,19 +805,10 @@ function MySQLVehiclesOriginalStyleInner() {
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium"
                     onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
                   >
-                    <svg
-                      className="w-4 h-4"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M2 4h12M2 8h8M2 12h4" />
-                    </svg>
                     Sort
                   </button>
                   {sortDropdownOpen && (
-                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[60] w-56">
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-60 w-56">
                       <button
                         onClick={() => {
                           setSortBy("relevance");
@@ -1716,15 +827,6 @@ function MySQLVehiclesOriginalStyleInner() {
                       >
                         Price: Low to High
                       </button>
-                      <button
-                        onClick={() => {
-                          setSortBy("price-high");
-                          setSortDropdownOpen(false);
-                        }}
-                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${sortBy === "price-high" ? "bg-red-50 text-red-600" : ""}`}
-                      >
-                        Price: High to Low
-                      </button>
                     </div>
                   )}
                 </div>
@@ -1735,18 +837,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium ${viewMode === "favorites" ? "text-red-600" : ""}`}
                   onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
                 >
-                  Favorites
-                  <div className="relative">
-                    <div className={`w-12 h-6 rounded-full ${viewMode === "favorites" ? "bg-red-600" : "bg-gray-300"} transition-colors`}>
-                      <div
-                        className={`absolute top-0.5 w-5 h-5 rounded-full transition-transform ${
-                          viewMode === "favorites" ? "translate-x-6" : "translate-x-0.5"
-                        } ${
-                          viewMode === "favorites" ? "bg-white" : favoritesCount > 0 ? "bg-red-600 md:bg-white" : "bg-white"
-                        }`}
-                      />
-                    </div>
-                  </div>
+                  Favorites ({favoritesCount})
                 </button>
               </div>
             </div>
@@ -1764,19 +855,17 @@ function MySQLVehiclesOriginalStyleInner() {
             </div>
 
             <div className="hidden lg:flex items-center gap-4">
-              <div className="view-switcher">
+              <div className="flex bg-white border border-gray-300 rounded-md">
                 <button
-                  className={viewMode === "all" ? "active" : ""}
+                  className={`px-4 py-2 text-sm font-medium ${viewMode === "all" ? "bg-red-600 text-white" : "text-gray-700 hover:bg-gray-50"}`}
                   onClick={() => setViewMode("all")}
                 >
-                  <Gauge className="w-4 h-4" />
                   All Vehicles
                 </button>
                 <button
-                  className={viewMode === "favorites" ? "active" : ""}
+                  className={`px-4 py-2 text-sm font-medium ${viewMode === "favorites" ? "bg-red-600 text-white" : "text-gray-700 hover:bg-gray-50"}`}
                   onClick={() => setViewMode("favorites")}
                 >
-                  <Heart className="w-4 h-4" />
                   Favorites ({favoritesCount})
                 </button>
               </div>
@@ -1826,14 +915,6 @@ function MySQLVehiclesOriginalStyleInner() {
                   : "Try adjusting your filters to see more results."
                 }
               </p>
-              {viewMode === "favorites" && (
-                <button
-                  onClick={() => setViewMode("all")}
-                  className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors"
-                >
-                  Browse All Vehicles
-                </button>
-              )}
             </div>
           ) : (
             <>
