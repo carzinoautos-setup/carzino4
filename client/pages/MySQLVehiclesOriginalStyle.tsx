@@ -1077,6 +1077,10 @@ function MySQLVehiclesOriginalStyleInner() {
     localStorage.setItem("carzino_favorites", JSON.stringify(newFavorites));
   };
 
+  const isFavorited = (vehicleId: number): boolean => {
+    return !!favorites[vehicleId];
+  };
+
   const toggleFavorite = (vehicle: Vehicle) => {
     const newFavorites = { ...favorites };
     const wasAlreadyFavorited = !!newFavorites[vehicle.id];
