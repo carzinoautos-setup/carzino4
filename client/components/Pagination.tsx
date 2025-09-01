@@ -29,43 +29,43 @@ export const Pagination: React.FC<PaginationProps> = ({
     const pages = [];
     const maxPagesToShow = window.innerWidth < 640 ? 3 : 7; // Show fewer pages on mobile
 
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (safeTotalPages <= maxPagesToShow) {
+      for (let i = 1; i <= safeTotalPages; i++) {
         pages.push(i);
       }
     } else {
       if (window.innerWidth < 640) {
         // Mobile: Show only current page and adjacent pages
-        if (currentPage === 1) {
-          pages.push(1, 2, "...", totalPages);
-        } else if (currentPage === totalPages) {
-          pages.push(1, "...", totalPages - 1, totalPages);
+        if (safeCurrentPage === 1) {
+          pages.push(1, 2, "...", safeTotalPages);
+        } else if (safeCurrentPage === safeTotalPages) {
+          pages.push(1, "...", safeTotalPages - 1, safeTotalPages);
         } else {
-          pages.push(currentPage - 1, currentPage, currentPage + 1);
+          pages.push(safeCurrentPage - 1, safeCurrentPage, safeCurrentPage + 1);
         }
       } else {
         // Desktop: Keep original logic
-        if (currentPage <= 4) {
-          pages.push(1, 2, 3, 4, 5, "...", totalPages);
-        } else if (currentPage >= totalPages - 3) {
+        if (safeCurrentPage <= 4) {
+          pages.push(1, 2, 3, 4, 5, "...", safeTotalPages);
+        } else if (safeCurrentPage >= safeTotalPages - 3) {
           pages.push(
             1,
             "...",
-            totalPages - 4,
-            totalPages - 3,
-            totalPages - 2,
-            totalPages - 1,
-            totalPages,
+            safeTotalPages - 4,
+            safeTotalPages - 3,
+            safeTotalPages - 2,
+            safeTotalPages - 1,
+            safeTotalPages,
           );
         } else {
           pages.push(
             1,
             "...",
-            currentPage - 1,
-            currentPage,
-            currentPage + 1,
+            safeCurrentPage - 1,
+            safeCurrentPage,
+            safeCurrentPage + 1,
             "...",
-            totalPages,
+            safeTotalPages,
           );
         }
       }
@@ -81,14 +81,14 @@ export const Pagination: React.FC<PaginationProps> = ({
         <div className="text-sm text-gray-700 text-center">
           Showing <span className="font-medium">{startResult}</span> to{" "}
           <span className="font-medium">{endResult}</span> of{" "}
-          <span className="font-medium">{totalResults}</span> results
+          <span className="font-medium">{safeTotalResults}</span> results
         </div>
 
         <div className="flex items-center justify-center space-x-4 sm:space-x-2 w-full">
           {/* Previous Button */}
           <button
-            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
+            onClick={() => onPageChange(Math.max(1, safeCurrentPage - 1))}
+            disabled={safeCurrentPage === 1}
             className="flex items-center justify-center w-10 h-10 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed sm:px-4 sm:w-auto"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -114,7 +114,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                   key={page}
                   onClick={() => onPageChange(page as number)}
                   className={`w-10 h-10 text-sm font-medium rounded-md flex items-center justify-center ${
-                    page === currentPage
+                    page === safeCurrentPage
                       ? "bg-red-600 text-white border border-red-600"
                       : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
                   }`}
@@ -127,8 +127,8 @@ export const Pagination: React.FC<PaginationProps> = ({
 
           {/* Next Button */}
           <button
-            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => onPageChange(Math.min(safeTotalPages, safeCurrentPage + 1))}
+            disabled={safeCurrentPage === safeTotalPages}
             className="flex items-center justify-center w-10 h-10 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed sm:px-4 sm:w-auto"
           >
             <ChevronRight className="w-5 h-5" />
@@ -141,11 +141,11 @@ export const Pagination: React.FC<PaginationProps> = ({
           <div className="flex items-center justify-center gap-3">
             <span className="text-sm text-gray-600">Go to page:</span>
             <select
-              value={currentPage}
+              value={safeCurrentPage}
               onChange={(e) => onPageChange(parseInt(e.target.value))}
               className="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:border-red-600"
             >
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              {Array.from({ length: safeTotalPages }, (_, i) => i + 1).map(
                 (page) => (
                   <option key={page} value={page}>
                     {page}
@@ -153,7 +153,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 ),
               )}
             </select>
-            <span className="text-sm text-gray-500">of {totalPages}</span>
+            <span className="text-sm text-gray-500">of {safeTotalPages}</span>
           </div>
         </div>
       </div>
