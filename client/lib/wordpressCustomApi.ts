@@ -206,7 +206,7 @@ Original error: ${error.message}`);
       }
     });
 
-    const endpoint = `/wp-json/carzino/v1/vehicles?${params.toString()}`;
+    const endpoint = `/wp-json/custom/v1/vehicles?${params.toString()}`;
     const cacheKey = `vehicles_${params.toString()}`;
 
     return this.request<WordPressVehiclesResponse>(endpoint, cacheKey);
