@@ -445,25 +445,14 @@ export default function WordPressVehicles() {
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1">
-              {/* Results Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 bg-white rounded-lg border border-gray-200 p-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Search Results
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {loading ? 'Loading...' : `Showing ${vehicles.length} of ${totalRecords.toLocaleString()} vehicles`}
-                  </p>
+            {/* Main Content - Automotive dealership style */}
+            <div className="flex-1 bg-white p-4 lg:p-4 min-h-screen">
+              {/* Debug info */}
+              {import.meta.env.DEV && (
+                <div className="text-xs text-gray-500 mb-2 p-2 bg-yellow-50 rounded">
+                  🔍 Debug: vehicles={vehicles.length}, loading={loading.toString()}, error={error || 'none'}
                 </div>
-                
-                {totalRecords > 0 && (
-                  <div className="text-sm text-gray-600 mt-2 sm:mt-0">
-                    Page {currentPage} of {totalPages}
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Loading State */}
               {loading && (
