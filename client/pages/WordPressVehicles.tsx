@@ -16,49 +16,13 @@ import { FilterSection } from "@/components/FilterSection";
 import { MySQLVehicleCard } from "@/components/MySQLVehicleCard";
 import { Pagination } from "@/components/Pagination";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { 
-  wordpressCustomApi, 
-  WordPressVehicle, 
+import { VehicleRecord } from "../lib/vehicleApi";
+import {
+  wordpressCustomApi,
+  WordPressVehicle,
   WordPressVehiclesResponse,
-  WordPressVehicleFilters 
+  WordPressVehicleFilters
 } from "../lib/wordpressCustomApi";
-
-// Transformed vehicle for card display
-interface VehicleRecord {
-  id: number;
-  year: number;
-  make: string;
-  model: string;
-  trim: string;
-  body_style: string;
-  engine_cylinders: number;
-  fuel_type: string;
-  transmission: string;
-  drivetrain: string;
-  exterior_color_generic: string;
-  interior_color_generic: string;
-  doors: number;
-  price: number;
-  mileage: number;
-  title_status: string;
-  highway_mpg: number;
-  condition: string;
-  certified: boolean;
-  seller_type: string;
-  city_seller?: string;
-  state_seller?: string;
-  zip_seller?: string;
-  phone_number_seller?: string;
-  business_name_seller?: string;
-  interest_rate: number;
-  down_payment: number;
-  loan_term: number;
-  payments: number;
-  images: string[];
-  stock_status: string;
-  is_featured: boolean;
-  title: string;
-}
 
 export default function WordPressVehicles() {
   // State management
