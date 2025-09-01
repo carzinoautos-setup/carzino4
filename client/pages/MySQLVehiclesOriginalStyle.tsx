@@ -4322,7 +4322,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       <div>• Total vehicles: {vehicles.length}</div>
                       <div>• Current page: {currentPage}</div>
                       <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
-                      <div>�� Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
+                      <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
                     </div>
                   )}
                   <button
@@ -4489,13 +4489,16 @@ function MySQLVehiclesOriginalStyleInner() {
                   value={resultsPerPage}
                   onChange={(e) => {
                     const newValue = parseInt(e.target.value);
-                    console.log('📊 View count changed:', resultsPerPage, '->', newValue);
+                    console.log('📊 FIXED: View count changed:', resultsPerPage, '->', newValue);
                     setResultsPerPage(newValue);
                     setCurrentPage(1); // Reset to first page when changing view count
-                    // Force immediate refresh of vehicles with new page size
-                    if (isMountedRef.current) {
-                      fetchCombinedData();
-                    }
+                    // FIXED: Force immediate refresh with new page size
+                    setTimeout(() => {
+                      if (isMountedRef.current) {
+                        console.log('📊 FIXED: Forcing vehicle refresh with new page size');
+                        fetchCombinedData();
+                      }
+                    }, 100); // Small delay to ensure state is updated
                   }}
                   className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white"
                 >
