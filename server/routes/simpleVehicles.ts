@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { WooCommerceApiService } from "../services/woocommerceApiService.js";
+import { SimpleMockVehicleService } from "../services/simpleMockVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Testing WooCommerce API again - switching back from mock data
-console.log("🛍️ Testing WooCommerce REST API for live product inventory");
-const vehicleService = new WooCommerceApiService();
+// Using clean, fast SimpleMockVehicleService as requested
+console.log("🚀 Using SimpleMockVehicleService - clean and fast");
+const vehicleService = new SimpleMockVehicleService();
 
 /**
  * GET /api/simple-vehicles
