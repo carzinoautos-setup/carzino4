@@ -257,6 +257,15 @@ function MySQLVehiclesOriginalStyleInner() {
       if (appliedFilters.paymentMax) {
         apiUrl.searchParams.set('paymentMax', appliedFilters.paymentMax);
       }
+      if (termLength && termLength !== "72") {
+        apiUrl.searchParams.set('termLength', termLength);
+      }
+      if (interestRate && interestRate !== "8") {
+        apiUrl.searchParams.set('interestRate', interestRate);
+      }
+      if (downPayment && downPayment !== "2000") {
+        apiUrl.searchParams.set('downPayment', downPayment);
+      }
       if (zipCode) {
         apiUrl.searchParams.set('zipCode', zipCode);
       }
