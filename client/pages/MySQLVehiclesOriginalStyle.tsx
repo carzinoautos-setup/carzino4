@@ -545,8 +545,11 @@ function MySQLVehiclesOriginalStyleInner() {
         signal: requestController.signal
       });
 
-      // WordPress API already returns structured data
-      const responseData = response;
+      if (!response.ok) {
+        throw new Error(`Server API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
 
       cleanup();
 
