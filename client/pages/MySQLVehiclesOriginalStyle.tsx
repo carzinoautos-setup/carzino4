@@ -585,9 +585,23 @@ function MySQLVehiclesOriginalStyleInner() {
             }
 
             // Handle featured image from multiple sources
-            const vehicleImages = wpVehicle.featured_image ?
-                                [wpVehicle.featured_image] :
-                                (wpVehicle.images?.map(img => img.src) || []);
+            const vehicleImages = [];
+            // Priority: ACF featured_image, main featured_image, WooCommerce images
+            if (acf?.featured_image) {
+              vehicleImages.push(acf.featured_image);
+            } else if (wpVehicle.featured_image) {
+              vehicleImages.push(wpVehicle.featured_image);
+            } else if (wpVehicle.images && wpVehicle.images.length > 0) {
+              vehicleImages.push(...wpVehicle.images.map(img => img.src));
+            }
+
+            if (import.meta.env.DEV && vehicleImages.length === 0) {
+              console.warn(`🖼️ No images found for vehicle ${wpVehicle.id}:`, {
+                acf_featured: acf?.featured_image,
+                wp_featured: wpVehicle.featured_image,
+                wp_images_count: wpVehicle.images?.length || 0
+              });
+            }
 
             return {
               id: wpVehicle.id,
