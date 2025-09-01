@@ -1114,7 +1114,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // FIXED: Separate effect for results per page changes
   useEffect(() => {
     if (isMountedRef.current && resultsPerPage !== 20) {
-      console.log(`📊 FIXED: Results per page changed to ${resultsPerPage} - refreshing...`);
+      console.log(`��� FIXED: Results per page changed to ${resultsPerPage} - refreshing...`);
       setCurrentPage(1); // Reset to first page when changing page size
       fetchCombinedData();
     }
@@ -4175,7 +4175,7 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    {import.meta.env.DEV && `API: WordPress Custom API (/wp-json/custom/v1/vehicles)`}
+                    {import.meta.env.DEV && `API: Server-side Node.js API (/api/simple-vehicles/combined)`}
                   </div>
                   {import.meta.env.DEV && (
                     <button
