@@ -562,202 +562,37 @@ function MySQLVehiclesOriginalStyleInner() {
         abortControllerRef.current = null;
       }
 
-      if (!response.success) {
-        throw new Error(`WordPress API error: ${response.message || 'Unknown error'}`);
+      if (!responseData.success) {
+        throw new Error(`Server API error: ${responseData.message || 'Unknown error'}`);
       }
 
+      console.log("✅ FIXED: Server API Response received:", {
+        vehiclesCount: responseData.data?.vehicles?.length || 0,
+        filtersCount: Object.keys(responseData.data?.filters || {}).length,
+        dealersCount: responseData.data?.dealers?.length || 0,
+        totalRecords: responseData.data?.meta?.totalRecords || 0
+      });
+
+      // Server API already returns the correct format
       const data = {
         success: true,
         data: {
-          vehicles: response.data.map(wpVehicle => {
-            // Transform WordPress vehicle to MySQL format
-            const acf = wpVehicle.acf;
-
-            // Debug log to see actual WordPress data structure
-            if (import.meta.env.DEV) {
-              console.log('🔍 WordPress Vehicle Data:', {
-                id: wpVehicle.id,
-                name: wpVehicle.name,
-                price: wpVehicle.price,
-                regular_price: wpVehicle.regular_price,
-                sale_price: wpVehicle.sale_price,
-                acf: acf ? {
-                  price: acf.price,
-                  sale_price: acf.sale_price,
-                  payment: acf.payment,
-                  year: acf.year,
-                  make: acf.make,
-                  model: acf.model
-                } : null,
-                images: wpVehicle.images,
-                featured_image: wpVehicle.featured_image
-              });
-            }
-
-            // Convert price to number - try multiple sources for price
-            const rawPrice = acf?.price ||
-                           acf?.sale_price ||
-                           wpVehicle.price ||
-                           wpVehicle.sale_price ||
-                           wpVehicle.regular_price;
-
-            // Convert to number, handling string and various formats
-            let vehiclePrice = 0;
-            if (rawPrice) {
-              if (typeof rawPrice === 'string') {
-                // Remove any non-numeric characters except decimal point
-                const numStr = rawPrice.replace(/[^\d.]/g, '');
-                vehiclePrice = parseFloat(numStr) || 0;
-              } else {
-                vehiclePrice = Number(rawPrice) || 0;
-              }
-            }
-
-            // Convert payment to number
-            let vehiclePayment = 0;
-            if (acf?.payment) {
-              if (typeof acf.payment === 'string') {
-                const numStr = String(acf.payment).replace(/[^\d.]/g, '');
-                vehiclePayment = parseFloat(numStr) || 0;
-              } else {
-                vehiclePayment = Number(acf.payment) || 0;
-              }
-            }
-
-            // Remove mock data - using real WordPress data now
-
-            if (import.meta.env.DEV) {
-              console.log('💰 Price conversion:', {
-                rawPrice,
-                vehiclePrice,
-                rawPayment: acf?.payment,
-                vehiclePayment,
-                finalPrice: vehiclePrice,
-                finalPayment: vehiclePayment
-              });
-            }
-
-            // FIXED: Featured image size - ALWAYS use 450x300px medium size
-            const vehicleImages = [];
-            const enforceImageSize = (url: string) => {
-              if (!url) return '';
-
-              // Remove any existing parameters and enforce 450x300px
-              const baseUrl = url.split('?')[0].split('#')[0];
-
-              // For WordPress media, use proper size parameters
-              if (baseUrl.includes('wp-content/uploads') || baseUrl.includes('unsplash.com')) {
-                return `${baseUrl}?w=450&h=300&fit=crop&auto=format&q=85`;
-              }
-
-              // For other image sources, use URL parameters
-              return `${baseUrl}?width=450&height=300&fit=crop`;
-            };
-
-            // Priority order: ACF featured_image → WP featured_image → WooCommerce images
-            if (acf?.featured_image) {
-              vehicleImages.push(enforceImageSize(acf.featured_image));
-            } else if (wpVehicle.featured_image) {
-              vehicleImages.push(enforceImageSize(wpVehicle.featured_image));
-            } else if (wpVehicle.images && wpVehicle.images.length > 0) {
-              vehicleImages.push(...wpVehicle.images.map(img => enforceImageSize(img.src)));
-            }
-
-            // Log if image sizing was applied
-            if (import.meta.env.DEV && vehicleImages.length > 0) {
-              console.log(`🖼️ FIXED: Image sizing applied to vehicle ${wpVehicle.id}:`, vehicleImages[0]);
-            }
-
-            if (import.meta.env.DEV && vehicleImages.length === 0) {
-              console.warn(`🖼️ No images found for vehicle ${wpVehicle.id}:`, {
-                acf_featured: acf?.featured_image,
-                wp_featured: wpVehicle.featured_image,
-                wp_images_count: wpVehicle.images?.length || 0
-              });
-            }
-
-            return {
-              id: wpVehicle.id,
-              year: acf?.year || 2020,
-              make: acf?.make || 'Unknown',
-              model: acf?.model || 'Model',
-              trim: acf?.trim || '',
-              body_style: acf?.body_style || acf?.body_type || '',
-              engine_cylinders: acf?.engine_cylinders || 4,
-              fuel_type: acf?.fuel_type || 'Gasoline',
-              transmission: acf?.transmission || 'Auto',
-              drivetrain: acf?.drivetrain || acf?.drive_type || 'FWD',
-              exterior_color_generic: acf?.exterior_color || 'Black',
-              interior_color_generic: acf?.interior_color || 'Black',
-              doors: String(acf?.doors || 4),
-              price: vehiclePrice,
-              salePrice: vehiclePrice > 0 ? `$${vehiclePrice.toLocaleString()}` : null,
-              mileage: String(acf?.mileage || 0),
-              title_status: acf?.title_status || 'Clean',
-              highway_mpg: acf?.highway_mpg || 25,
-              condition: acf?.condition || 'Used',
-              certified: acf?.certified === true || acf?.certified === '1',
-              seller_type: acf?.account_type_seller || 'Dealer',
-              city_seller: acf?.city_seller || 'Seattle',
-              state_seller: acf?.state_seller || 'WA',
-              zip_seller: acf?.zip_seller || '98101',
-              interest_rate: acf?.interest_rate || 5.0,
-              down_payment: acf?.down_payment || 2000,
-              loan_term: acf?.loan_term || 60,
-              payments: vehiclePayment,
-              payment: vehiclePayment > 0 ? `$${vehiclePayment}/mo*` :
-                       (vehiclePrice > 0 ? `$${Math.round(vehiclePrice / 60)}/mo*` : null),
-              featured: acf?.is_featured === true || acf?.is_featured === '1',
-              viewed: false,
-              images: vehicleImages,
-              badges: [acf?.condition || 'Used', acf?.drivetrain || acf?.drive_type || 'FWD'].filter(Boolean),
-              title: wpVehicle.name || `${acf?.year || ''} ${acf?.make || ''} ${acf?.model || ''}`.trim(),
-              phone: acf?.phone_number_seller || '(253) 555-0100',
-              dealer: acf?.account_name_seller || 'Dealer',
-              location: `${acf?.city_seller || 'Seattle'}, ${acf?.state_seller || 'WA'} ${acf?.zip_seller || '98101'}`,
-            };
-          }),
-          meta: {
-            totalRecords: response.pagination?.total || 0,
-            totalPages: response.pagination?.total_pages || 0,
-            currentPage: response.pagination?.page || 1,
-            pageSize: response.pagination?.per_page || 20,
-            hasNextPage: (response.pagination?.page || 1) < (response.pagination?.total_pages || 0),
-            hasPreviousPage: (response.pagination?.page || 1) > 1,
+          vehicles: responseData.data.vehicles || [],
+          meta: responseData.data.meta || {
+            totalRecords: 0,
+            totalPages: 0,
+            currentPage: 1,
+            pageSize: 20,
+            hasNextPage: false,
+            hasPreviousPage: false,
           },
-          filters: {
-            makes: Array.from(new Set(response.data.map(v => v.acf?.make).filter(Boolean)))
-              .map(make => ({ name: make!, count: response.data.filter(v => v.acf?.make === make).length })),
-            models: Array.from(new Set(response.data.map(v => v.acf?.model).filter(Boolean)))
-              .map(model => ({ name: model!, count: response.data.filter(v => v.acf?.model === model).length })),
-            trims: Array.from(new Set(response.data.map(v => v.acf?.trim).filter(Boolean)))
-              .map(trim => ({ name: trim!, count: response.data.filter(v => v.acf?.trim === trim).length })),
-            conditions: Array.from(new Set([
-              'Used', 'New', 'Certified',
-              ...response.data.map(v => v.acf?.condition).filter(Boolean)
-            ]))
-              .map(condition => ({ name: condition!, count: response.data.filter(v => v.acf?.condition === condition || (condition === 'Used' && (!v.acf?.condition || v.acf?.condition.toLowerCase() === 'used'))).length })),
-            vehicleTypes: Array.from(new Set(response.data.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
-              .map(type => ({ name: type!, count: response.data.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length })),
-            driveTypes: Array.from(new Set(response.data.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
-              .map(drive => ({ name: drive!, count: response.data.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length })),
-            transmissions: Array.from(new Set(response.data.map(v => v.acf?.transmission).filter(Boolean)))
-              .map(trans => ({ name: trans!, count: response.data.filter(v => v.acf?.transmission === trans).length })),
-            exteriorColors: Array.from(new Set(response.data.map(v => v.acf?.exterior_color).filter(Boolean)))
-              .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.exterior_color === color).length })),
-            interiorColors: Array.from(new Set(response.data.map(v => v.acf?.interior_color).filter(Boolean)))
-              .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.interior_color === color).length })),
-            sellerTypes: Array.from(new Set(response.data.map(v => v.acf?.account_type_seller).filter(Boolean)))
-              .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.account_type_seller === type).length })),
-            dealers: Array.from(new Set(response.data.map(v => v.acf?.account_name_seller).filter(Boolean)))
-              .map(dealer => ({ name: dealer!, count: response.data.filter(v => v.acf?.account_name_seller === dealer).length })),
-            states: Array.from(new Set(response.data.map(v => v.acf?.state_seller).filter(Boolean)))
-              .map(state => ({ name: state!, count: response.data.filter(v => v.acf?.state_seller === state).length })),
-            cities: Array.from(new Set(response.data.map(v => v.acf?.city_seller).filter(Boolean)))
-              .map(city => ({ name: city!, count: response.data.filter(v => v.acf?.city_seller === city).length })),
-            totalVehicles: response.pagination?.total || 0
+          filters: responseData.data.filters || {
+            makes: [], models: [], trims: [], conditions: [],
+            vehicleTypes: [], driveTypes: [], transmissions: [],
+            exteriorColors: [], interiorColors: [], sellerTypes: [],
+            dealers: [], states: [], cities: [], totalVehicles: 0
           },
-          dealers: []
+          dealers: responseData.data.dealers || []
         }
       };
 
