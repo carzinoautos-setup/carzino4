@@ -983,19 +983,19 @@ function MySQLVehiclesOriginalStyleInner() {
       "Pickup": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Pickup Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Crew Cab Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
-      "Regular Cab Truck": "��",
+      "Regular Cab Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Extended Cab Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
       "Full Size Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
-      "Compact Truck": "��",
+      "Compact Truck": "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?w=64&h=64&fit=crop&crop=center",
 
       // Sports Cars and Coupes
-      "Coupe": "🏎️",
-      "Coupes": "🏎️",
-      "Sports Car": "🏎️",
-      "Sports Cars": "🏎️",
-      "Convertible": "🏎️",
-      "Convertibles": "🏎️",
-      "Roadster": "🏎️",
+      "Coupe": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Coupes": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Sports Car": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Sports Cars": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Convertible": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Convertibles": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
+      "Roadster": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
 
       // Hatchbacks and Compacts
       "Hatchback": "🚗",
