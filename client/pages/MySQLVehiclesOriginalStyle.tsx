@@ -305,8 +305,13 @@ function MySQLVehiclesOriginalStyleInner() {
       paymentMin: "",
       paymentMax: "",
     });
-    setPriceMin("10000");
-    setPriceMax("100000");
+    setPriceMin("");
+    setPriceMax("");
+    setPaymentMin("");
+    setPaymentMax("");
+    setZipCode("");
+    setRadius("10");
+    setCurrentPage(1);
   };
 
   // Handle make selection with cascading filter clearing
