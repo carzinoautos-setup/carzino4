@@ -620,7 +620,7 @@ function MySQLVehiclesOriginalStyleInner() {
               badges: [acf?.condition || 'Used', acf?.drivetrain || acf?.drive_type || 'FWD'].filter(Boolean),
               title: wpVehicle.name || `${acf?.year || ''} ${acf?.make || ''} ${acf?.model || ''}`.trim(),
               phone: acf?.phone_number_seller || '(253) 555-0100',
-              dealer: acf?.account_name_seller || acf?.acount_name_seller || 'Dealer',
+              dealer: acf?.account_name_seller || 'Dealer',
               location: `${acf?.city_seller || 'Seattle'}, ${acf?.state_seller || 'WA'} ${acf?.zip_seller || '98101'}`,
             };
           }),
@@ -653,8 +653,8 @@ function MySQLVehiclesOriginalStyleInner() {
               .map(color => ({ name: color!, count: response.data.filter(v => v.acf?.interior_color === color).length })),
             sellerTypes: Array.from(new Set(response.data.map(v => v.acf?.account_type_seller).filter(Boolean)))
               .map(type => ({ name: type!, count: response.data.filter(v => v.acf?.account_type_seller === type).length })),
-            dealers: Array.from(new Set(response.data.map(v => v.acf?.account_name_seller || v.acf?.acount_name_seller).filter(Boolean)))
-              .map(dealer => ({ name: dealer!, count: response.data.filter(v => (v.acf?.account_name_seller || v.acf?.acount_name_seller) === dealer).length })),
+            dealers: Array.from(new Set(response.data.map(v => v.acf?.account_name_seller).filter(Boolean)))
+              .map(dealer => ({ name: dealer!, count: response.data.filter(v => v.acf?.account_name_seller === dealer).length })),
             states: Array.from(new Set(response.data.map(v => v.acf?.state_seller).filter(Boolean)))
               .map(state => ({ name: state!, count: response.data.filter(v => v.acf?.state_seller === state).length })),
             cities: Array.from(new Set(response.data.map(v => v.acf?.city_seller).filter(Boolean)))
