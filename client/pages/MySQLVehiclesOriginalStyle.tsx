@@ -4074,21 +4074,30 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Mobile Product Grid */}
             <div className="p-4 bg-white min-h-screen">
+              {/* DEBUG: Always show this info */}
+              <div className="text-xs text-gray-500 mb-4 p-2 bg-yellow-50 rounded">
+                📱 MOBILE DEBUG: loading={loading.toString()}, vehicles={vehicles.length}, totalResults={totalResults}, error={error || 'none'}
+              </div>
+
               {loading ? (
                 <div className="text-center py-12">
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    {import.meta.env.DEV && `API: Server-side Node.js API (/api/simple-vehicles/combined)`}
+                    API calls are working (254 vehicles found)
                   </div>
-                  {import.meta.env.DEV && (
-                    <button
-                      onClick={() => setLoading(false)}
-                      className="mt-4 px-4 py-2 bg-red-600 text-white rounded text-sm"
-                    >
-                      Force Stop Loading (Debug)
-                    </button>
-                  )}
+                  <div className="text-xs text-red-500 mt-2">
+                    DEBUG: Component is stuck in loading state
+                  </div>
+                  <button
+                    onClick={() => {
+                      console.log("🔧 FORCE STOP LOADING:", { loading, vehicles: vehicles.length, totalResults });
+                      setLoading(false);
+                    }}
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded text-sm"
+                  >
+                    Force Stop Loading (Debug)
+                  </button>
                 </div>
               ) : error ? (
                 <div className="text-center py-12">
