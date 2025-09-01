@@ -837,6 +837,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       className="mr-2"
                       checked={appliedFilters.condition.includes(condition)}
                       onChange={(e) => {
+                        setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
                           setAppliedFilters(prev => ({
                             ...prev,
