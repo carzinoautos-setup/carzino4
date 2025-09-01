@@ -241,7 +241,7 @@ export default function WordPressVehicles() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Navigation Header */}
         <NavigationHeader />
 
