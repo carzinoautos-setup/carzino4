@@ -245,23 +245,23 @@ export default function WordPressVehicles() {
         {/* Navigation Header */}
         <NavigationHeader />
 
-        <div className="max-w-[1400px] mx-auto px-4 py-6">
-          {/* Page Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div className="max-w-[1400px] mx-auto px-4 py-4">
+          {/* Page Header - Professional automotive style */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 bg-white rounded-lg border border-gray-200 p-4">
             <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                WordPress Vehicles
+              <h1 className="text-xl font-semibold text-gray-900">
+                New and Used Vehicles for sale
               </h1>
-              <p className="text-gray-600 mt-1">
-                {loading ? 'Loading...' : `${totalRecords.toLocaleString()} vehicles available`}
+              <p className="text-gray-600 text-sm mt-1">
+                {loading ? 'Loading...' : `${totalRecords.toLocaleString()} Matches`}
               </p>
             </div>
-            
+
             {/* API Status */}
             <div className="mt-4 lg:mt-0 flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600">WordPress Custom API</span>
+                <span className="text-gray-600">WordPress API</span>
               </div>
               <button
                 onClick={() => {
