@@ -627,13 +627,16 @@ function MySQLVehiclesOriginalStyleInner() {
         setVehicleTypes(data.data.filters?.vehicleTypes || []);
 
         // Force update of totalResults and loading state
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 100);
 
         if (import.meta.env.DEV) {
           console.log("✅ EMERGENCY REVERT: Successfully loaded all data from server API", {
             vehiclesCount: data.data.vehicles?.length || 0,
             totalRecords: data.data.meta?.totalRecords || 0,
-            filtersCount: Object.keys(data.data.filters || {}).length
+            filtersCount: Object.keys(data.data.filters || {}).length,
+            loadingState: loading
           });
         }
       } else {
