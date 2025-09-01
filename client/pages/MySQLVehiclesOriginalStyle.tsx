@@ -589,15 +589,37 @@ function MySQLVehiclesOriginalStyleInner() {
               });
             }
 
-            // Handle featured image from multiple sources
+            // Handle featured image from multiple sources - constrain to medium size (450x300px)
             const vehicleImages = [];
             // Priority: ACF featured_image, main featured_image, WooCommerce images
             if (acf?.featured_image) {
-              vehicleImages.push(acf.featured_image);
+              // Ensure image is medium size (450x300px)
+              let imageUrl = acf.featured_image;
+              if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
+                // Add medium size parameters
+                imageUrl = imageUrl.includes('?')
+                  ? `${imageUrl}&w=450&h=300&fit=crop`
+                  : `${imageUrl}?w=450&h=300&fit=crop`;
+              }
+              vehicleImages.push(imageUrl);
             } else if (wpVehicle.featured_image) {
-              vehicleImages.push(wpVehicle.featured_image);
+              let imageUrl = wpVehicle.featured_image;
+              if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
+                imageUrl = imageUrl.includes('?')
+                  ? `${imageUrl}&w=450&h=300&fit=crop`
+                  : `${imageUrl}?w=450&h=300&fit=crop`;
+              }
+              vehicleImages.push(imageUrl);
             } else if (wpVehicle.images && wpVehicle.images.length > 0) {
-              vehicleImages.push(...wpVehicle.images.map(img => img.src));
+              vehicleImages.push(...wpVehicle.images.map(img => {
+                let imageUrl = img.src;
+                if (!imageUrl.includes('w=450') && !imageUrl.includes('450x300')) {
+                  imageUrl = imageUrl.includes('?')
+                    ? `${imageUrl}&w=450&h=300&fit=crop`
+                    : `${imageUrl}?w=450&h=300&fit=crop`;
+                }
+                return imageUrl;
+              }));
             }
 
             if (import.meta.env.DEV && vehicleImages.length === 0) {
@@ -1412,7 +1434,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // Apply payment filters handler
   const applyPaymentFilters = useCallback(() => {
     if (import.meta.env.DEV) {
-      console.log("💰 Applying payment filters:", {
+      console.log("��� Applying payment filters:", {
         paymentMin,
         paymentMax,
         currentAppliedPaymentMin: appliedFilters.paymentMin,
