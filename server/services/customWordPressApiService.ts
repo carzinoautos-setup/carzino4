@@ -57,22 +57,22 @@ export class CustomWordPressApiService {
         phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
         seller_type: vehicle.acf?.account_type_seller || "Dealer"
       }));
-      
-      const totalRecords = allVehicles.length;
-      const totalPages = Math.ceil(totalRecords / pagination.pageSize);
-      
-      console.log(`✅ Returned ${transformedVehicles.length} vehicles from ${totalRecords} total`);
-      
+
+      // Use pagination info from API response
+      const paginationInfo = apiResponse.pagination;
+
+      console.log(`✅ Returned ${transformedVehicles.length} vehicles from ${paginationInfo.total} total (page ${paginationInfo.page}/${paginationInfo.total_pages})`);
+
       return {
         success: true,
         data: transformedVehicles,
         meta: {
-          totalRecords,
-          totalPages,
-          currentPage: pagination.page,
-          pageSize: pagination.pageSize,
-          hasNextPage: pagination.page < totalPages,
-          hasPreviousPage: pagination.page > 1
+          totalRecords: paginationInfo.total,
+          totalPages: paginationInfo.total_pages,
+          currentPage: paginationInfo.page,
+          pageSize: paginationInfo.per_page,
+          hasNextPage: paginationInfo.page < paginationInfo.total_pages,
+          hasPreviousPage: paginationInfo.page > 1
         }
       };
       
