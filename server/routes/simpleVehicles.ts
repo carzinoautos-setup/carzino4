@@ -336,6 +336,11 @@ export const getCombinedVehicleData: RequestHandler = async (req, res) => {
     if (req.query.max_mileage) filters.max_mileage = req.query.max_mileage as string;
     if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
     if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
+    if (req.query.paymentMin) filters.paymentMin = req.query.paymentMin as string;
+    if (req.query.paymentMax) filters.paymentMax = req.query.paymentMax as string;
+    if (req.query.termLength) filters.termLength = req.query.termLength as string;
+    if (req.query.interestRate) filters.interestRate = req.query.interestRate as string;
+    if (req.query.downPayment) filters.downPayment = req.query.downPayment as string;
 
     // Parse sort parameter
     const sortBy = (req.query.sortBy as string) || "relevance";
