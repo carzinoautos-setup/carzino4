@@ -65,14 +65,24 @@ export class CustomWordPressApiService {
       if (filters.max_mileage) {
         url.searchParams.set('max_mileage', filters.max_mileage);
       }
-      if (filters.priceMin) {
-        url.searchParams.set('price_min', filters.priceMin);
-      }
-      if (filters.priceMax) {
-        url.searchParams.set('price_max', filters.priceMax);
-      }
+      // Temporarily disable price filtering to test if WordPress API supports it
+      // if (filters.priceMin) {
+      //   url.searchParams.set('price_min', filters.priceMin);
+      // }
+      // if (filters.priceMax) {
+      //   url.searchParams.set('price_max', filters.priceMax);
+      // }
       if (filters.search) {
         url.searchParams.set('search', filters.search);
+      }
+
+      // Test: Log when price filters are being requested but disabled
+      if (filters.priceMin || filters.priceMax) {
+        console.log("🚫 PRICE FILTER DISABLED FOR TESTING - Would have sent:", {
+          priceMin: filters.priceMin,
+          priceMax: filters.priceMax,
+          message: "WordPress API may not support price_min/price_max parameters"
+        });
       }
       if (sortBy && sortBy !== 'relevance') {
         // Map frontend sort values to WordPress API sort parameters
@@ -280,12 +290,13 @@ export class CustomWordPressApiService {
       if (filters.max_mileage) {
         url.searchParams.set('max_mileage', filters.max_mileage);
       }
-      if (filters.priceMin) {
-        url.searchParams.set('price_min', filters.priceMin);
-      }
-      if (filters.priceMax) {
-        url.searchParams.set('price_max', filters.priceMax);
-      }
+      // Temporarily disable price filtering to test if WordPress API supports it
+      // if (filters.priceMin) {
+      //   url.searchParams.set('price_min', filters.priceMin);
+      // }
+      // if (filters.priceMax) {
+      //   url.searchParams.set('price_max', filters.priceMax);
+      // }
       if (filters.search) {
         url.searchParams.set('search', filters.search);
       }
