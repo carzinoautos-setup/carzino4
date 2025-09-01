@@ -522,21 +522,57 @@ function MySQLVehiclesOriginalStyleInner() {
                 price: wpVehicle.price,
                 regular_price: wpVehicle.regular_price,
                 sale_price: wpVehicle.sale_price,
-                acf_payment: acf?.payment,
-                acf_price: acf?.price,
-                acf_sale_price: acf?.sale_price,
+                acf: acf ? {
+                  price: acf.price,
+                  sale_price: acf.sale_price,
+                  payment: acf.payment,
+                  year: acf.year,
+                  make: acf.make,
+                  model: acf.model
+                } : null,
                 images: wpVehicle.images,
                 featured_image: wpVehicle.featured_image
               });
             }
 
-            // Try multiple sources for price - ACF fields, WooCommerce fields, etc.
-            const vehiclePrice = acf?.price ||
-                               acf?.sale_price ||
-                               wpVehicle.price ||
-                               wpVehicle.sale_price ||
-                               wpVehicle.regular_price ||
-                               0;
+            // Convert price to number - try multiple sources for price
+            const rawPrice = acf?.price ||
+                           acf?.sale_price ||
+                           wpVehicle.price ||
+                           wpVehicle.sale_price ||
+                           wpVehicle.regular_price;
+
+            // Convert to number, handling string and various formats
+            let vehiclePrice = 0;
+            if (rawPrice) {
+              if (typeof rawPrice === 'string') {
+                // Remove any non-numeric characters except decimal point
+                const numStr = rawPrice.replace(/[^\d.]/g, '');
+                vehiclePrice = parseFloat(numStr) || 0;
+              } else {
+                vehiclePrice = Number(rawPrice) || 0;
+              }
+            }
+
+            // Convert payment to number
+            let vehiclePayment = 0;
+            if (acf?.payment) {
+              if (typeof acf.payment === 'string') {
+                const numStr = acf.payment.replace(/[^\d.]/g, '');
+                vehiclePayment = parseFloat(numStr) || 0;
+              } else {
+                vehiclePayment = Number(acf.payment) || 0;
+              }
+            }
+
+            if (import.meta.env.DEV) {
+              console.log('💰 Price conversion:', {
+                rawPrice,
+                vehiclePrice,
+                rawPayment: acf?.payment,
+                vehiclePayment
+              });
+            }
 
             // Handle featured image from multiple sources
             const vehicleImages = wpVehicle.featured_image ?
