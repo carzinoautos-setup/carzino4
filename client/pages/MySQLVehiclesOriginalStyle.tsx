@@ -642,7 +642,7 @@ function MySQLVehiclesOriginalStyleInner() {
               doors: acf?.doors || 4,
               price: vehiclePrice,
               salePrice: vehiclePrice > 0 ? `$${vehiclePrice.toLocaleString()}` : null,
-              mileage: acf?.mileage || 0,
+              mileage: String(acf?.mileage || 0),
               title_status: acf?.title_status || 'Clean',
               highway_mpg: acf?.highway_mpg || 25,
               condition: acf?.condition || 'Used',
@@ -1054,7 +1054,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Recreational Vehicle": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center"
     };
 
-    console.log("🖼️ Setting up vehicle type images mapping...");
+    console.log("��️ Setting up vehicle type images mapping...");
     setVehicleImages(vehicleImageMap);
   }, []);
 
@@ -1724,7 +1724,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
     // Don't proceed if component is unmounted
     if (!isMountedRef.current) {
-      console.log("🚫 Component unmounted, skipping geocoding");
+      console.log("���� Component unmounted, skipping geocoding");
       return null;
     }
 
