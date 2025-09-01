@@ -433,7 +433,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (import.meta.env.DEV && retryCount === 0) {
-        console.log("🚀 COMBINED FETCH: Calling your server-side API");
+        console.log("���� COMBINED FETCH: Calling your server-side API");
       }
 
       // Set timeout for request
@@ -549,22 +549,13 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       console.log("📡 FIXED: Calling your FAST WordPress API with filters:", wpFilters);
-      console.log("📡 DEBUG: wordpressCustomApi object:", wordpressCustomApi);
 
       // Use WordPress custom API instead of slow server API
-      console.log("📡 DEBUG: About to call wordpressCustomApi.getVehicles...");
-      let response: WordPressVehiclesResponse;
-      try {
-        response = await wordpressCustomApi.getVehicles(
-          currentPage,
-          resultsPerPage,
-          wpFilters
-        );
-        console.log("📡 DEBUG: WordPress API response received:", response);
-      } catch (apiError) {
-        console.error("❌ DEBUG: WordPress API call failed:", apiError);
-        throw apiError;
-      }
+      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+        currentPage,
+        resultsPerPage,
+        wpFilters
+      );
 
       // WordPress API already returns structured data
       const responseData = response;
@@ -1817,7 +1808,7 @@ function MySQLVehiclesOriginalStyleInner() {
       // Handle AbortError gracefully
       if (error instanceof Error && error.name === "AbortError") {
         if (import.meta.env.DEV) {
-          console.log("🚫 Geocoding request aborted (expected behavior)");
+          console.log("��� Geocoding request aborted (expected behavior)");
         }
         return null;
       }
