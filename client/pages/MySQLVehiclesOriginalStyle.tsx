@@ -590,9 +590,44 @@ function MySQLVehiclesOriginalStyleInner() {
         success: responseData.success
       });
 
+      // Helper function to calculate monthly payment
+      const calculatePayment = (price: number, termMonths: number = 60, apr: number = 5.0, downPayment: number = 2000): number => {
+        const principal = price - downPayment;
+        if (principal <= 0) return 0;
+
+        const monthlyRate = apr / 100 / 12;
+        if (monthlyRate === 0) {
+          return principal / termMonths;
+        }
+
+        const payment = (principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
+                       (Math.pow(1 + monthlyRate, termMonths) - 1);
+        return Math.round(payment);
+      };
+
       // Transform WordPress vehicles to our format
       const transformVehicle = (wpVehicle: WordPressVehicle): any => {
         const acf = wpVehicle.acf;
+
+        // Handle price conversion carefully
+        const rawPrice = wpVehicle.price || wpVehicle.sale_price || acf?.price || acf?.sale_price;
+        const numericPrice = typeof rawPrice === 'string' ? parseFloat(rawPrice) : (rawPrice || 0);
+        const formattedPrice = numericPrice > 0 ? `$${numericPrice.toLocaleString()}` : null;
+
+        // Calculate payment if not provided or if provided payment is 0
+        let paymentAmount = acf?.payment && acf.payment > 0 ? acf.payment : null;
+        if (!paymentAmount && numericPrice > 0) {
+          const calculatedPayment = calculatePayment(
+            numericPrice,
+            acf?.loan_term || 60,
+            acf?.interest_rate || 5.0,
+            acf?.down_payment || 2000
+          );
+          paymentAmount = calculatedPayment;
+        }
+
+        const formattedPayment = paymentAmount && paymentAmount > 0 ? `$${paymentAmount.toLocaleString()}/mo*` : "Call for Payment";
+
         return {
           id: wpVehicle.id,
           featured: acf?.is_featured === "1" || acf?.is_featured === true,
@@ -608,8 +643,8 @@ function MySQLVehiclesOriginalStyleInner() {
           mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
           transmission: acf?.transmission || "Auto",
           doors: acf?.doors ? `${acf.doors}` : "4",
-          salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
-          payment: acf?.payment ? `$${acf.payment}/mo*` : null,
+          salePrice: formattedPrice,
+          payment: formattedPayment,
           dealer: acf?.account_name_seller || "Dealer Account #1000821",
           location: `${acf?.city_seller || "Seattle"}, ${acf?.state_seller || "WA"} ${acf?.zip_seller || "98101"}`,
           phone: acf?.phone_number_seller || "(253) 555-0100",
@@ -626,7 +661,9 @@ function MySQLVehiclesOriginalStyleInner() {
           body_style: acf?.body_style,
           drivetrain: acf?.drive_type || acf?.drivetrain,
           exterior_color_generic: acf?.exterior_color,
-          interior_color_generic: acf?.interior_color
+          interior_color_generic: acf?.interior_color,
+          // Add missing VehicleCard interface fields
+          seller_account_number: acf?.account_name_seller || "#1000821"
         };
       };
 
@@ -805,7 +842,7 @@ function MySQLVehiclesOriginalStyleInner() {
     isMountedRef.current = true;
     return () => {
       if (import.meta.env.DEV) {
-        console.log("�� Component unmounting - cleaning up requests");
+        console.log("���� Component unmounting - cleaning up requests");
       }
       isMountedRef.current = false;
 
