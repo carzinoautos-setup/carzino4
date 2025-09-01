@@ -968,7 +968,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Sedans": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=64&h=64&fit=crop&crop=center",
 
       // SUVs and Crossovers
-      "SUV": "🚙",
+      "SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "SUVs": "🚙",
       "Crossover": "🚙",
       "Crossovers": "🚙",
@@ -1019,7 +1019,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Motorcycles
       "Motorcycle": "🏍️",
-      "Motorcycles": "🏍️",
+      "Motorcycles": "🏍���",
       "Bike": "🏍️",
 
       // RVs and Large Vehicles
