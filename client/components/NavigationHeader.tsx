@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Database, Home, Globe, TestTube } from "lucide-react";
+import { Database, Home, Globe, TestTube, Stethoscope } from "lucide-react";
 
 export function NavigationHeader() {
   const location = useLocation();
