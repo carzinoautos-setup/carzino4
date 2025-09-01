@@ -256,7 +256,7 @@ export default function WordPressVehicles() {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         {/* Navigation Header */}
-        <NavigationHeader currentPage="WordPress Vehicles" />
+        <NavigationHeader />
 
         <div className="max-w-[1400px] mx-auto px-4 py-6">
           {/* Page Header */}
