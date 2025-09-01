@@ -1448,6 +1448,59 @@ export default function WordPressVehicles() {
 
           {/* Main Content - exactly like MySQL page */}
           <div className="flex-1 bg-white">
+            {/* Mobile Header */}
+            <div className="md:hidden p-4 bg-white border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  <Sliders className="w-4 h-4" />
+                  <span className="text-sm font-medium">Filters</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {/* Mobile Favorites Button */}
+                  <button
+                    className="p-2 border border-gray-300 rounded hover:bg-gray-50 bg-white relative"
+                    onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${favoritesCount > 0 ? "text-red-600 fill-red-600" : "text-red-600"}`}
+                    />
+                    {favoritesCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {favoritesCount}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile Search */}
+              <form onSubmit={handleUnifiedSearchSubmit} className="mb-4">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search Cars For Sale"
+                    value={unifiedSearch}
+                    onChange={(e) => setUnifiedSearch(e.target.value)}
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:border-red-600"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 p-1"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
+                </div>
+              </form>
+
+              <div className="text-sm text-gray-600">
+                {totalRecords.toLocaleString()} Matches
+              </div>
+            </div>
+
             {/* Desktop Header */}
             <div className="hidden md:block p-4 bg-white">
               <div className="flex items-center justify-between">
