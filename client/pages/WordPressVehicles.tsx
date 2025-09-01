@@ -1021,7 +1021,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.model.includes(modelOption.name)}
-                          onChange={(e) => updateFilter("model", modelOption.name, e.target.checked)}
+                          onChange={(e) => updateFilter("model", modelOption.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{modelOption.name}</span>
                         <span className="carzino-filter-count">({modelOption.count})</span>
