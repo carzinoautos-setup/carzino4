@@ -581,7 +581,7 @@ function MySQLVehiclesOriginalStyleInner() {
             let vehiclePayment = 0;
             if (acf?.payment) {
               if (typeof acf.payment === 'string') {
-                const numStr = acf.payment.replace(/[^\d.]/g, '');
+                const numStr = String(acf.payment).replace(/[^\d.]/g, '');
                 vehiclePayment = parseFloat(numStr) || 0;
               } else {
                 vehiclePayment = Number(acf.payment) || 0;
@@ -4300,7 +4300,7 @@ function MySQLVehiclesOriginalStyleInner() {
                     <div className="text-xs text-gray-400 mt-4 p-4 bg-gray-50 rounded">
                       <div>Debug Info:</div>
                       <div>• Total vehicles: {vehicles.length}</div>
-                      <div>• Current page: {currentPage}</div>
+                      <div>�� Current page: {currentPage}</div>
                       <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
                       <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
                     </div>
