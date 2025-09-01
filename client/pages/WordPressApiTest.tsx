@@ -140,19 +140,51 @@ export default function WordPressApiTest() {
             <h2 className={`text-lg font-semibold mb-2 ${
               connectionTest.success ? 'text-green-800' : 'text-red-800'
             }`}>
-              {connectionTest.success ? '✅ Connection Test Passed' : '❌ Connection Test Failed'}
+              {connectionTest.success ? '✅ WordPress API Tests Passed' : '❌ WordPress API Tests Failed'}
             </h2>
-            <p className={connectionTest.success ? 'text-green-700' : 'text-red-700'}>
-              {connectionTest.message}
-            </p>
-            
+            <div className={`mb-4 ${connectionTest.success ? 'text-green-700' : 'text-red-700'}`}>
+              <p className="whitespace-pre-line">{connectionTest.message}</p>
+            </div>
+
+            {/* Detailed Test Results */}
             {connectionTest.data && (
-              <details className="mt-4">
-                <summary className="cursor-pointer font-medium">Show Connection Details</summary>
-                <pre className="mt-2 bg-white/50 p-3 rounded text-xs overflow-x-auto">
-                  {JSON.stringify(connectionTest.data, null, 2)}
-                </pre>
-              </details>
+              <div className="space-y-4">
+                {/* Individual Test Results */}
+                {Object.entries(connectionTest.data).map(([testName, result]: [string, any]) => {
+                  if (typeof result === 'object' && result.success !== undefined) {
+                    return (
+                      <div key={testName} className={`p-3 rounded border ${
+                        result.success
+                          ? 'bg-green-100 border-green-300 text-green-800'
+                          : 'bg-red-100 border-red-300 text-red-800'
+                      }`}>
+                        <div className="flex items-center gap-2 font-medium">
+                          <span>{result.success ? '✅' : '❌'}</span>
+                          <span>{testName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+                        </div>
+                        <p className="text-sm mt-1">{result.message}</p>
+                        {result.data && (
+                          <details className="mt-2">
+                            <summary className="cursor-pointer text-sm opacity-75">Show Details</summary>
+                            <pre className="mt-1 bg-white/50 p-2 rounded text-xs overflow-x-auto">
+                              {JSON.stringify(result.data, null, 2)}
+                            </pre>
+                          </details>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+
+                {/* Full Debug Info */}
+                <details className="mt-4">
+                  <summary className="cursor-pointer font-medium">Show Complete Debug Information</summary>
+                  <pre className="mt-2 bg-white/50 p-3 rounded text-xs overflow-x-auto">
+                    {JSON.stringify(connectionTest.data, null, 2)}
+                  </pre>
+                </details>
+              </div>
             )}
           </div>
         )}
