@@ -521,76 +521,103 @@ export default function WordPressVehicles() {
               {/* Make Filter */}
               <FilterSection
                 title="Make"
-                isCollapsed={false}
-                onToggle={() => {}}
+                isCollapsed={collapsedFilters.make}
+                onToggle={() => toggleFilter("make")}
               >
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {filterOptions.makes.map((makeOption) => (
-                    <label
-                      key={makeOption.name}
-                      className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.make.includes(makeOption.name)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              make: [...prev.make, makeOption.name]
-                            }));
-                          } else {
-                            removeAppliedFilter("make", makeOption.name);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option flex-1">{makeOption.name}</span>
-                      <span className="carzino-filter-count">({makeOption.count})</span>
-                    </label>
-                  ))}
+                <div className="space-y-1">
+                  {filterOptions.makes.length > 0 ? (
+                    filterOptions.makes
+                      .filter(makeOption => makeOption.count > 0)
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((makeOption) => (
+                      <label
+                        key={makeOption.name}
+                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={appliedFilters.make.includes(makeOption.name)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.checked) {
+                              setAppliedFilters(prev => ({
+                                ...prev,
+                                make: [...prev.make, makeOption.name]
+                              }));
+                            } else {
+                              removeAppliedFilter("make", makeOption.name);
+                            }
+                          }}
+                        />
+                        <span className="carzino-filter-option flex-1">{makeOption.name}</span>
+                        <span className="carzino-filter-count">({makeOption.count})</span>
+                      </label>
+                    ))
+                  ) : (
+                    <div className="text-gray-500 text-sm p-2">Loading makes...</div>
+                  )}
                 </div>
               </FilterSection>
 
               {/* Model Filter */}
               <FilterSection
                 title="Model"
-                isCollapsed={true}
-                onToggle={() => {}}
+                isCollapsed={collapsedFilters.model}
+                onToggle={() => toggleFilter("model")}
               >
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {filterOptions.models.map((modelOption) => (
-                    <label
-                      key={modelOption.name}
-                      className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.model.includes(modelOption.name)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              model: [...prev.model, modelOption.name]
-                            }));
-                          } else {
-                            removeAppliedFilter("model", modelOption.name);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option flex-1">{modelOption.name}</span>
-                      <span className="carzino-filter-count">({modelOption.count})</span>
-                    </label>
-                  ))}
+                <div className="space-y-1">
+                  {filterOptions.models.length > 0 ? (
+                    filterOptions.models
+                      .filter(modelOption => modelOption.count > 0)
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((modelOption) => (
+                      <label
+                        key={modelOption.name}
+                        className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={appliedFilters.model.includes(modelOption.name)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.checked) {
+                              setAppliedFilters(prev => ({
+                                ...prev,
+                                model: [...prev.model, modelOption.name]
+                              }));
+                            } else {
+                              removeAppliedFilter("model", modelOption.name);
+                            }
+                          }}
+                        />
+                        <span className="carzino-filter-option flex-1">{modelOption.name}</span>
+                        <span className="carzino-filter-count">({modelOption.count})</span>
+                      </label>
+                    ))
+                  ) : (
+                    <div className="text-gray-500 text-sm p-2">Loading models...</div>
+                  )}
+                </div>
+              </FilterSection>
+
+              {/* Trim Filter */}
+              <FilterSection
+                title="Trim"
+                isCollapsed={collapsedFilters.trim}
+                onToggle={() => toggleFilter("trim")}
+              >
+                <div className="space-y-1">
+                  <div className="text-gray-500 text-sm p-2">No trim options available</div>
                 </div>
               </FilterSection>
 
               {/* Price Filter */}
               <FilterSection
                 title="Price"
-                isCollapsed={false}
-                onToggle={() => {}}
+                isCollapsed={collapsedFilters.price}
+                onToggle={() => toggleFilter("price")}
               >
                 <div className="space-y-3">
                   <div className="flex gap-2">
