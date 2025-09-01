@@ -58,6 +58,11 @@ interface Vehicle {
   mileage: string;
   transmission: string;
   doors: string;
+  drivetrain: string; // Add drivetrain field
+  condition: string; // Add condition field
+  year: string; // Add year field
+  make: string; // Add make field
+  model: string; // Add model field
   salePrice: string | null;
   payment: string | null;
   dealer: string;
@@ -210,7 +215,18 @@ export default function WordPressVehicles() {
   // Transform WordPress vehicle to Vehicle interface (same as MySQL page)
   const transformVehicle = useCallback((wpVehicle: WordPressVehicle): Vehicle => {
     const acf = wpVehicle.acf;
-    
+
+    // Helper function to format drivetrain
+    const formatDrivetrain = (driveType: string | undefined): string => {
+      if (!driveType) return "FWD";
+      const normalized = driveType.toLowerCase();
+      if (normalized.includes('awd') || normalized.includes('all wheel')) return "AWD";
+      if (normalized.includes('4wd') || normalized.includes('4 wheel') || normalized.includes('four wheel')) return "4WD";
+      if (normalized.includes('rwd') || normalized.includes('rear wheel')) return "RWD";
+      if (normalized.includes('fwd') || normalized.includes('front wheel')) return "FWD";
+      return driveType.toUpperCase();
+    };
+
     return {
       id: wpVehicle.id,
       featured: acf?.is_featured === "1" || acf?.is_featured === true,
@@ -218,13 +234,19 @@ export default function WordPressVehicles() {
       images: wpVehicle.featured_image ? [wpVehicle.featured_image] : [],
       badges: [
         acf?.condition || "Used",
+        formatDrivetrain(acf?.drive_type),
         ...(acf?.certified === "1" || acf?.certified === true ? ["Certified"] : []),
         ...(acf?.is_featured === "1" || acf?.is_featured === true ? ["Featured"] : [])
       ].filter(Boolean),
       title: `${acf?.year || ""} ${acf?.make || ""} ${acf?.model || ""}`.trim() || wpVehicle.name,
-      mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()} Mi.` : "0 Mi.",
+      mileage: acf?.mileage ? `${parseInt(acf.mileage).toLocaleString()}` : "0",
       transmission: acf?.transmission || "Auto",
-      doors: acf?.doors ? `${acf.doors} Doors` : "4 Doors",
+      doors: acf?.doors ? `${acf.doors}` : "4",
+      drivetrain: formatDrivetrain(acf?.drive_type),
+      condition: acf?.condition || "Used",
+      year: acf?.year || "2020",
+      make: acf?.make || "Unknown",
+      model: acf?.model || "Model",
       salePrice: wpVehicle.price ? `$${parseInt(wpVehicle.price).toLocaleString()}` : null,
       payment: acf?.payment ? `$${acf.payment}/mo*` : null,
       dealer: acf?.account_name_seller || "Dealer Account #1000821",
@@ -423,9 +445,14 @@ export default function WordPressVehicles() {
     return () => clearTimeout(debounceTimer);
   }, [zipCode]);
 
-  // Initial load and refetch when filters change
+  // Refetch when filters change (debounced)
   useEffect(() => {
-    fetchVehicles(currentPage);
+    const timeoutId = setTimeout(() => {
+      setCurrentPage(1);
+      fetchVehicles(1);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [appliedFilters, searchTerm, appliedLocation, appliedRadius, sortBy]);
 
   // Initial load
@@ -481,15 +508,14 @@ export default function WordPressVehicles() {
       }
 
       const newFilters = { ...prev, [filterType]: newValues };
-
-      // Trigger refetch with new filters
-      setTimeout(() => {
-        setCurrentPage(1);
-        fetchVehicles(1);
-      }, 100);
-
       return newFilters;
     });
+
+    // Trigger refetch immediately
+    setTimeout(() => {
+      setCurrentPage(1);
+      fetchVehicles(1);
+    }, 50);
   };
 
   // Helper functions for price formatting
