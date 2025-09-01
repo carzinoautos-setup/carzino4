@@ -1018,82 +1018,131 @@ function MySQLVehiclesOriginalStyleInner() {
     }
 
     if (import.meta.env.DEV) {
-      console.log("🔄 CONDITIONAL FILTERS: Updating with filters:", currentFilters);
+      console.log("🔄 CONDITIONAL FILTERS: Updating with WordPress API filters:", currentFilters);
     }
 
     try {
-      // Get filter options from server API with current filters for conditional filtering
-      const filterApiUrl = new URL('/api/simple-vehicles/filters', window.location.origin);
+      // Get filter options from WordPress API with current filters for conditional filtering
+      const wpFilters: any = {
+        page: 1,
+        per_page: 100 // Get more vehicles for better filter options
+      };
 
       // Add current filters to get conditional filter options
       if (currentFilters.make && currentFilters.make.length > 0) {
-        filterApiUrl.searchParams.set('make', currentFilters.make.join(','));
+        wpFilters.make = currentFilters.make.join(',');
       }
       if (currentFilters.model && currentFilters.model.length > 0) {
-        filterApiUrl.searchParams.set('model', currentFilters.model.join(','));
+        wpFilters.model = currentFilters.model.join(',');
       }
       if (currentFilters.condition && currentFilters.condition.length > 0) {
-        filterApiUrl.searchParams.set('condition', currentFilters.condition.join(','));
+        wpFilters.condition = currentFilters.condition.join(',');
       }
 
-      console.log("📡 CONDITIONAL: Calling server filter API:", filterApiUrl.toString());
+      console.log("📡 CONDITIONAL: Calling WordPress API for filter options:", wpFilters);
 
-      const filterResponse = await fetch(filterApiUrl.toString(), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      });
+      // Use WordPress API to get vehicles with current filters
+      const filterResponse = await wordpressCustomApi.getVehicles(1, 100, wpFilters);
 
-      if (!filterResponse.ok) {
-        console.warn("❌ Filter API call failed:", filterResponse.statusText);
+      if (!filterResponse.success) {
+        console.warn("❌ WordPress filter API call failed:", filterResponse.message);
         return;
       }
 
-      const filterData = await filterResponse.json();
+      console.log(`🚗 CONDITIONAL: WordPress returned ${filterResponse.data?.length || 0} vehicles for filtering`);
 
-      if (!filterData.success) {
-        console.warn("❌ Filter API returned error:", filterData.message);
-        return;
-      }
-      console.log(`🚗 CONDITIONAL: Server returned filter options:`, {
-        makes: filterData.data?.makes?.length || 0,
-        models: filterData.data?.models?.length || 0,
-        trims: filterData.data?.trims?.length || 0,
-        transmissions: filterData.data?.transmissions?.length || 0
-      });
+      // Extract filter options from WordPress vehicle data
+      const extractFilterOptions = (vehicles: any[]) => {
+        const vehicleData = vehicles.map(v => ({
+          make: v.acf?.make,
+          model: v.acf?.model,
+          trim: v.acf?.trim,
+          condition: v.acf?.condition,
+          body_style: v.acf?.body_style,
+          drive_type: v.acf?.drive_type || v.acf?.drivetrain,
+          transmission: v.acf?.transmission,
+          exterior_color: v.acf?.exterior_color,
+          interior_color: v.acf?.interior_color,
+          seller_type: v.acf?.account_type_seller,
+          dealer: v.acf?.account_name_seller,
+          state: v.acf?.state_seller,
+          city: v.acf?.city_seller
+        }));
 
-      // Use the server-provided filter options (already conditionally filtered)
-      const updatedFilterOptions = {
-        makes: filterData.data?.makes || [],
-        models: filterData.data?.models || [],
-        trims: filterData.data?.trims || [],
-        transmissions: filterData.data?.transmissions || [],
-        conditions: filterData.data?.conditions || [],
-        vehicleTypes: filterData.data?.vehicleTypes || [],
-        driveTypes: filterData.data?.driveTypes || [],
-        exteriorColors: filterData.data?.exteriorColors || [],
-        interiorColors: filterData.data?.interiorColors || [],
-        sellerTypes: filterData.data?.sellerTypes || [],
-        dealers: filterData.data?.dealers || [],
-        states: filterData.data?.states || [],
-        cities: filterData.data?.cities || [],
-        totalVehicles: filterData.data?.totalVehicles || 0
+        const makes = Array.from(new Set(vehicleData.map(v => v.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: vehicleData.filter(v => v.make === make).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const models = Array.from(new Set(vehicleData.map(v => v.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: vehicleData.filter(v => v.model === model).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const trims = Array.from(new Set(vehicleData.map(v => v.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: vehicleData.filter(v => v.trim === trim).length }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        const conditions = Array.from(new Set(vehicleData.map(v => v.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: vehicleData.filter(v => v.condition === condition).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const vehicleTypes = Array.from(new Set(vehicleData.map(v => v.body_style).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicleData.filter(v => v.body_style === type).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const driveTypes = Array.from(new Set(vehicleData.map(v => v.drive_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicleData.filter(v => v.drive_type === type).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const transmissions = Array.from(new Set(vehicleData.map(v => v.transmission).filter(Boolean)))
+          .map(trans => ({ name: trans!, count: vehicleData.filter(v => v.transmission === trans).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const exteriorColors = Array.from(new Set(vehicleData.map(v => v.exterior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: vehicleData.filter(v => v.exterior_color === color).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const interiorColors = Array.from(new Set(vehicleData.map(v => v.interior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: vehicleData.filter(v => v.interior_color === color).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const sellerTypes = Array.from(new Set(vehicleData.map(v => v.seller_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: vehicleData.filter(v => v.seller_type === type).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const dealers = Array.from(new Set(vehicleData.map(v => v.dealer).filter(Boolean)))
+          .map(dealer => ({ name: dealer!, count: vehicleData.filter(v => v.dealer === dealer).length }))
+          .sort((a, b) => b.count - a.count);
+
+        const states = Array.from(new Set(vehicleData.map(v => v.state).filter(Boolean)))
+          .map(state => ({ name: state!, count: vehicleData.filter(v => v.state === state).length }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        const cities = Array.from(new Set(vehicleData.map(v => v.city).filter(Boolean)))
+          .map(city => ({ name: city!, count: vehicleData.filter(v => v.city === city).length }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        return {
+          makes, models, trims, conditions, vehicleTypes, driveTypes,
+          transmissions, exteriorColors, interiorColors, sellerTypes,
+          dealers, states, cities, totalVehicles: vehicles.length
+        };
       };
+
+      // Use the WordPress-provided filter options (already conditionally filtered)
+      const updatedFilterOptions = extractFilterOptions(filterResponse.data || []);
 
       setFilterOptions(updatedFilterOptions);
       setVehicleTypes(updatedFilterOptions.vehicleTypes);
       setAvailableDealers(updatedFilterOptions.dealers);
 
-      console.log("✅ CONDITIONAL: Server filter options applied", {
+      console.log("✅ CONDITIONAL: WordPress filter options applied", {
         makes: updatedFilterOptions.makes.length,
         models: updatedFilterOptions.models.length,
         trims: updatedFilterOptions.trims.length,
         transmissions: updatedFilterOptions.transmissions.length
       });
     } catch (error) {
-      console.error("❌ Error updating conditional filters from server API:", error);
+      console.error("❌ Error updating conditional filters from WordPress API:", error);
 
       // Fallback to basic client-side filtering if server fails
       const fallbackOptions = {
