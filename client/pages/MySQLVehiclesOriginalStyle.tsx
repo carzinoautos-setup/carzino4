@@ -144,9 +144,14 @@ function MySQLVehiclesOriginalStyleInner() {
     );
   }
 
+  // SAFETY: Track component progression
+  console.log("🔍 STEP 1: Starting component execution");
+
   // React Router hooks
   const location = useLocation();
   const navigate = useNavigate();
+
+  console.log("🔍 STEP 2: Router hooks initialized");
 
   // State management - exactly like original
   const [favorites, setFavorites] = useState<{ [key: number]: Vehicle }>({});
@@ -862,7 +867,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // SIMPLIFIED: Single effect for all data fetching with better dependency management
   useEffect(() => {
     if (!isMountedRef.current) {
-      console.log("��� Component not mounted, skipping fetch");
+      console.log("🚫 Component not mounted, skipping fetch");
       return;
     }
 
