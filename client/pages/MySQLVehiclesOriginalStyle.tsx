@@ -1011,84 +1011,168 @@ function MySQLVehiclesOriginalStyleInner() {
   // REMOVED: Dealers now fetched via combined endpoint for better performance
 
   // Update filter options based on current selections (conditional filtering)
+  // This needs to call the API to get proper conditional filter counts
   const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters, forceRefresh = false) => {
     if (!isMountedRef.current) {
       return;
     }
 
-    // Filter the current vehicles based on applied filters
-    let filteredVehicles = vehicles;
-
-    // Apply current filter selections to get conditional options
-    if (currentFilters.make && currentFilters.make.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => currentFilters.make.includes(v.make));
-    }
-    if (currentFilters.model && currentFilters.model.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => currentFilters.model.includes(v.model));
-    }
-    if (currentFilters.condition && currentFilters.condition.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => currentFilters.condition.includes(v.condition));
-    }
-    if (currentFilters.vehicleType && currentFilters.vehicleType.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => currentFilters.vehicleType.includes(v.body_style));
-    }
-    if (currentFilters.driveType && currentFilters.driveType.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => currentFilters.driveType.includes(v.drivetrain));
-    }
-
-    // Update filter options based on filtered vehicles
-    const updatedOptions = {
-      makes: Array.from(new Set(filteredVehicles.map(v => v.make).filter(Boolean)))
-        .map(make => ({ name: make!, count: filteredVehicles.filter(v => v.make === make).length }))
-        .sort((a, b) => b.count - a.count),
-      models: Array.from(new Set(filteredVehicles.map(v => v.model).filter(Boolean)))
-        .map(model => ({ name: model!, count: filteredVehicles.filter(v => v.model === model).length }))
-        .sort((a, b) => b.count - a.count),
-      trims: Array.from(new Set(filteredVehicles.map(v => v.trim).filter(Boolean)))
-        .map(trim => ({ name: trim!, count: filteredVehicles.filter(v => v.trim === trim).length }))
-        .sort((a, b) => b.count - a.count),
-      conditions: Array.from(new Set(filteredVehicles.map(v => v.condition).filter(Boolean)))
-        .map(condition => ({ name: condition!, count: filteredVehicles.filter(v => v.condition === condition).length }))
-        .sort((a, b) => b.count - a.count),
-      vehicleTypes: Array.from(new Set(filteredVehicles.map(v => v.body_style).filter(Boolean)))
-        .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.body_style === type).length }))
-        .sort((a, b) => b.count - a.count),
-      driveTypes: Array.from(new Set(filteredVehicles.map(v => v.drivetrain).filter(Boolean)))
-        .map(drive => ({ name: drive!, count: filteredVehicles.filter(v => v.drivetrain === drive).length }))
-        .sort((a, b) => b.count - a.count),
-      transmissions: Array.from(new Set(filteredVehicles.map(v => v.transmission).filter(Boolean)))
-        .map(trans => ({ name: trans!, count: filteredVehicles.filter(v => v.transmission === trans).length }))
-        .sort((a, b) => b.count - a.count),
-      exteriorColors: Array.from(new Set(filteredVehicles.map(v => v.exterior_color_generic).filter(Boolean)))
-        .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.exterior_color_generic === color).length }))
-        .sort((a, b) => b.count - a.count),
-      interiorColors: Array.from(new Set(filteredVehicles.map(v => v.interior_color_generic).filter(Boolean)))
-        .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.interior_color_generic === color).length }))
-        .sort((a, b) => b.count - a.count),
-      sellerTypes: Array.from(new Set(filteredVehicles.map(v => v.seller_type).filter(Boolean)))
-        .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.seller_type === type).length }))
-        .sort((a, b) => b.count - a.count),
-      dealers: Array.from(new Set(filteredVehicles.map(v => v.dealer).filter(Boolean)))
-        .map(dealer => ({ name: dealer!, count: filteredVehicles.filter(v => v.dealer === dealer).length }))
-        .sort((a, b) => b.count - a.count),
-      states: Array.from(new Set(filteredVehicles.map(v => v.state_seller).filter(Boolean)))
-        .map(state => ({ name: state!, count: filteredVehicles.filter(v => v.state_seller === state).length }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-      cities: Array.from(new Set(filteredVehicles.map(v => v.city_seller).filter(Boolean)))
-        .map(city => ({ name: city!, count: filteredVehicles.filter(v => v.city_seller === city).length }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-      totalVehicles: filteredVehicles.length
-    };
-
-    setFilterOptions(updatedOptions);
-    setVehicleTypes(updatedOptions.vehicleTypes);
-
     if (import.meta.env.DEV) {
-      console.log("🔄 Updated conditional filters:", {
-        totalVehicles: filteredVehicles.length,
-        makes: updatedOptions.makes.length,
-        models: updatedOptions.models.length
+      console.log("🔄 Fetching conditional filter options with filters:", currentFilters);
+    }
+
+    try {
+      // Build WordPress API filters from current applied filters to get conditional counts
+      const wpFilters: WordPressVehicleFilters = {
+        page: 1,
+        per_page: 1000, // Get all vehicles to calculate proper filter counts
+      };
+
+      // Add current filters to get conditional options
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        wpFilters.make = currentFilters.make.join(','); // WordPress API can handle multiple makes
+      }
+      if (currentFilters.model && currentFilters.model.length > 0) {
+        wpFilters.model = currentFilters.model.join(',');
+      }
+      if (currentFilters.condition && currentFilters.condition.length > 0) {
+        wpFilters.condition = currentFilters.condition.join(',');
+      }
+      if (currentFilters.priceMin) {
+        wpFilters.min_price = parseInt(currentFilters.priceMin.replace(/[^\d]/g, ''));
+      }
+      if (currentFilters.priceMax) {
+        wpFilters.max_price = parseInt(currentFilters.priceMax.replace(/[^\d]/g, ''));
+      }
+
+      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+        1,
+        1000, // Get all to calculate filter counts
+        wpFilters
+      );
+
+      if (!response.success) {
+        if (import.meta.env.DEV) {
+          console.warn("❌ Filter options API call failed:", response.message);
+        }
+        return;
+      }
+
+      // Calculate filter options from all vehicles matching current filters
+      const allVehicles = response.data;
+      const updatedOptions = {
+        makes: Array.from(new Set(allVehicles.map(v => v.acf?.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: allVehicles.filter(v => v.acf?.make === make).length }))
+          .sort((a, b) => b.count - a.count),
+        models: Array.from(new Set(allVehicles.map(v => v.acf?.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: allVehicles.filter(v => v.acf?.model === model).length }))
+          .sort((a, b) => b.count - a.count),
+        trims: Array.from(new Set(allVehicles.map(v => v.acf?.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: allVehicles.filter(v => v.acf?.trim === trim).length }))
+          .sort((a, b) => b.count - a.count),
+        conditions: Array.from(new Set(allVehicles.map(v => v.acf?.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: allVehicles.filter(v => v.acf?.condition === condition).length }))
+          .sort((a, b) => b.count - a.count),
+        vehicleTypes: Array.from(new Set(allVehicles.map(v => v.acf?.body_style || v.acf?.body_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: allVehicles.filter(v => (v.acf?.body_style || v.acf?.body_type) === type).length }))
+          .sort((a, b) => b.count - a.count),
+        driveTypes: Array.from(new Set(allVehicles.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
+          .map(drive => ({ name: drive!, count: allVehicles.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length }))
+          .sort((a, b) => b.count - a.count),
+        transmissions: Array.from(new Set(allVehicles.map(v => v.acf?.transmission).filter(Boolean)))
+          .map(trans => ({ name: trans!, count: allVehicles.filter(v => v.acf?.transmission === trans).length }))
+          .sort((a, b) => b.count - a.count),
+        exteriorColors: Array.from(new Set(allVehicles.map(v => v.acf?.exterior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.exterior_color === color).length }))
+          .sort((a, b) => b.count - a.count),
+        interiorColors: Array.from(new Set(allVehicles.map(v => v.acf?.interior_color).filter(Boolean)))
+          .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.interior_color === color).length }))
+          .sort((a, b) => b.count - a.count),
+        sellerTypes: Array.from(new Set(allVehicles.map(v => v.acf?.account_type_seller).filter(Boolean)))
+          .map(type => ({ name: type!, count: allVehicles.filter(v => v.acf?.account_type_seller === type).length }))
+          .sort((a, b) => b.count - a.count),
+        dealers: Array.from(new Set(allVehicles.map(v => v.acf?.account_name_seller).filter(Boolean)))
+          .map(dealer => ({ name: dealer!, count: allVehicles.filter(v => v.acf?.account_name_seller === dealer).length }))
+          .sort((a, b) => b.count - a.count),
+        states: Array.from(new Set(allVehicles.map(v => v.acf?.state_seller).filter(Boolean)))
+          .map(state => ({ name: state!, count: allVehicles.filter(v => v.acf?.state_seller === state).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        cities: Array.from(new Set(allVehicles.map(v => v.acf?.city_seller).filter(Boolean)))
+          .map(city => ({ name: city!, count: allVehicles.filter(v => v.acf?.city_seller === city).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        totalVehicles: allVehicles.length
+      };
+
+      setFilterOptions(updatedOptions);
+      setVehicleTypes(updatedOptions.vehicleTypes);
+      setAvailableDealers(updatedOptions.dealers);
+
+      if (import.meta.env.DEV) {
+        console.log("🔄 Updated conditional filters via API:", {
+          totalVehicles: allVehicles.length,
+          makes: updatedOptions.makes.length,
+          models: updatedOptions.models.length,
+          dealers: updatedOptions.dealers.length
+        });
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("❌ Error fetching filter options:", error);
+      }
+      // Fall back to local filtering if API fails
+      const filteredVehicles = vehicles.filter(v => {
+        if (currentFilters.make && currentFilters.make.length > 0 && !currentFilters.make.includes(v.make)) return false;
+        if (currentFilters.model && currentFilters.model.length > 0 && !currentFilters.model.includes(v.model)) return false;
+        if (currentFilters.condition && currentFilters.condition.length > 0 && !currentFilters.condition.includes(v.condition)) return false;
+        return true;
       });
+
+      const fallbackOptions = {
+        makes: Array.from(new Set(filteredVehicles.map(v => v.make).filter(Boolean)))
+          .map(make => ({ name: make!, count: filteredVehicles.filter(v => v.make === make).length }))
+          .sort((a, b) => b.count - a.count),
+        models: Array.from(new Set(filteredVehicles.map(v => v.model).filter(Boolean)))
+          .map(model => ({ name: model!, count: filteredVehicles.filter(v => v.model === model).length }))
+          .sort((a, b) => b.count - a.count),
+        trims: Array.from(new Set(filteredVehicles.map(v => v.trim).filter(Boolean)))
+          .map(trim => ({ name: trim!, count: filteredVehicles.filter(v => v.trim === trim).length }))
+          .sort((a, b) => b.count - a.count),
+        conditions: Array.from(new Set(filteredVehicles.map(v => v.condition).filter(Boolean)))
+          .map(condition => ({ name: condition!, count: filteredVehicles.filter(v => v.condition === condition).length }))
+          .sort((a, b) => b.count - a.count),
+        vehicleTypes: Array.from(new Set(filteredVehicles.map(v => v.body_style).filter(Boolean)))
+          .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.body_style === type).length }))
+          .sort((a, b) => b.count - a.count),
+        driveTypes: Array.from(new Set(filteredVehicles.map(v => v.drivetrain).filter(Boolean)))
+          .map(drive => ({ name: drive!, count: filteredVehicles.filter(v => v.drivetrain === drive).length }))
+          .sort((a, b) => b.count - a.count),
+        transmissions: Array.from(new Set(filteredVehicles.map(v => v.transmission).filter(Boolean)))
+          .map(trans => ({ name: trans!, count: filteredVehicles.filter(v => v.transmission === trans).length }))
+          .sort((a, b) => b.count - a.count),
+        exteriorColors: Array.from(new Set(filteredVehicles.map(v => v.exterior_color_generic).filter(Boolean)))
+          .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.exterior_color_generic === color).length }))
+          .sort((a, b) => b.count - a.count),
+        interiorColors: Array.from(new Set(filteredVehicles.map(v => v.interior_color_generic).filter(Boolean)))
+          .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.interior_color_generic === color).length }))
+          .sort((a, b) => b.count - a.count),
+        sellerTypes: Array.from(new Set(filteredVehicles.map(v => v.seller_type).filter(Boolean)))
+          .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.seller_type === type).length }))
+          .sort((a, b) => b.count - a.count),
+        dealers: Array.from(new Set(filteredVehicles.map(v => v.dealer).filter(Boolean)))
+          .map(dealer => ({ name: dealer!, count: filteredVehicles.filter(v => v.dealer === dealer).length }))
+          .sort((a, b) => b.count - a.count),
+        states: Array.from(new Set(filteredVehicles.map(v => v.state_seller).filter(Boolean)))
+          .map(state => ({ name: state!, count: filteredVehicles.filter(v => v.state_seller === state).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        cities: Array.from(new Set(filteredVehicles.map(v => v.city_seller).filter(Boolean)))
+          .map(city => ({ name: city!, count: filteredVehicles.filter(v => v.city_seller === city).length }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+        totalVehicles: filteredVehicles.length
+      };
+
+      setFilterOptions(fallbackOptions);
+      setVehicleTypes(fallbackOptions.vehicleTypes);
+      setAvailableDealers(fallbackOptions.dealers);
     }
   }, [debouncedAppliedFilters, vehicles]);
 
