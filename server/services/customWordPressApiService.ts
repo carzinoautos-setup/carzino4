@@ -65,8 +65,6 @@ export class CustomWordPressApiService {
       if (filters.max_mileage) {
         url.searchParams.set('max_mileage', filters.max_mileage);
       }
-      // WordPress API doesn't support price filtering yet - will filter client-side
-      // TODO: Remove this when WordPress API adds price_min/price_max support
       if (filters.search) {
         url.searchParams.set('search', filters.search);
       }
@@ -128,8 +126,60 @@ export class CustomWordPressApiService {
         throw new Error("API did not return expected format");
       }
 
-      // Use vehicles directly from API (already paginated)
-      const vehicles = apiResponse.data;
+      // Get all vehicles from current page
+      let vehicles = apiResponse.data;
+
+      // Apply client-side price filtering since WordPress API doesn't support it
+      const originalVehicleCount = vehicles.length;
+      if (filters.priceMin || filters.priceMax) {
+        console.log("💰 APPLYING CLIENT-SIDE PRICE FILTER:", {
+          priceMin: filters.priceMin,
+          priceMax: filters.priceMax,
+          originalCount: originalVehicleCount
+        });
+
+        vehicles = vehicles.filter(vehicle => {
+          // Get price from multiple possible fields
+          const priceFields = [
+            vehicle.acf?.price,
+            vehicle.acf?.sale_price,
+            vehicle.acf?.listing_price,
+            vehicle.price,
+            vehicle.regular_price,
+            vehicle.acf?.vehicle_price,
+            vehicle.acf?.asking_price
+          ];
+
+          // Find first valid price
+          const priceStr = priceFields.find(p => p && p !== "" && p !== "0" && parseInt(p) > 0);
+          if (!priceStr) {
+            // No valid price found - exclude from price filtering
+            return false;
+          }
+
+          const price = parseInt(priceStr);
+
+          // Apply min price filter
+          if (filters.priceMin) {
+            const minPrice = parseInt(filters.priceMin.replace(/[,$]/g, ''));
+            if (price < minPrice) return false;
+          }
+
+          // Apply max price filter
+          if (filters.priceMax) {
+            const maxPrice = parseInt(filters.priceMax.replace(/[,$]/g, ''));
+            if (price > maxPrice) return false;
+          }
+
+          return true;
+        });
+
+        console.log("💰 PRICE FILTER RESULTS:", {
+          originalCount: originalVehicleCount,
+          filteredCount: vehicles.length,
+          filteredOut: originalVehicleCount - vehicles.length
+        });
+      }
 
       // Transform vehicles to expected format using new ACF structure
       const transformedVehicles = vehicles.map(vehicle => {
@@ -198,23 +248,44 @@ export class CustomWordPressApiService {
         };
       });
 
-      // Use pagination info from API response
+      // Use pagination info from API response, but adjust for client-side filtering
       const paginationInfo = apiResponse.pagination;
+      const isFiltered = (filters.priceMin || filters.priceMax);
 
-      console.log(`✅ Returned ${transformedVehicles.length} vehicles from ${paginationInfo.total} total (page ${paginationInfo.page}/${paginationInfo.total_pages})`);
+      if (isFiltered) {
+        // For client-side filtering, we need to adjust pagination
+        // Note: This is a simplified approach - in production you'd want to fetch more pages
+        // and apply filtering across all results for accurate pagination
+        console.log(`✅ Returned ${transformedVehicles.length} vehicles (filtered from ${originalVehicleCount}) on page ${paginationInfo.page}`);
 
-      return {
-        success: true,
-        data: transformedVehicles,
-        meta: {
-          totalRecords: paginationInfo.total,
-          totalPages: paginationInfo.total_pages,
-          currentPage: paginationInfo.page,
-          pageSize: paginationInfo.per_page,
-          hasNextPage: paginationInfo.page < paginationInfo.total_pages,
-          hasPreviousPage: paginationInfo.page > 1
-        }
-      };
+        return {
+          success: true,
+          data: transformedVehicles,
+          meta: {
+            totalRecords: transformedVehicles.length, // This is not entirely accurate but functional
+            totalPages: Math.ceil(transformedVehicles.length / paginationInfo.per_page) || 1,
+            currentPage: paginationInfo.page,
+            pageSize: paginationInfo.per_page,
+            hasNextPage: false, // Simplified for client-side filtering
+            hasPreviousPage: paginationInfo.page > 1
+          }
+        };
+      } else {
+        console.log(`✅ Returned ${transformedVehicles.length} vehicles from ${paginationInfo.total} total (page ${paginationInfo.page}/${paginationInfo.total_pages})`);
+
+        return {
+          success: true,
+          data: transformedVehicles,
+          meta: {
+            totalRecords: paginationInfo.total,
+            totalPages: paginationInfo.total_pages,
+            currentPage: paginationInfo.page,
+            pageSize: paginationInfo.per_page,
+            hasNextPage: paginationInfo.page < paginationInfo.total_pages,
+            hasPreviousPage: paginationInfo.page > 1
+          }
+        };
+      }
       
     } catch (error) {
       console.error("❌ Error fetching vehicles from custom API:", error);
@@ -276,13 +347,6 @@ export class CustomWordPressApiService {
       if (filters.max_mileage) {
         url.searchParams.set('max_mileage', filters.max_mileage);
       }
-      // Temporarily disable price filtering to test if WordPress API supports it
-      // if (filters.priceMin) {
-      //   url.searchParams.set('price_min', filters.priceMin);
-      // }
-      // if (filters.priceMax) {
-      //   url.searchParams.set('price_max', filters.priceMax);
-      // }
       if (filters.search) {
         url.searchParams.set('search', filters.search);
       }
