@@ -248,6 +248,10 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
     }
 
     console.log("🔍 ROUTE: Parsed applied filters for conditional filtering:", filters);
+    console.log("🔍 ROUTE: Sending filters to service for conditional filter options:", {
+      hasFilters: Object.keys(filters).length > 0,
+      filterKeys: Object.keys(filters)
+    });
 
     const result = await vehicleService.getFilterOptions(filters);
 
