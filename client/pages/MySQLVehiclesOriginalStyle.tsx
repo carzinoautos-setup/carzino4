@@ -74,6 +74,7 @@ function MySQLVehiclesOriginalStyleInner() {
   const [showMoreTrims, setShowMoreTrims] = useState(false);
   const [zipCode, setZipCode] = useState("");
   const [radius, setRadius] = useState("10");
+  const [vehicleImages, setVehicleImages] = useState<{ [key: string]: string }>({});
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState("relevance");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -1144,35 +1145,41 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Vehicle Type Filter */}
             <FilterSection
-              title="Vehicle Type"
+              title="Search by Vehicle Type"
               isCollapsed={collapsedFilters.vehicleType}
               onToggle={() => toggleFilter("vehicleType")}
             >
-              <div className="space-y-1">
+              <div className="grid grid-cols-2 gap-2">
                 {(availableBodyTypes && availableBodyTypes.length > 0) ? (
                   availableBodyTypes.map((type, index) => (
-                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.vehicleType.includes(type.name)}
-                        onChange={(e) => handleVehicleTypeToggle(type.name)}
-                      />
-                      <span className="carzino-filter-option">{type.name}</span>
-                      <span className="carzino-filter-count ml-1">({type.count})</span>
-                    </label>
+                    <VehicleTypeCard
+                      key={index}
+                      type={type.name}
+                      count={type.count}
+                      vehicleImages={vehicleImages}
+                      isSelected={appliedFilters.vehicleType.includes(type.name)}
+                      onToggle={handleVehicleTypeToggle}
+                    />
                   ))
                 ) : (
-                  ["SUV / Crossover", "Truck", "Sedan", "Coupe", "Convertible", "Hatchback", "Van / Minivan", "Wagon"].map((type) => (
-                    <label key={type} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.vehicleType.includes(type)}
-                        onChange={(e) => handleVehicleTypeToggle(type)}
-                      />
-                      <span className="carzino-filter-option">{type}</span>
-                    </label>
+                  [
+                    { name: "Truck", count: 299 },
+                    { name: "SUV / Crossover", count: 762 },
+                    { name: "Sedan", count: 672 },
+                    { name: "Coupe", count: 96 },
+                    { name: "Hatchback", count: 22 },
+                    { name: "Convertible", count: 15 },
+                    { name: "Van / Minivan", count: 8 },
+                    { name: "Wagon", count: 5 }
+                  ].map((type) => (
+                    <VehicleTypeCard
+                      key={type.name}
+                      type={type.name}
+                      count={type.count}
+                      vehicleImages={vehicleImages}
+                      isSelected={appliedFilters.vehicleType.includes(type.name)}
+                      onToggle={handleVehicleTypeToggle}
+                    />
                   ))
                 )}
               </div>
