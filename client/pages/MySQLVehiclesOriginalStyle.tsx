@@ -3114,6 +3114,11 @@ function MySQLVehiclesOriginalStyleInner() {
                     type="text"
                     placeholder="Down Payment: $2,000"
                     value={`Down Payment: $${formatPrice(downPayment)}`}
+                    onFocus={(e) => {
+                      // Clear the field when user clicks into it
+                      e.target.value = "";
+                      setDownPayment("");
+                    }}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^\d]/g, "");
                       setDownPayment(value);
@@ -3691,8 +3696,8 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Mobile Filter Action Buttons - Always Visible and Sticky */}
-            <div className="lg:hidden mobile-action-buttons">
+            {/* Mobile Filter Action Buttons - Sticky at Bottom */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 mobile-action-buttons">
               <div className="flex gap-3 max-w-md mx-auto">
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
@@ -3714,8 +3719,8 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </div>
 
-            {/* Spacer to prevent content from being hidden behind fixed buttons */}
-            <div className="lg:hidden h-20"></div>
+            {/* Spacer to prevent content from being hidden behind sticky buttons */}
+            <div className="lg:hidden h-24"></div>
           </div>
         </div>
 
