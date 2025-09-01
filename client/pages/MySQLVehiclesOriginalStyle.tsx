@@ -952,19 +952,41 @@ function MySQLVehiclesOriginalStyleInner() {
     }
 
     try {
-      // Get ALL vehicles first to build complete filter universe
-      const allVehiclesResponse: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
-        1,
-        2000, // Increased to get more complete data
-        { page: 1, per_page: 2000 }
-      );
+      // Get filter options from server API with current filters for conditional filtering
+      const filterApiUrl = new URL('/api/simple-vehicles/filters', window.location.origin);
 
-      if (!allVehiclesResponse.success) {
-        console.warn("❌ All vehicles API call failed:", allVehiclesResponse.message);
+      // Add current filters to get conditional filter options
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        filterApiUrl.searchParams.set('make', currentFilters.make.join(','));
+      }
+      if (currentFilters.model && currentFilters.model.length > 0) {
+        filterApiUrl.searchParams.set('model', currentFilters.model.join(','));
+      }
+      if (currentFilters.condition && currentFilters.condition.length > 0) {
+        filterApiUrl.searchParams.set('condition', currentFilters.condition.join(','));
+      }
+
+      console.log("📡 CONDITIONAL: Calling server filter API:", filterApiUrl.toString());
+
+      const filterResponse = await fetch(filterApiUrl.toString(), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!filterResponse.ok) {
+        console.warn("❌ Filter API call failed:", filterResponse.statusText);
         return;
       }
 
-      const allVehicles = allVehiclesResponse.data;
+      const filterData = await filterResponse.json();
+
+      if (!filterData.success) {
+        console.warn("❌ Filter API returned error:", filterData.message);
+        return;
+      }
       console.log(`🚗 CONDITIONAL: ${allVehicles.length} total vehicles available`);
 
       // ALWAYS show ALL makes (never filter makes)
