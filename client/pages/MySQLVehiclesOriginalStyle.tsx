@@ -597,7 +597,7 @@ function MySQLVehiclesOriginalStyleInner() {
       };
 
       if (import.meta.env.DEV) {
-        console.log("🚀 WORDPRESS API Response:", {
+        console.log("🚀 SERVER API Response:", {
           success: data.success,
           vehiclesCount: data.data?.vehicles?.length,
           filtersCount: Object.keys(data.data?.filters || {}).length,
@@ -1696,7 +1696,7 @@ function MySQLVehiclesOriginalStyleInner() {
         const result = await response.json();
         if (result.success && result.data) {
           console.log(
-            `�� Geocoded ${zip} to ${result.data.city}, ${result.data.state}`,
+            `��� Geocoded ${zip} to ${result.data.city}, ${result.data.state}`,
           );
           return {
             lat: result.data.lat,
@@ -2013,7 +2013,7 @@ function MySQLVehiclesOriginalStyleInner() {
         }
 
         input[type="checkbox"]:checked::before {
-          content: '��' !important;
+          content: '✓' !important;
           position: absolute !important;
           color: white !important;
           font-size: 12px !important;
