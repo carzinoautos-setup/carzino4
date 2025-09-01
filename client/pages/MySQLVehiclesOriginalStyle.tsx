@@ -740,12 +740,10 @@ function MySQLVehiclesOriginalStyleInner() {
         setLoading(false);
 
         if (import.meta.env.DEV) {
-          const isMockData = response.message && response.message.includes('Mock data generated');
-          console.log(`✅ COMBINED: Successfully loaded ${isMockData ? 'mock' : 'live'} data`, {
+          console.log("✅ COMBINED: Successfully loaded all data in one call", {
             vehiclesCount: data.data.vehicles?.length || 0,
             totalRecords: data.data.meta?.totalRecords || 0,
-            filtersCount: Object.keys(data.data.filters || {}).length,
-            dataSource: isMockData ? 'Mock/Fallback' : 'WordPress API'
+            filtersCount: Object.keys(data.data.filters || {}).length
           });
         }
       } else {
