@@ -199,7 +199,7 @@ Trying fallback data...`);
 
 
   /**
-   * Fetch vehicles with pagination and optional filters (with fallback)
+   * Fetch vehicles with pagination and optional filters
    */
   async getVehicles(
     page: number = 1,
@@ -208,7 +208,7 @@ Trying fallback data...`);
   ): Promise<WordPressVehiclesResponse> {
     const params = new URLSearchParams({
       page: page.toString(),
-      per_page: Math.min(pageSize, 100).toString(),
+      per_page: Math.min(pageSize, 100).toString(), // WordPress typically limits to 100
     });
 
     // Add filters to params if provided
@@ -221,14 +221,7 @@ Trying fallback data...`);
     const endpoint = `/wp-json/custom/v1/vehicles?${params.toString()}`;
     const cacheKey = `vehicles_${params.toString()}`;
 
-    try {
-      return await this.request<WordPressVehiclesResponse>(endpoint, cacheKey);
-    } catch (error) {
-      console.warn(`⚠️ WordPress API failed, using mock data:`, error.message);
-
-      // Return mock data as fallback
-      return this.generateMockVehicles(page, pageSize);
-    }
+    return this.request<WordPressVehiclesResponse>(endpoint, cacheKey);
   }
 
   /**
