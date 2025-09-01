@@ -11,8 +11,66 @@ export class CustomWordPressApiService {
 
   async getVehicles(pagination: SimplePaginationParams, filters: SimpleVehicleFilters = {}, sortBy: string = "relevance") {
     try {
-      const url = `${VEHICLES_ENDPOINT}?per_page=${pagination.pageSize}&page=${pagination.page}`;
-      console.log("🔗 Fetching from new vehicles API:", url);
+      // Build URL with pagination
+      const url = new URL(VEHICLES_ENDPOINT);
+      url.searchParams.set('per_page', pagination.pageSize.toString());
+      url.searchParams.set('page', pagination.page.toString());
+
+      // Add all filter parameters
+      if (filters.make && filters.make.length > 0) {
+        url.searchParams.set('make', filters.make.join(','));
+      }
+      if (filters.model && filters.model.length > 0) {
+        url.searchParams.set('model', filters.model.join(','));
+      }
+      if (filters.trim && filters.trim.length > 0) {
+        url.searchParams.set('trim', filters.trim.join(','));
+      }
+      if (filters.condition && filters.condition.length > 0) {
+        url.searchParams.set('condition', filters.condition.join(','));
+      }
+      if (filters.vehicleType && filters.vehicleType.length > 0) {
+        url.searchParams.set('body_type', filters.vehicleType.join(','));
+      }
+      if (filters.driveType && filters.driveType.length > 0) {
+        url.searchParams.set('drivetrain', filters.driveType.join(','));
+      }
+      if (filters.transmission && filters.transmission.length > 0) {
+        url.searchParams.set('transmission', filters.transmission.join(','));
+      }
+      if (filters.exteriorColor && filters.exteriorColor.length > 0) {
+        url.searchParams.set('exterior_color', filters.exteriorColor.join(','));
+      }
+      if (filters.sellerType && filters.sellerType.length > 0) {
+        url.searchParams.set('account_type_seller', filters.sellerType.join(','));
+      }
+      if (filters.dealer && filters.dealer.length > 0) {
+        url.searchParams.set('account_name_seller', filters.dealer.join(','));
+      }
+      if (filters.city && filters.city.length > 0) {
+        url.searchParams.set('city_seller', filters.city.join(','));
+      }
+      if (filters.state && filters.state.length > 0) {
+        url.searchParams.set('state_seller', filters.state.join(','));
+      }
+      if (filters.mileage) {
+        url.searchParams.set('mileage_range', filters.mileage);
+      }
+      if (filters.priceMin) {
+        url.searchParams.set('price_min', filters.priceMin);
+      }
+      if (filters.priceMax) {
+        url.searchParams.set('price_max', filters.priceMax);
+      }
+      if (filters.search) {
+        url.searchParams.set('search', filters.search);
+      }
+      if (sortBy && sortBy !== 'relevance') {
+        url.searchParams.set('orderby', sortBy);
+      }
+
+      console.log("🔗 Fetching from new vehicles API:", url.toString());
+      console.log("🔍 DEBUG: Filters being sent to WordPress:", filters);
 
       const response = await fetch(url);
       if (!response.ok) {
