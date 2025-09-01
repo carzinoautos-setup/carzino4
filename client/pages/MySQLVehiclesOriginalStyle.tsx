@@ -484,6 +484,12 @@ function MySQLVehiclesOriginalStyleInner() {
         if (debouncedAppliedFilters.priceMax) {
           wpFilters.max_price = parseInt(debouncedAppliedFilters.priceMax.replace(/[^\d]/g, ''));
         }
+        if (debouncedAppliedFilters.paymentMin) {
+          wpFilters.min_payment = parseInt(debouncedAppliedFilters.paymentMin.replace(/[^\d]/g, ''));
+        }
+        if (debouncedAppliedFilters.paymentMax) {
+          wpFilters.max_payment = parseInt(debouncedAppliedFilters.paymentMax.replace(/[^\d]/g, ''));
+        }
       }
 
       const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
