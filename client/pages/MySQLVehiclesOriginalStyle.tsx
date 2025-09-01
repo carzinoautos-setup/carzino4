@@ -825,6 +825,20 @@ function MySQLVehiclesOriginalStyleInner() {
     [navigate, location.pathname],
   );
 
+  // Initial data fetch on component mount
+  useEffect(() => {
+    console.log("🚀 INITIAL MOUNT: Triggering data fetch");
+    if (!isMountedRef.current) return;
+
+    // Force initial data fetch regardless of dependencies
+    setTimeout(() => {
+      if (isMountedRef.current) {
+        console.log("🚀 INITIAL MOUNT: Executing fetchCombinedData");
+        fetchCombinedData();
+      }
+    }, 100);
+  }, []); // Empty dependency array - runs only on mount
+
   // Performance: Fetch combined data when memoized parameters change
   useEffect(() => {
     if (!isMountedRef.current) return;
