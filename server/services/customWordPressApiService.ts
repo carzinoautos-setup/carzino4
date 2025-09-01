@@ -81,8 +81,10 @@ export class CustomWordPressApiService {
           'price-high': 'price_desc',
           'miles-low': 'mileage_asc',
           'mileage-low': 'mileage_asc',
+          'mileage-high': 'mileage_desc',
           'year-newest': 'year_desc',
-          'year-new': 'year_desc'
+          'year-new': 'year_desc',
+          'year-oldest': 'year_asc'
         };
 
         const wpSortValue = sortMapping[sortBy] || sortBy;
