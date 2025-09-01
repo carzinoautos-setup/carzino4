@@ -17,7 +17,7 @@ export const testWordPressApiCall: RequestHandler = async (req, res) => {
     
     // Show the first vehicle's structure
     const firstVehicle = Array.isArray(data) ? data[0] : data.sampleVehicle || data;
-    
+
     res.status(200).json({
       success: true,
       message: "Raw API response from your custom WordPress endpoint",
@@ -25,7 +25,7 @@ export const testWordPressApiCall: RequestHandler = async (req, res) => {
       responseStatus: response.status,
       totalVehicles: Array.isArray(data) ? data.length : "Unknown",
       sampleVehicle: firstVehicle,
-      fullResponse: data
+      responseType: Array.isArray(data) ? "array" : "object"
     });
     
   } catch (error) {
