@@ -2898,27 +2898,46 @@ function MySQLVehiclesOriginalStyleInner() {
                           onChange={(e) => {
                           console.log("🔧 FIXED: Make filter clicked:", makeOption.name, "checked:", e.target.checked);
                           console.log("🔧 FIXED: Current applied makes:", appliedFilters.make);
-                          console.log("🔧 FIXED: Available models before change:", filterOptions.models.length);
                           e.stopPropagation();
                           try {
                             if (e.target.checked) {
                               const newFilters = {
                                 ...appliedFilters,
                                 make: [...appliedFilters.make, makeOption.name],
+                                // CRITICAL: Clear dependent filters when make changes
+                                model: [],
+                                trim: [],
                               };
-                              console.log("🔧 FIXED: Adding make filter. New makes array:", newFilters.make);
-                              console.log("🔧 FIXED: This should trigger conditional filtering - watch for model updates");
+                              console.log("🔧 FIXED: Adding make filter. Clearing models/trims:", newFilters.make);
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
+                              setCurrentPage(1);
 
-                              // Force immediate data refresh after filter change
-                              setCurrentPage(1); // Reset to page 1 when filtering
+                              // FIXED: Trigger conditional filtering update
+                              setTimeout(() => {
+                                if (isMountedRef.current) {
+                                  fetchFilterOptions(newFilters, true);
+                                }
+                              }, 100);
                             } else {
-                              console.log("🔧 Removing make filter:", makeOption.name, "from:", appliedFilters.make);
-                              removeAppliedFilter("make", makeOption.name);
+                              const newFilters = {
+                                ...appliedFilters,
+                                make: appliedFilters.make.filter(item => item !== makeOption.name),
+                                // CRITICAL: Clear dependent filters when make changes
+                                model: [],
+                                trim: [],
+                              };
+                              console.log("🔧 FIXED: Removing make filter. Clearing models/trims:", newFilters.make);
+                              setAppliedFilters(newFilters);
+                              updateURLFromFilters(newFilters);
+                              setCurrentPage(1);
 
-                              // Force immediate data refresh after filter change
-                              setCurrentPage(1); // Reset to page 1 when filtering
+                              // FIXED: Trigger conditional filtering update
+                              setTimeout(() => {
+                                if (isMountedRef.current) {
+                                  fetchFilterOptions(newFilters, true);
+                                }
+                              }, 100);
                             }
                           } catch (error) {
                             console.error("❌ Error in make filter handler:", error);
