@@ -490,7 +490,7 @@ function MySQLVehiclesOriginalStyleInner() {
             try {
               requestController.abort();
               if (import.meta.env.DEV) {
-                console.log("⏰ Combined request timeout after 30 seconds");
+                console.log("�� Combined request timeout after 30 seconds");
               }
             } catch (err) {
               // Ignore timeout abort errors
@@ -1797,6 +1797,8 @@ function MySQLVehiclesOriginalStyleInner() {
       <span className="carzino-filter-count ml-1">({count})</span>
     </label>
   );
+
+  console.log("🔍 STEP FINAL: About to render component JSX");
 
   return (
     <div
