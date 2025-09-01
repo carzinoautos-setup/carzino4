@@ -432,7 +432,7 @@ function MySQLVehiclesOriginalStyleInner() {
       }
 
       if (import.meta.env.DEV && retryCount === 0) {
-        console.log("��� COMBINED FETCH: Calling WordPress API");
+        console.log("🚀 COMBINED FETCH: Calling your server-side API");
       }
 
       // Set timeout for request
