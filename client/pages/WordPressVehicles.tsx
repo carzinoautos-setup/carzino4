@@ -1274,7 +1274,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.transmission.includes(trans.name)}
-                          onChange={(e) => updateFilter("transmission", trans.name, e.target.checked)}
+                          onChange={(e) => updateFilter("transmission", trans.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{trans.name}</span>
                         <span className="carzino-filter-count">({trans.count})</span>
@@ -1306,7 +1306,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.exteriorColor.includes(color.name)}
-                          onChange={(e) => updateFilter("exteriorColor", color.name, e.target.checked)}
+                          onChange={(e) => updateFilter("exteriorColor", color.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{color.name}</span>
                         <span className="carzino-filter-count">({color.count})</span>
@@ -1338,7 +1338,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.interiorColor.includes(color.name)}
-                          onChange={(e) => updateFilter("interiorColor", color.name, e.target.checked)}
+                          onChange={(e) => updateFilter("interiorColor", color.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{color.name}</span>
                         <span className="carzino-filter-count">({color.count})</span>
@@ -1370,7 +1370,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.sellerType.includes(type.name)}
-                          onChange={(e) => updateFilter("sellerType", type.name, e.target.checked)}
+                          onChange={(e) => updateFilter("sellerType", type.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{type.name}</span>
                         <span className="carzino-filter-count">({type.count})</span>
@@ -1402,7 +1402,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.dealer.includes(dealer.name)}
-                          onChange={(e) => updateFilter("dealer", dealer.name, e.target.checked)}
+                          onChange={(e) => updateFilter("dealer", dealer.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{dealer.name}</span>
                         <span className="carzino-filter-count">({dealer.count})</span>
@@ -1434,7 +1434,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.state.includes(state.name)}
-                          onChange={(e) => updateFilter("state", state.name, e.target.checked)}
+                          onChange={(e) => updateFilter("state", state.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{state.name}</span>
                         <span className="carzino-filter-count">({state.count})</span>
@@ -1466,7 +1466,7 @@ export default function WordPressVehicles() {
                           type="checkbox"
                           className="mr-2"
                           checked={appliedFilters.city.includes(city.name)}
-                          onChange={(e) => updateFilter("city", city.name, e.target.checked)}
+                          onChange={(e) => updateFilter("city", city.name, e.target.checked, e)}
                         />
                         <span className="carzino-filter-option flex-1">{city.name}</span>
                         <span className="carzino-filter-count">({city.count})</span>
