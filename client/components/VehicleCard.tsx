@@ -293,6 +293,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             >
               {vehicle.seller_type}
             </div>
+            {vehicle.seller_account_number && (
+              <div className="text-xs text-gray-500 mt-1">
+                Account: {vehicle.seller_account_number}
+              </div>
+            )}
           </div>
         </div>
       </div>

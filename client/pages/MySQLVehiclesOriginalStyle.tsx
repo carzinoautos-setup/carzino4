@@ -1685,6 +1685,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         className="mr-2"
                         checked={appliedFilters.dealer.includes(dealer.name)}
                         onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
