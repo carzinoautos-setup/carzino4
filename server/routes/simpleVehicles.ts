@@ -332,10 +332,16 @@ export const getCombinedVehicleData: RequestHandler = async (req, res) => {
 
     console.log("🚀 COMBINED: Fetching all data in parallel");
 
+    console.log("🔍 COMBINED: Sending filters to all service calls for conditional filtering:", {
+      hasFilters: Object.keys(filters).length > 0,
+      filterKeys: Object.keys(filters)
+    });
+
     // PERFORMANCE: Execute all three calls in parallel instead of sequential
+    // IMPORTANT: Pass filters to getFilterOptions for conditional filtering
     const [vehiclesResult, filtersResult, dealersResult] = await Promise.all([
       vehicleService.getVehicles(pagination, filters, sortBy),
-      vehicleService.getFilterOptions(filters),
+      vehicleService.getFilterOptions(filters), // ✅ NOW PASSING FILTERS FOR CONDITIONAL FILTERING
       vehicleService.getDealers()
     ]);
 
