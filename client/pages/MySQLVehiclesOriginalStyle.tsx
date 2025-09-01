@@ -4212,12 +4212,15 @@ function MySQLVehiclesOriginalStyleInner() {
                 </div>
                 <div className="vehicle-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                   {displayedVehicles.length > 0 ? displayedVehicles.map((vehicle) => (
-                    <MySQLVehicleCard
+                    <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
-                      onFavoriteToggle={(vehicleId) => toggleFavorite(vehicle)}
-                      isFavorite={isFavorited(vehicle.id)}
-                      className="h-full"
+                      favorites={favorites}
+                      onToggleFavorite={toggleFavorite}
+                      keeperMessage={keeperMessage}
+                      termLength={termLength}
+                      interestRate={interestRate}
+                      downPayment={downPayment}
                     />
                   )) : (
                     <div className="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
