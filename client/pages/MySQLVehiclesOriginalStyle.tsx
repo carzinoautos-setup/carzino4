@@ -1050,6 +1050,12 @@ function MySQLVehiclesOriginalStyleInner() {
       if (currentFilters.priceMax) {
         wpFilters.max_price = parseInt(currentFilters.priceMax.replace(/[^\d]/g, ''));
       }
+      if (currentFilters.paymentMin) {
+        wpFilters.min_payment = parseInt(currentFilters.paymentMin.replace(/[^\d]/g, ''));
+      }
+      if (currentFilters.paymentMax) {
+        wpFilters.max_payment = parseInt(currentFilters.paymentMax.replace(/[^\d]/g, ''));
+      }
 
       const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
         1,
