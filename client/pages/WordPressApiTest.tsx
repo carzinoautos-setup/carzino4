@@ -17,19 +17,24 @@ export default function WordPressApiTest() {
 
         console.log('🔍 Starting WordPress Custom API tests...');
 
-        // Test 1: Basic connection test
-        console.log('📡 Testing API connection...');
+        // Test 1: Comprehensive connection test (includes all sub-tests)
+        console.log('📡 Running comprehensive API tests...');
         const connectionResult = await wordpressCustomApi.testConnection();
         setConnectionTest(connectionResult);
 
-        if (!connectionResult.success) {
-          throw new Error(connectionResult.message);
+        // Test 2: Try to fetch vehicles (only if custom endpoint is working)
+        if (connectionResult.success) {
+          console.log('📦 Fetching sample vehicles...');
+          try {
+            const vehiclesResult = await wordpressCustomApi.getVehicles(1, 5); // Get first 5 vehicles
+            setVehiclesData(vehiclesResult);
+          } catch (vehicleError) {
+            console.warn('⚠️ Could not fetch vehicles, but connection test passed:', vehicleError);
+            // Don't throw here, we still want to show the connection test results
+          }
+        } else {
+          console.log('❌ Skipping vehicle fetch due to connection test failure');
         }
-
-        // Test 2: Fetch vehicles with pagination
-        console.log('📦 Fetching sample vehicles...');
-        const vehiclesResult = await wordpressCustomApi.getVehicles(1, 5); // Get first 5 vehicles
-        setVehiclesData(vehiclesResult);
 
         // Get cache stats
         setCacheStats(wordpressCustomApi.getCacheStats());
