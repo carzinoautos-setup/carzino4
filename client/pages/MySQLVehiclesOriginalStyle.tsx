@@ -128,7 +128,7 @@ function MySQLVehiclesOriginalStyleInner() {
   console.log("🚀 COMPONENT: MySQLVehiclesOriginalStyleInner rendering");
 
   // EMERGENCY: Force a simple test render to debug
-  const FORCE_TEST_RENDER = true; // Enable test render to see if component loads
+  const FORCE_TEST_RENDER = false; // Disable test render, now debug the main logic
   if (FORCE_TEST_RENDER) {
     console.log("🚨 EMERGENCY: Test render active");
     return (
@@ -862,7 +862,7 @@ function MySQLVehiclesOriginalStyleInner() {
   // SIMPLIFIED: Single effect for all data fetching with better dependency management
   useEffect(() => {
     if (!isMountedRef.current) {
-      console.log("🚫 Component not mounted, skipping fetch");
+      console.log("��� Component not mounted, skipping fetch");
       return;
     }
 
