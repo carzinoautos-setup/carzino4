@@ -2894,7 +2894,8 @@ function MySQLVehiclesOriginalStyleInner() {
                                 ...appliedFilters,
                                 make: [...appliedFilters.make, makeOption.name],
                               };
-                              console.log("🔧 Adding make filter. New makes array:", newFilters.make);
+                              console.log("🔧 FIXED: Adding make filter. New makes array:", newFilters.make);
+                              console.log("🔧 FIXED: This should trigger conditional filtering - watch for model updates");
                               setAppliedFilters(newFilters);
                               updateURLFromFilters(newFilters);
 
