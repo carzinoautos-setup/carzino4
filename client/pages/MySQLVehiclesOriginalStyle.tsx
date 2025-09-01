@@ -190,7 +190,7 @@ function MySQLVehiclesOriginalStyleInner() {
         apiUrl.searchParams.set('trim', appliedFilters.trim.join(','));
       }
       if (appliedFilters.vehicleType.length > 0) {
-        apiUrl.searchParams.set('vehicleType', appliedFilters.vehicleType.join(','));
+        apiUrl.searchParams.set('body_type', appliedFilters.vehicleType.join(','));
       }
       if (appliedFilters.driveType.length > 0) {
         apiUrl.searchParams.set('driveType', appliedFilters.driveType.join(','));
