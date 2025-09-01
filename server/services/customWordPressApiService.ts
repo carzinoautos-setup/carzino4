@@ -94,6 +94,19 @@ export class CustomWordPressApiService {
       console.log("🔗 Fetching from vehicles API with clean field names:", url.toString());
       console.log("🔍 DEBUG: Filters being sent to WordPress:", filters);
 
+      // Debug price filtering specifically
+      if (filters.priceMin || filters.priceMax) {
+        console.log("💰 PRICE FILTER DEBUG:", {
+          priceMin: filters.priceMin,
+          priceMax: filters.priceMax,
+          apiUrl: url.toString(),
+          hasMinPrice: url.searchParams.has('price_min'),
+          hasMaxPrice: url.searchParams.has('price_max'),
+          minPriceValue: url.searchParams.get('price_min'),
+          maxPriceValue: url.searchParams.get('price_max')
+        });
+      }
+
       const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error(`API responded with status: ${response.status}`);
