@@ -75,7 +75,18 @@ export class CustomWordPressApiService {
         url.searchParams.set('search', filters.search);
       }
       if (sortBy && sortBy !== 'relevance') {
-        url.searchParams.set('orderby', sortBy);
+        // Map frontend sort values to WordPress API sort parameters
+        const sortMapping: { [key: string]: string } = {
+          'price-low': 'price_asc',
+          'price-high': 'price_desc',
+          'miles-low': 'mileage_asc',
+          'mileage-low': 'mileage_asc',
+          'year-newest': 'year_desc',
+          'year-new': 'year_desc'
+        };
+
+        const wpSortValue = sortMapping[sortBy] || sortBy;
+        url.searchParams.set('sort', wpSortValue);
       }
 
       console.log("🔗 Fetching from vehicles API with clean field names:", url.toString());
