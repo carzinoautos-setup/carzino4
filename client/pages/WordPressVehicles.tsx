@@ -201,8 +201,8 @@ export default function WordPressVehicles() {
     fetchVehicles(1);
   }, [fetchVehicles]);
 
-  // Toggle favorite
-  const handleToggleFavorite = (vehicleId: number) => {
+  // Toggle favorite (matching MySQL page function signature)
+  const toggleFavorite = (vehicleId: number) => {
     const vehicle = vehicles.find(v => v.id === vehicleId);
     if (!vehicle) return;
 
@@ -210,8 +210,12 @@ export default function WordPressVehicles() {
       const newFavorites = { ...prev };
       if (newFavorites[vehicle.id]) {
         delete newFavorites[vehicle.id];
+        setKeeperMessage(null);
       } else {
         newFavorites[vehicle.id] = vehicle;
+        setKeeperMessage(vehicle.id);
+        // Clear keeper message after 3 seconds
+        setTimeout(() => setKeeperMessage(null), 3000);
       }
       return newFavorites;
     });
