@@ -104,6 +104,18 @@ export class CustomWordPressApiService {
         const price = vehicle.acf?.price || vehicle.price || vehicle.regular_price;
         const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
 
+        // DEBUG: Log price transformation for first few vehicles
+        if (vehicles.indexOf(vehicle) < 3) {
+          console.log(`🔍 DEBUG PRICE: Vehicle ID ${vehicle.id}:`, {
+            'vehicle.acf?.price': vehicle.acf?.price,
+            'vehicle.price': vehicle.price,
+            'vehicle.regular_price': vehicle.regular_price,
+            'final_price': price,
+            'formattedPrice': formattedPrice,
+            'acf_keys': vehicle.acf ? Object.keys(vehicle.acf) : 'no acf'
+          });
+        }
+
         // Get mileage - ensure it's not zero/empty
         const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
         const formattedMileage = mileage && parseInt(mileage) > 0 ?
