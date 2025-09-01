@@ -214,10 +214,21 @@ export class CustomWordPressApiService {
             }
           }
 
-          // If no valid payment found, include the vehicle (don't exclude it just for lacking payment data)
-          // This allows price sorting to work properly even when payment filters are applied
+          // If no valid payment found but vehicle has price data, include it
+          // This allows price sorting to work even when payment filters are applied
           if (!monthlyPayment || monthlyPayment <= 0) {
-            return true;
+            // Check if vehicle has price data - if so, include it for price sorting
+            const priceFields = [
+              vehicle.acf?.price,
+              vehicle.acf?.sale_price,
+              vehicle.acf?.listing_price,
+              vehicle.price,
+              vehicle.regular_price,
+              vehicle.acf?.vehicle_price,
+              vehicle.acf?.asking_price
+            ];
+            const hasPrice = priceFields.some(p => p && p !== "" && p !== "0" && parseInt(p) > 0);
+            return hasPrice; // Include if it has price data, exclude if it has neither price nor payment
           }
 
           // Apply min payment filter
