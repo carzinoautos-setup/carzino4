@@ -955,18 +955,15 @@ function MySQLVehiclesOriginalStyleInner() {
     // No separate API call needed
   }, [appliedFilters]);
 
-  // Load initial data on component mount with conditional filtering
+  // Load initial data on component mount
   useEffect(() => {
     if (isMountedRef.current) {
-      console.log("🚀 Component mounted - loading data with conditional filtering");
+      console.log("🚀 Component mounted - loading data via combined endpoint");
 
-      // Load conditional filters first
-      updateConditionalFilters();
-
-      // Then load vehicle data
+      // Combined endpoint handles vehicles + filters + dealers in one call
       fetchCombinedData();
     }
-  }, []);
+  }, [fetchCombinedData]);
 
   // FIXED: Simplified conditional filtering - let fetchCombinedData handle everything
   // Remove separate fetchFilterOptions calls to prevent race conditions
@@ -1184,7 +1181,7 @@ function MySQLVehiclesOriginalStyleInner() {
   }, [updateConditionalFilters]);
 
   const handleModelChange = useCallback((modelName: string, isChecked: boolean) => {
-    console.log(`🔄 MODEL CHANGE: ${modelName} ${isChecked ? 'selected' : 'deselected'}`);
+    console.log(`�� MODEL CHANGE: ${modelName} ${isChecked ? 'selected' : 'deselected'}`);
 
     setAppliedFilters((prev) => {
       const newModels = isChecked
