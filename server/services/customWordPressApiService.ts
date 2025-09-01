@@ -84,38 +84,43 @@ export class CustomWordPressApiService {
 
   async getFilterOptions(filters: SimpleVehicleFilters = {}) {
     try {
-      const response = await fetch(WP_API_URL);
-      const apiResponse = await response.json();
-      const allVehicles = apiResponse.success ? apiResponse.data : apiResponse;
-      
-      if (!Array.isArray(allVehicles)) {
-        throw new Error("API did not return an array for filter options");
+      console.log("🎛 Fetching from new filters API:", FILTERS_ENDPOINT);
+
+      const response = await fetch(FILTERS_ENDPOINT);
+      if (!response.ok) {
+        throw new Error(`Filters API responded with status: ${response.status}`);
       }
-      
-      // Extract unique filter values
-      const makes = [...new Set(allVehicles.map(v => v.acf?.make).filter(Boolean))]
-        .map(make => ({ name: make, count: allVehicles.filter(v => v.acf?.make === make).length }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-      
-      const models = [...new Set(allVehicles.map(v => v.acf?.model).filter(Boolean))]
-        .map(model => ({ name: model, count: allVehicles.filter(v => v.acf?.model === model).length }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-        
-      const conditions = [...new Set(allVehicles.map(v => v.acf?.condition).filter(Boolean))]
-        .map(condition => ({ name: condition, count: allVehicles.filter(v => v.acf?.condition === condition).length }));
-        
-      const driveTypes = [...new Set(allVehicles.map(v => v.acf?.drivetrain).filter(Boolean))]
-        .map(drive => ({ name: drive, count: allVehicles.filter(v => v.acf?.drivetrain === drive).length }));
-      
+
+      const apiResponse = await response.json();
+      console.log("📦 Filters API Response:", {
+        hasSuccess: 'success' in apiResponse,
+        hasFilters: 'filters' in apiResponse,
+        cached: apiResponse.cached || false
+      });
+
+      if (!apiResponse.success || !apiResponse.filters) {
+        throw new Error("Filters API did not return expected format");
+      }
+
+      // Use pre-computed filters from API (cached for performance)
+      const filtersData = apiResponse.filters;
+
       return {
         success: true,
         data: {
-          makes,
-          models,
-          trims: [],
-          conditions,
-          driveTypes,
-          sellerTypes: [{ name: "Dealer", count: allVehicles.length }]
+          makes: filtersData.make || [],
+          models: filtersData.model || [],
+          trims: filtersData.trim || [],
+          conditions: filtersData.condition || [],
+          driveTypes: filtersData.drivetrain || [],
+          sellerTypes: filtersData.account_type_seller || [],
+          bodyStyles: filtersData.body_style || [],
+          fuelTypes: filtersData.fuel_type || [],
+          transmissions: filtersData.transmission || [],
+          years: filtersData.year || [],
+          priceRange: filtersData.price_range || { min: 0, max: 100000 },
+          mileageRange: filtersData.mileage_range || { min: 0, max: 200000 },
+          yearRange: filtersData.year_range || { min: 2000, max: 2025 }
         }
       };
       
