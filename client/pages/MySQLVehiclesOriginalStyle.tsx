@@ -934,7 +934,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Crossovers": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "Crossover/SUV": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
       "SUV / Crossover": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
-      "SUV/Crossover": "����",
+      "SUV/Crossover": "�����",
       "Sport Utility Vehicle": "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=64&h=64&fit=crop&crop=center",
 
       // Trucks
@@ -4102,19 +4102,21 @@ function MySQLVehiclesOriginalStyleInner() {
                   <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
                   <div className="text-lg">Loading vehicles...</div>
                   <div className="text-sm text-gray-500 mt-2">
-                    API calls are working (254 vehicles found)
+                    Server API working (logs show 254 vehicles returned)
                   </div>
-                  <div className="text-xs text-red-500 mt-2">
-                    DEBUG: Component is stuck in loading state
+                  <div className="text-xs text-red-500 mt-2 space-y-1">
+                    <div>DEBUG: loading={loading.toString()}, vehicles={vehicles.length}</div>
+                    <div>totalResults={totalResults}, apiResponse={(apiResponse ? 'exists' : 'null')}</div>
+                    <div>Time: {new Date().toLocaleTimeString()}</div>
                   </div>
                   <button
                     onClick={() => {
-                      console.log("🔧 FORCE STOP LOADING:", { loading, vehicles: vehicles.length, totalResults });
+                      console.log("🔧 MANUAL FORCE: User clicked to clear loading state");
                       setLoading(false);
                     }}
-                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded text-sm"
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700"
                   >
-                    Force Stop Loading (Debug)
+                    Force Show Vehicles
                   </button>
                 </div>
               ) : error ? (
