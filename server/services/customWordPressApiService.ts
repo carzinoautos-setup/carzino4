@@ -134,15 +134,26 @@ export class CustomWordPressApiService {
         const price = priceFields.find(p => p && p !== "" && p !== "0" && parseInt(p) > 0);
         const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
 
-        // Debug price detection for first few vehicles
+        // Get payment - try ACF payment field first, then calculate from price
+        const existingPayment = vehicle.acf?.payment;
+        let payment = null;
+
+        if (existingPayment && existingPayment !== "0" && parseInt(existingPayment) > 0) {
+          // Use existing payment from ACF
+          payment = `$${parseInt(existingPayment)}/mo*`;
+        } else if (price) {
+          // Calculate payment from price
+          payment = `$${Math.round(parseInt(price) / 60)}/mo*`;
+        }
+
+        // Debug price/payment detection for first few vehicles
         if (vehicles.indexOf(vehicle) < 3) {
-          console.log(`🔍 Price Debug for vehicle ${vehicle.id}:`, {
+          console.log(`🔍 Price/Payment Debug for vehicle ${vehicle.id}:`, {
             acf_price: vehicle.acf?.price,
-            acf_sale_price: vehicle.acf?.sale_price,
-            price: vehicle.price,
-            regular_price: vehicle.regular_price,
+            acf_payment: vehicle.acf?.payment,
             finalPrice: price,
             formattedPrice: formattedPrice,
+            finalPayment: payment,
             availableAcfFields: vehicle.acf ? Object.keys(vehicle.acf) : 'no ACF'
           });
         }
