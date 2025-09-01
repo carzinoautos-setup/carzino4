@@ -13,7 +13,7 @@ import {
   Loader,
   AlertTriangle,
 } from "lucide-react";
-import { MySQLVehicleCard } from "@/components/MySQLVehicleCard";
+import { VehicleCard } from "@/components/VehicleCard";
 import { FilterSection } from "@/components/FilterSection";
 import { VehicleTypeCard } from "@/components/VehicleTypeCard";
 import { Pagination } from "@/components/Pagination";
@@ -1450,7 +1450,7 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Call our geocoding API with proper error handling
       const apiUrl = `${getApiBaseUrl()}/api/geocode/${zip}`;
-      console.log("🔍 Geocoding ZIP:", zip, "using:", apiUrl);
+      console.log("��� Geocoding ZIP:", zip, "using:", apiUrl);
 
       const controller = new AbortController();
 
