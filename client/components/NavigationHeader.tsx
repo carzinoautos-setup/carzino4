@@ -43,6 +43,30 @@ export function NavigationHeader() {
               <Database className="w-4 h-4" />
               MySQL Vehicles (50k)
             </Link>
+
+            <Link
+              to="/wordpress-vehicles"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive("/wordpress-vehicles")
+                  ? "bg-red-100 text-red-700"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              WordPress API
+            </Link>
+
+            <Link
+              to="/wordpress-api-test"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive("/wordpress-api-test")
+                  ? "bg-red-100 text-red-700"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              }`}
+            >
+              <TestTube className="w-4 h-4" />
+              API Test
+            </Link>
           </nav>
 
           {/* Stats/Info */}
