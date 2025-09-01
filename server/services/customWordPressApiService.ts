@@ -34,9 +34,9 @@ export class CustomWordPressApiService {
 
       // Use vehicles directly from API (already paginated)
       const vehicles = apiResponse.data;
-      
-      // Transform vehicles to expected format
-      const transformedVehicles = paginatedVehicles.map(vehicle => ({
+
+      // Transform vehicles to expected format using new ACF structure
+      const transformedVehicles = vehicles.map(vehicle => ({
         id: vehicle.id,
         featured: vehicle.acf?.is_featured || false,
         viewed: false,
