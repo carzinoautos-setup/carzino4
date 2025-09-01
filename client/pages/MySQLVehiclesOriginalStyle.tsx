@@ -961,7 +961,7 @@ function MySQLVehiclesOriginalStyleInner() {
       "Regular Cab Truck": "��",
       "Extended Cab Truck": "🚚",
       "Full Size Truck": "🚚",
-      "Compact Truck": "🚚",
+      "Compact Truck": "��",
 
       // Sports Cars and Coupes
       "Coupe": "🏎️",
@@ -1010,15 +1010,87 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // REMOVED: Dealers now fetched via combined endpoint for better performance
 
-  // WordPress API doesn't have separate filter endpoint, filters are extracted from vehicle data
+  // Update filter options based on current selections (conditional filtering)
   const fetchFilterOptions = useCallback(async (currentFilters = debouncedAppliedFilters, forceRefresh = false) => {
-    // Filter options are now populated by fetchCombinedData, so this function is not needed
-    // But keep it for compatibility - it will be called but will be a no-op
-    if (import.meta.env.DEV) {
-      console.log("🔍 Filter options are extracted from WordPress vehicle data in fetchCombinedData");
+    if (!isMountedRef.current) {
+      return;
     }
-    return;
-  }, [debouncedAppliedFilters]);
+
+    // Filter the current vehicles based on applied filters
+    let filteredVehicles = vehicles;
+
+    // Apply current filter selections to get conditional options
+    if (currentFilters.make && currentFilters.make.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => currentFilters.make.includes(v.make));
+    }
+    if (currentFilters.model && currentFilters.model.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => currentFilters.model.includes(v.model));
+    }
+    if (currentFilters.condition && currentFilters.condition.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => currentFilters.condition.includes(v.condition));
+    }
+    if (currentFilters.vehicleType && currentFilters.vehicleType.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => currentFilters.vehicleType.includes(v.body_style));
+    }
+    if (currentFilters.driveType && currentFilters.driveType.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => currentFilters.driveType.includes(v.drivetrain));
+    }
+
+    // Update filter options based on filtered vehicles
+    const updatedOptions = {
+      makes: Array.from(new Set(filteredVehicles.map(v => v.make).filter(Boolean)))
+        .map(make => ({ name: make!, count: filteredVehicles.filter(v => v.make === make).length }))
+        .sort((a, b) => b.count - a.count),
+      models: Array.from(new Set(filteredVehicles.map(v => v.model).filter(Boolean)))
+        .map(model => ({ name: model!, count: filteredVehicles.filter(v => v.model === model).length }))
+        .sort((a, b) => b.count - a.count),
+      trims: Array.from(new Set(filteredVehicles.map(v => v.trim).filter(Boolean)))
+        .map(trim => ({ name: trim!, count: filteredVehicles.filter(v => v.trim === trim).length }))
+        .sort((a, b) => b.count - a.count),
+      conditions: Array.from(new Set(filteredVehicles.map(v => v.condition).filter(Boolean)))
+        .map(condition => ({ name: condition!, count: filteredVehicles.filter(v => v.condition === condition).length }))
+        .sort((a, b) => b.count - a.count),
+      vehicleTypes: Array.from(new Set(filteredVehicles.map(v => v.body_style).filter(Boolean)))
+        .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.body_style === type).length }))
+        .sort((a, b) => b.count - a.count),
+      driveTypes: Array.from(new Set(filteredVehicles.map(v => v.drivetrain).filter(Boolean)))
+        .map(drive => ({ name: drive!, count: filteredVehicles.filter(v => v.drivetrain === drive).length }))
+        .sort((a, b) => b.count - a.count),
+      transmissions: Array.from(new Set(filteredVehicles.map(v => v.transmission).filter(Boolean)))
+        .map(trans => ({ name: trans!, count: filteredVehicles.filter(v => v.transmission === trans).length }))
+        .sort((a, b) => b.count - a.count),
+      exteriorColors: Array.from(new Set(filteredVehicles.map(v => v.exterior_color_generic).filter(Boolean)))
+        .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.exterior_color_generic === color).length }))
+        .sort((a, b) => b.count - a.count),
+      interiorColors: Array.from(new Set(filteredVehicles.map(v => v.interior_color_generic).filter(Boolean)))
+        .map(color => ({ name: color!, count: filteredVehicles.filter(v => v.interior_color_generic === color).length }))
+        .sort((a, b) => b.count - a.count),
+      sellerTypes: Array.from(new Set(filteredVehicles.map(v => v.seller_type).filter(Boolean)))
+        .map(type => ({ name: type!, count: filteredVehicles.filter(v => v.seller_type === type).length }))
+        .sort((a, b) => b.count - a.count),
+      dealers: Array.from(new Set(filteredVehicles.map(v => v.dealer).filter(Boolean)))
+        .map(dealer => ({ name: dealer!, count: filteredVehicles.filter(v => v.dealer === dealer).length }))
+        .sort((a, b) => b.count - a.count),
+      states: Array.from(new Set(filteredVehicles.map(v => v.state_seller).filter(Boolean)))
+        .map(state => ({ name: state!, count: filteredVehicles.filter(v => v.state_seller === state).length }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+      cities: Array.from(new Set(filteredVehicles.map(v => v.city_seller).filter(Boolean)))
+        .map(city => ({ name: city!, count: filteredVehicles.filter(v => v.city_seller === city).length }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+      totalVehicles: filteredVehicles.length
+    };
+
+    setFilterOptions(updatedOptions);
+    setVehicleTypes(updatedOptions.vehicleTypes);
+
+    if (import.meta.env.DEV) {
+      console.log("🔄 Updated conditional filters:", {
+        totalVehicles: filteredVehicles.length,
+        makes: updatedOptions.makes.length,
+        models: updatedOptions.models.length
+      });
+    }
+  }, [debouncedAppliedFilters, vehicles]);
 
   // Load initial data on component mount - OPTIMIZED: Single combined call
   useEffect(() => {
