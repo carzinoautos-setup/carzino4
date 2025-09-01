@@ -1,0 +1,127 @@
+<?php
+
+// COMPLETE CORRECTED WORDPRESS API CODE
+
+// CORS Headers
+add_action('init', function() {
+    if (isset($_SERVER['HTTP_ORIGIN'])) {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+        exit(0);
+    }
+});
+
+// Register Custom API Endpoint - CORRECTED
+add_action('rest_api_init', function() {
+    register_rest_route('custom/v1', '/vehicles', array(
+        'methods' => 'GET',
+        'callback' => 'get_custom_vehicles',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+// Fixed Vehicle API Function
+function get_custom_vehicles(WP_REST_Request $request) {
+    $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+    $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 20;
+    
+    $args = array(
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'paged' => $page
+    );
+    
+    $query = new WP_Query($args);
+    $vehicles = array();
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+            
+            $vehicles[] = array(
+                'id' => $post_id,
+                'name' => get_the_title($post_id),
+                'slug' => get_post_field('post_name', $post_id),
+                'permalink' => get_permalink($post_id),
+                'price' => get_post_meta($post_id, '_price', true),
+                'stock_status' => get_post_meta($post_id, '_stock_status', true),
+                'featured_image' => get_the_post_thumbnail_url($post_id, 'full'),
+                'acf' => array(
+                    // Vehicle specs
+                    'make' => get_post_meta($post_id, 'make', true),
+                    'model' => get_post_meta($post_id, 'model', true),
+                    'year' => get_post_meta($post_id, 'year', true),
+                    'trim' => get_post_meta($post_id, 'trim', true),
+                    'mileage' => get_post_meta($post_id, 'mileage', true),
+                    'condition' => get_post_meta($post_id, 'condition', true),
+                    'transmission' => get_post_meta($post_id, 'transmission', true),
+                    'doors' => get_post_meta($post_id, 'doors', true),
+                    'drivetrain' => get_post_meta($post_id, 'drivetrain', true),
+                    'fuel_type' => get_post_meta($post_id, 'fuel_type', true),
+                    'body_style' => get_post_meta($post_id, 'body_style', true),
+                    'highway_mpg' => get_post_meta($post_id, 'highway_mpg', true),
+                    'exterior_color' => get_post_meta($post_id, 'exterior_color', true),
+                    'interior_color' => get_post_meta($post_id, 'interior_color', true),
+                    'vin' => get_post_meta($post_id, 'vin', true),
+                    'engine_cylinders' => get_post_meta($post_id, 'engine_cylinders', true),
+                    'engine' => get_post_meta($post_id, 'engine', true),
+                    
+                    // Status flags
+                    'certified' => get_post_meta($post_id, 'certified', true),
+                    'title_status' => get_post_meta($post_id, 'title_status', true),
+                    'is_featured' => get_post_meta($post_id, 'is_featured', true),
+                    'is_certified' => get_post_meta($post_id, 'is_certified', true),
+                    'has_warranty' => get_post_meta($post_id, 'has_warranty', true),
+                    
+                    // Seller info
+                    'account_name_seller' => get_post_meta($post_id, 'account_name_seller', true),
+                    'account_type_seller' => get_post_meta($post_id, 'account_type_seller', true),
+                    'city_seller' => get_post_meta($post_id, 'city_seller', true),
+                    'state_seller' => get_post_meta($post_id, 'state_seller', true),
+                    'zip_seller' => get_post_meta($post_id, 'zip_seller', true),
+                    'phone_number_seller' => get_post_meta($post_id, 'phone_number_seller', true),
+                    'email_seller' => get_post_meta($post_id, 'email_seller', true),
+                    'address_seller' => get_post_meta($post_id, 'address_seller', true),
+                    
+                    // Location
+                    'car_location_latitude' => get_post_meta($post_id, 'car_location_latitude', true),
+                    'car_location_longitude' => get_post_meta($post_id, 'car_location_longitude', true),
+                    
+                    // Financial
+                    'interest_rate' => get_post_meta($post_id, 'interest_rate', true),
+                    'down_payment' => get_post_meta($post_id, 'down_payment', true),
+                    'loan_term' => get_post_meta($post_id, 'loan_term', true),
+                    'payment' => get_post_meta($post_id, 'payment', true)
+                )
+            );
+        }
+        wp_reset_postdata();
+    }
+    
+    // Return in correct format for React app
+    return new WP_REST_Response(array(
+        'success' => true,
+        'data' => $vehicles,
+        'pagination' => array(
+            'total' => $query->found_posts,
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_pages' => $query->max_num_pages
+        )
+    ), 200);
+}
+
+// INSTRUCTIONS:
+// 1. REPLACE ALL PREVIOUS API CODE in functions.php with this
+// 2. SAVE THE FILE
+// 3. WordPress Admin → Settings → Permalinks → Save Changes
+// 4. TEST IMMEDIATELY
