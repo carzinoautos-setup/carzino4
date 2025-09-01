@@ -512,7 +512,7 @@ function MySQLVehiclesOriginalStyleInner() {
       cleanup();
 
       if (abortControllerRef.current !== requestController || !isMountedRef.current) {
-        console.log("���� Combined request superseded or component unmounted");
+        console.log("🚫 Combined request superseded or component unmounted");
         return;
       }
 
@@ -4240,15 +4240,10 @@ function MySQLVehiclesOriginalStyleInner() {
 
             {/* Connection Status & Results Count - NOT in sticky */}
             <div className="px-3 py-2 bg-gray-50 text-sm">
-              {(error || (vehicles.length > 0 && apiResponse?.message?.includes('Mock data'))) && (
-                <div className="bg-blue-100 border border-blue-400 text-blue-700 px-3 py-2 rounded mb-2 text-xs flex items-center gap-1">
+              {error && error.includes("Unable to connect") && (
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded mb-2 text-xs flex items-center gap-1">
                   <AlertTriangle className="w-4 h-4" />
-                  {error && (error.includes('WordPress API') || error.includes('demo data') || error.includes('Mock data'))
-                    ? 'WordPress API unavailable - showing demo data for testing'
-                    : apiResponse?.message?.includes('Mock data')
-                    ? 'WordPress API temporarily unavailable - using demo data'
-                    : 'Connection issues detected - using fallback data'
-                  }
+                  Connection issues detected. Some features may be limited.
                 </div>
               )}
               <span className="font-medium">
