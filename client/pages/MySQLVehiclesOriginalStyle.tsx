@@ -687,9 +687,9 @@ function MySQLVehiclesOriginalStyleInner() {
 
       // Set error state
       if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
-        setError("Unable to connect to WordPress vehicle database. Check your internet connection and try refreshing the page.");
+        setError("Unable to connect to vehicle database. Check your internet connection and try refreshing the page.");
       } else {
-        setError(err instanceof Error ? err.message : "An unexpected error occurred while loading data from WordPress.");
+        setError(err instanceof Error ? err.message : "An unexpected error occurred while loading vehicle data.");
       }
 
       // Set empty state
