@@ -58,6 +58,7 @@ export default function WordPressVehicles() {
   
   // Filter states - matching MySQL page
   const [searchTerm, setSearchTerm] = useState("");
+  const [unifiedSearch, setUnifiedSearch] = useState("");
   const [appliedFilters, setAppliedFilters] = useState({
     condition: [] as string[],
     make: [] as string[],
@@ -68,6 +69,24 @@ export default function WordPressVehicles() {
     priceMax: "",
   });
 
+  // Location/Distance states - matching MySQL page
+  const [zipCode, setZipCode] = useState("");
+  const [radius, setRadius] = useState("200");
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+    city?: string;
+    state?: string;
+  } | null>(null);
+  const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
+  const [appliedLocation, setAppliedLocation] = useState<{
+    lat: number;
+    lng: number;
+    city?: string;
+    state?: string;
+  } | null>(null);
+  const [appliedRadius, setAppliedRadius] = useState("200");
+
   // UI states - matching MySQL page
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [favorites, setFavorites] = useState<{ [key: number]: Vehicle }>({});
@@ -75,7 +94,7 @@ export default function WordPressVehicles() {
   const [viewMode, setViewMode] = useState<"all" | "favorites">("all");
   const [sortBy, setSortBy] = useState("relevance");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
-  
+
   // Financing states (for VehicleCard component)
   const [termLength, setTermLength] = useState("60");
   const [interestRate, setInterestRate] = useState("5");
