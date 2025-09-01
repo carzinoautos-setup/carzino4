@@ -998,19 +998,19 @@ function MySQLVehiclesOriginalStyleInner() {
       "Roadster": "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=64&h=64&fit=crop&crop=center",
 
       // Hatchbacks and Compacts
-      "Hatchback": "🚗",
-      "Hatchbacks": "🚗",
-      "Compact": "🚗",
-      "Compact Car": "🚗",
+      "Hatchback": "https://images.unsplash.com/photo-1502877828070-33f132bf7d5d?w=64&h=64&fit=crop&crop=center",
+      "Hatchbacks": "https://images.unsplash.com/photo-1502877828070-33f132bf7d5d?w=64&h=64&fit=crop&crop=center",
+      "Compact": "https://images.unsplash.com/photo-1502877828070-33f132bf7d5d?w=64&h=64&fit=crop&crop=center",
+      "Compact Car": "https://images.unsplash.com/photo-1502877828070-33f132bf7d5d?w=64&h=64&fit=crop&crop=center",
 
       // Vans and Minivans
-      "Van": "🚐",
-      "Vans": "🚐",
-      "Minivan": "🚐",
-      "Minivans": "🚐",
-      "Van / Minivan": "🚐",
-      "Cargo Van": "🚐",
-      "Passenger Van": "🚐",
+      "Van": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Vans": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Minivan": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Minivans": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Van / Minivan": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Cargo Van": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
+      "Passenger Van": "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=64&h=64&fit=crop&crop=center",
 
       // Wagons
       "Wagon": "🚗",
