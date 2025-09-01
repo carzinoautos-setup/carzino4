@@ -109,12 +109,7 @@ export class WordPressCustomApiClient {
   private cacheTTL: number = 2 * 60 * 1000; // 2 minutes cache
 
   constructor() {
-    // Try multiple WordPress URL sources
-    this.baseUrl = import.meta.env.VITE_WP_URL ||
-                   import.meta.env.VITE_WORDPRESS_URL ||
-                   "https://env-uploadbackup62225-czdev.kinsta.cloud";
-
-    console.log(`🔗 WordPress API initialized with URL: ${this.baseUrl}`);
+    this.baseUrl = import.meta.env.VITE_WP_URL || "https://env-uploadbackup62225-czdev.kinsta.cloud";
   }
 
   /**
