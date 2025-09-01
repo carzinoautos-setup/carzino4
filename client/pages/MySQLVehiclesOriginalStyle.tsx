@@ -1251,25 +1251,24 @@ function MySQLVehiclesOriginalStyleInner() {
               isCollapsed={collapsedFilters.mileage}
               onToggle={() => toggleFilter("mileage")}
             >
-              <div className="space-y-1">
-                {["Under 15,000", "15,000 - 30,000", "30,000 - 60,000", "60,000 - 100,000", "Over 100,000"].map((range) => (
-                  <label key={range} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="radio"
-                      name="mileage"
-                      className="mr-2"
-                      checked={appliedFilters.mileage === range}
-                      onChange={() => {
-                        setAppliedFilters(prev => ({
-                          ...prev,
-                          mileage: range
-                        }));
-                      }}
-                    />
-                    <span className="carzino-filter-option">{range}</span>
-                  </label>
-                ))}
-              </div>
+              <select
+                value={appliedFilters.mileage || ""}
+                onChange={(e) => {
+                  setCurrentPage(1); // Reset to first page when filters change
+                  setAppliedFilters(prev => ({
+                    ...prev,
+                    mileage: e.target.value
+                  }));
+                }}
+                className="carzino-dropdown-option w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none bg-white"
+              >
+                <option value="">Any Mileage</option>
+                <option value="Under 15,000">Under 15,000</option>
+                <option value="15,000 - 30,000">15,000 - 30,000</option>
+                <option value="30,000 - 60,000">30,000 - 60,000</option>
+                <option value="60,000 - 100,000">60,000 - 100,000</option>
+                <option value="Over 100,000">Over 100,000</option>
+              </select>
             </FilterSection>
 
             {/* Drive Type Filter */}
