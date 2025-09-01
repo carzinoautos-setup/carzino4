@@ -364,13 +364,33 @@ function MySQLVehiclesOriginalStyleInner() {
     }));
   };
 
-  // Get conditional data
+  // Get conditional data - filter based on selections
   const getAvailableModels = () => {
-    return filterOptions.models || [];
+    if (!filterOptions.models || appliedFilters.make.length === 0) {
+      return [];
+    }
+
+    // Filter models based on selected makes
+    return filterOptions.models.filter(model =>
+      appliedFilters.make.some(selectedMake =>
+        model.name.toLowerCase().includes(selectedMake.toLowerCase()) ||
+        model.make === selectedMake
+      )
+    );
   };
 
   const getAvailableTrims = () => {
-    return filterOptions.trims || [];
+    if (!filterOptions.trims || appliedFilters.model.length === 0) {
+      return [];
+    }
+
+    // Filter trims based on selected models
+    return filterOptions.trims.filter(trim =>
+      appliedFilters.model.some(selectedModel =>
+        trim.model === selectedModel ||
+        trim.name.toLowerCase().includes(selectedModel.toLowerCase())
+      )
+    );
   };
 
   const getAvailableBodyTypes = () => {
