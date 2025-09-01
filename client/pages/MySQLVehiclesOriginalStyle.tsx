@@ -464,14 +464,10 @@ function MySQLVehiclesOriginalStyleInner() {
         }, 30000);
       }
 
-      // FIXED: Use WordPress custom API instead of slow server API
-      console.log("📡 USING WORDPRESS CUSTOM API:", "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles");
-
-      // Build WordPress API filters
-      const wpFilters: any = {
-        page: currentPage,
-        per_page: resultsPerPage
-      };
+      // Build server API URL with filters
+      const serverApiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
+      serverApiUrl.searchParams.set('page', currentPage.toString());
+      serverApiUrl.searchParams.set('pageSize', resultsPerPage.toString());
       // Add search term
       if (debouncedSearchTerm.trim()) {
         wpFilters.search = debouncedSearchTerm.trim();
@@ -4045,7 +4041,7 @@ function MySQLVehiclesOriginalStyleInner() {
                         }
                         className="ml-1 text-white"
                       >
-                        ���
+                        ��
                       </button>
                     </span>
                   )}
