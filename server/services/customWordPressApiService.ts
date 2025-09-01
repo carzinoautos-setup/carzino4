@@ -170,7 +170,8 @@ export class CustomWordPressApiService {
         console.log("💳 APPLYING CLIENT-SIDE PAYMENT FILTER:", {
           paymentMin: filters.paymentMin,
           paymentMax: filters.paymentMax,
-          originalCount: priceFilteredCount
+          originalCount: priceFilteredCount,
+          sortBy: sortBy
         });
 
         vehicles = vehicles.filter(vehicle => {
