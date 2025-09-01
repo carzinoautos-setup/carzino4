@@ -1050,97 +1050,134 @@ function MySQLVehiclesOriginalStyleInner() {
 
   // REMOVED: Dealers now fetched via combined endpoint for better performance
 
-  // FIXED: Conditional filtering with proper API integration
-  // This function now properly handles Make->Model->Trim cascading
+  // FIXED: Enhanced conditional filtering with proper cascading logic
   const fetchFilterOptions = useCallback(async (currentFilters = appliedFilters, forceRefresh = false) => {
     if (!isMountedRef.current) {
       return;
     }
 
     if (import.meta.env.DEV) {
-      console.log("🔄 Fetching conditional filter options with filters:", currentFilters);
+      console.log("🔄 FIXED: Fetching conditional filter options with filters:", currentFilters);
     }
 
     try {
-      // Build WordPress API filters from current applied filters to get conditional counts
-      const wpFilters: WordPressVehicleFilters = {
-        page: 1,
-        per_page: 1000, // Get all vehicles to calculate proper filter counts
-      };
-
-      // Add current filters to get conditional options
-      if (currentFilters.make && currentFilters.make.length > 0) {
-        wpFilters.make = currentFilters.make.join(','); // WordPress API can handle multiple makes
-      }
-      if (currentFilters.model && currentFilters.model.length > 0) {
-        wpFilters.model = currentFilters.model.join(',');
-      }
-      if (currentFilters.condition && currentFilters.condition.length > 0) {
-        wpFilters.condition = currentFilters.condition.join(',');
-      }
-      if (currentFilters.priceMin) {
-        wpFilters.min_price = parseInt(currentFilters.priceMin.replace(/[^\d]/g, ''));
-      }
-      if (currentFilters.priceMax) {
-        wpFilters.max_price = parseInt(currentFilters.priceMax.replace(/[^\d]/g, ''));
-      }
-      if (currentFilters.paymentMin) {
-        wpFilters.min_payment = parseInt(currentFilters.paymentMin.replace(/[^\d]/g, ''));
-      }
-      if (currentFilters.paymentMax) {
-        wpFilters.max_payment = parseInt(currentFilters.paymentMax.replace(/[^\d]/g, ''));
-      }
-
-      const response: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
+      // STEP 1: Get ALL vehicles first (no filters) to build complete filter universe
+      const allVehiclesResponse: WordPressVehiclesResponse = await wordpressCustomApi.getVehicles(
         1,
-        1000, // Get all to calculate filter counts
-        wpFilters
+        1000,
+        { page: 1, per_page: 1000 } // No filters - get everything
       );
 
-      if (!response.success) {
+      if (!allVehiclesResponse.success) {
         if (import.meta.env.DEV) {
-          console.warn("❌ Filter options API call failed:", response.message);
+          console.warn("❌ FIXED: All vehicles API call failed:", allVehiclesResponse.message);
         }
         return;
       }
 
-      // Calculate filter options from all vehicles matching current filters
-      const allVehicles = response.data;
+      const allVehicles = allVehiclesResponse.data;
 
-      // FIXED: Proper conditional filtering logic
-      // Step 1: Filter models based on selected makes
-      let filteredModels = allVehicles;
-      if (currentFilters.make && currentFilters.make.length > 0) {
-        filteredModels = allVehicles.filter(v => {
-          return v.acf?.make && currentFilters.make.includes(v.acf.make);
-        });
-        console.log(`🔄 CONDITIONAL: ${currentFilters.make.length} makes selected, filtered to ${filteredModels.length} vehicles`);
+      if (import.meta.env.DEV) {
+        console.log(`🚗 FIXED: Total vehicles available: ${allVehicles.length}`);
       }
 
-      // Step 2: Filter trims based on selected makes AND models
-      let filteredTrims = allVehicles;
+      // STEP 2: Apply conditional filtering logic
+      // Always show ALL makes (never filter makes based on other selections)
+      const allMakes = Array.from(new Set(allVehicles.map(v => v.acf?.make).filter(Boolean)))
+        .map(make => ({
+          name: make!,
+          count: allVehicles.filter(v => v.acf?.make === make).length
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      // CRITICAL FIX: Models should ONLY show for selected makes
+      let availableModels = [];
       if (currentFilters.make && currentFilters.make.length > 0) {
-        filteredTrims = allVehicles.filter(v => {
+        // Show only models that belong to the selected makes
+        const modelsForSelectedMakes = allVehicles.filter(v => {
+          return v.acf?.make && currentFilters.make.includes(v.acf.make);
+        });
+
+        availableModels = Array.from(new Set(modelsForSelectedMakes.map(v => v.acf?.model).filter(Boolean)))
+          .map(model => ({
+            name: model!,
+            count: modelsForSelectedMakes.filter(v => v.acf?.model === model).length
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        if (import.meta.env.DEV) {
+          console.log(`🔄 CONDITIONAL: ${currentFilters.make.length} makes selected -> showing ${availableModels.length} models`);
+        }
+      } else {
+        // No makes selected - show all models
+        availableModels = Array.from(new Set(allVehicles.map(v => v.acf?.model).filter(Boolean)))
+          .map(model => ({
+            name: model!,
+            count: allVehicles.filter(v => v.acf?.model === model).length
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      // CRITICAL FIX: Trims should filter based on BOTH selected makes AND models
+      let availableTrims = [];
+      let trimsBaseVehicles = allVehicles;
+
+      // Filter by selected makes first
+      if (currentFilters.make && currentFilters.make.length > 0) {
+        trimsBaseVehicles = trimsBaseVehicles.filter(v => {
           return v.acf?.make && currentFilters.make.includes(v.acf.make);
         });
       }
+
+      // Then filter by selected models
       if (currentFilters.model && currentFilters.model.length > 0) {
-        filteredTrims = filteredTrims.filter(v => {
+        trimsBaseVehicles = trimsBaseVehicles.filter(v => {
           return v.acf?.model && currentFilters.model.includes(v.acf.model);
         });
-        console.log(`🔄 CONDITIONAL: ${currentFilters.model.length} models selected, filtered to ${filteredTrims.length} vehicles`);
+
+        if (import.meta.env.DEV) {
+          console.log(`🔄 CONDITIONAL: ${currentFilters.model.length} models selected -> ${trimsBaseVehicles.length} vehicles for trims`);
+        }
       }
 
+      availableTrims = Array.from(new Set(trimsBaseVehicles.map(v => v.acf?.trim).filter(Boolean)))
+        .map(trim => ({
+          name: trim!,
+          count: trimsBaseVehicles.filter(v => v.acf?.trim === trim).length
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
+      // FIXED: Transmission filtering should also be conditional
+      let availableTransmissions = [];
+      let transmissionBaseVehicles = trimsBaseVehicles; // Use same base as trims
+
+      availableTransmissions = (() => {
+        const transmissionMap = new Map();
+        transmissionBaseVehicles.forEach(v => {
+          if (v.acf?.transmission) {
+            let normalized = String(v.acf.transmission).trim();
+            const lower = normalized.toLowerCase();
+            if (lower.includes('auto') || lower === 'a' || lower === 'at') {
+              normalized = 'Automatic';
+            } else if (lower.includes('manual') || lower.includes('stick') || lower === 'm' || lower === 'mt') {
+              normalized = 'Manual';
+            } else if (lower.includes('cvt')) {
+              normalized = 'CVT';
+            }
+            const current = transmissionMap.get(normalized) || 0;
+            transmissionMap.set(normalized, current + 1);
+          }
+        });
+        return Array.from(transmissionMap.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count);
+      })();
+
       const updatedOptions = {
-        makes: Array.from(new Set(allVehicles.map(v => v.acf?.make).filter(Boolean)))
-          .map(make => ({ name: make!, count: allVehicles.filter(v => v.acf?.make === make).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
-        models: Array.from(new Set(filteredModels.map(v => v.acf?.model).filter(Boolean)))
-          .map(model => ({ name: model!, count: filteredModels.filter(v => v.acf?.model === model).length }))
-          .sort((a, b) => a.name.localeCompare(b.name)), // Sort alphabetically
-        trims: Array.from(new Set(filteredTrims.map(v => v.acf?.trim).filter(Boolean)))
-          .map(trim => ({ name: trim!, count: filteredTrims.filter(v => v.acf?.trim === trim).length }))
-          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })), // Proper alphabetical sorting
+        makes: allMakes, // Always show all makes
+        models: availableModels, // Conditional: only models for selected makes
+        trims: availableTrims, // Conditional: only trims for selected makes/models
+        transmissions: availableTransmissions, // Conditional: only transmissions for filtered vehicles
         conditions: (() => {
           // Ensure 'Used' is always included as primary condition
           const conditionSet = new Set(['Used', 'New', 'Certified']);
@@ -1178,31 +1215,6 @@ function MySQLVehiclesOriginalStyleInner() {
         driveTypes: Array.from(new Set(allVehicles.map(v => v.acf?.drivetrain || v.acf?.drive_type).filter(Boolean)))
           .map(drive => ({ name: drive!, count: allVehicles.filter(v => (v.acf?.drivetrain || v.acf?.drive_type) === drive).length }))
           .sort((a, b) => b.count - a.count),
-        transmissions: (() => {
-          // FIXED: Enhanced transmission normalization to eliminate duplicates
-          const transmissionMap = new Map();
-          allVehicles.forEach(v => {
-            if (v.acf?.transmission) {
-              let normalized = String(v.acf.transmission).trim();
-              // Comprehensive normalization
-              const lower = normalized.toLowerCase();
-              if (lower.includes('auto') || lower === 'a' || lower === 'at') {
-                normalized = 'Automatic';
-              } else if (lower.includes('manual') || lower.includes('stick') || lower === 'm' || lower === 'mt') {
-                normalized = 'Manual';
-              } else if (lower.includes('cvt')) {
-                normalized = 'CVT';
-              }
-              const current = transmissionMap.get(normalized) || 0;
-              transmissionMap.set(normalized, current + 1);
-            }
-          });
-          const result = Array.from(transmissionMap.entries())
-            .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count);
-          console.log('🔧 FIXED: Transmission normalization result:', result);
-          return result;
-        })(),
         exteriorColors: Array.from(new Set(allVehicles.map(v => v.acf?.exterior_color).filter(Boolean)))
           .map(color => ({ name: color!, count: allVehicles.filter(v => v.acf?.exterior_color === color).length }))
           .sort((a, b) => b.count - a.count),
