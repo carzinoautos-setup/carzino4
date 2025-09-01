@@ -867,10 +867,13 @@ function MySQLVehiclesOriginalStyleInner() {
                       Payment: {appliedFilters.paymentMin || "$0"} - {appliedFilters.paymentMax || "Max"}
                       <button
                         onClick={() => {
-                          setAppliedFilters(prev => ({ ...prev, paymentMin: "", paymentMax: "" }));
-                          setPaymentMin("");
-                          setPaymentMax("");
-                        }}
+          setAppliedFilters(prev => ({ ...prev, paymentMin: "", paymentMax: "" }));
+          setPaymentMin("");
+          setPaymentMax("");
+          setTermLength("72");
+          setInterestRate("8");
+          setDownPayment("2000");
+        }}
                         className="ml-1 text-white hover:text-gray-300"
                       >
                         ×
