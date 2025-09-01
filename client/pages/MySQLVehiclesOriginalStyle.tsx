@@ -2204,14 +2204,17 @@ function MySQLVehiclesOriginalStyleInner() {
             right: 0 !important;
             z-index: 999 !important;
             background: white !important;
-            padding: 16px !important;
-            padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
-            border-top: 2px solid #e5e7eb !important;
+            padding: 20px 16px !important;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
+            border-top: 3px solid #dc2626 !important;
             -webkit-transform: translateZ(0) !important;
             transform: translateZ(0) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
+            backdrop-filter: blur(15px) !important;
+            -webkit-backdrop-filter: blur(15px) !important;
+            min-height: 88px !important;
+            display: flex !important;
+            align-items: center !important;
           }
 
           .mobile-filter-sidebar.open {
@@ -4319,7 +4322,7 @@ function MySQLVehiclesOriginalStyleInner() {
                       <div>• Total vehicles: {vehicles.length}</div>
                       <div>• Current page: {currentPage}</div>
                       <div>• API URL: WordPress Custom API (/wp-json/custom/v1/vehicles)</div>
-                      <div>• Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
+                      <div>�� Window width: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px</div>
                     </div>
                   )}
                   <button
