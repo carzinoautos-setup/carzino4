@@ -25,7 +25,9 @@ export class CustomWordPressApiService {
         hasData: 'data' in apiResponse,
         hasPagination: 'pagination' in apiResponse,
         dataLength: Array.isArray(apiResponse.data) ? apiResponse.data.length : 'N/A',
-        totalRecords: apiResponse.pagination?.total
+        totalRecords: apiResponse.pagination?.total,
+        fullStructure: Object.keys(apiResponse),
+        sampleVehicle: apiResponse.data?.[0] ? Object.keys(apiResponse.data[0]) : 'none'
       });
 
       if (!apiResponse.success || !Array.isArray(apiResponse.data)) {
