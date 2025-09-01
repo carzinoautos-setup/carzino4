@@ -102,7 +102,8 @@ export class CustomWordPressApiService {
       const transformedVehicles = vehicles.map(vehicle => {
         // Get price from ACF custom field (price) as shown in user's JSON structure
         const price = vehicle.acf?.price || vehicle.price || vehicle.regular_price;
-        const formattedPrice = price ? `$${parseInt(price).toLocaleString()}` : null;
+        // Treat 0 or empty string as no price available
+        const formattedPrice = (price && parseInt(price) > 0) ? `$${parseInt(price).toLocaleString()}` : null;
 
         // DEBUG: Log price transformation for first few vehicles
         if (vehicles.indexOf(vehicle) < 3) {
