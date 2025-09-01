@@ -311,12 +311,15 @@ export class CustomWordPressApiService {
           conditions: [],
           driveTypes: [],
           sellerTypes: [],
-          bodyStyles: [],
+          vehicleTypes: [], // Updated field name
           fuelTypes: [],
           transmissions: [],
           exteriorColors: [],
           interiorColors: [],
           years: [],
+          dealers: [], // Added missing fields
+          cities: [],
+          states: [],
           priceRange: { min: 0, max: 100000 },
           mileageRange: { min: 0, max: 200000 },
           yearRange: { min: 2000, max: 2025 },
