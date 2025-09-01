@@ -164,10 +164,14 @@ function MySQLVehiclesOriginalStyleInner() {
   const [sortBy, setSortBy] = useState("relevance");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
+  console.log("🔍 STEP 3: About to initialize state variables");
+
   // API state
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  console.log("🔍 STEP 4: Core state variables initialized");
   const [apiResponse, setApiResponse] = useState<VehiclesApiResponse | null>(
     null,
   );
