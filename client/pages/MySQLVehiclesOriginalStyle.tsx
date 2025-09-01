@@ -775,6 +775,140 @@ function MySQLVehiclesOriginalStyleInner() {
                       </button>
                     </span>
                   ))}
+                  {appliedFilters.trim.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
+                    >
+                      <Check className="w-3 h-3 text-red-600" />
+                      {item}
+                      <button
+                        onClick={() => removeAppliedFilter("trim", item)}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.vehicleType.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
+                    >
+                      <Check className="w-3 h-3 text-red-600" />
+                      {item}
+                      <button
+                        onClick={() => removeAppliedFilter("vehicleType", item)}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.driveType.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
+                    >
+                      <Check className="w-3 h-3 text-red-600" />
+                      {item}
+                      <button
+                        onClick={() => removeAppliedFilter("driveType", item)}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.exteriorColor.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
+                    >
+                      <Check className="w-3 h-3 text-red-600" />
+                      {item} Color
+                      <button
+                        onClick={() => removeAppliedFilter("exteriorColor", item)}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.sellerType.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs"
+                    >
+                      <Check className="w-3 h-3 text-red-600" />
+                      {item}
+                      <button
+                        onClick={() => removeAppliedFilter("sellerType", item)}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {appliedFilters.mileage && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
+                      <Check className="w-3 h-3 text-red-600" />
+                      {appliedFilters.mileage === "100001"
+                        ? "100k+ miles"
+                        : `Under ${parseInt(appliedFilters.mileage).toLocaleString()} mi`}
+                      <button
+                        onClick={() =>
+                          setAppliedFilters((prev) => ({
+                            ...prev,
+                            mileage: "",
+                          }))
+                        }
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {(appliedFilters.priceMin || appliedFilters.priceMax) && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
+                      <Check className="w-3 h-3 text-red-600" />$
+                      {appliedFilters.priceMin || "0"} - $
+                      {appliedFilters.priceMax || "Any"}
+                      <button
+                        onClick={() => {
+                          setAppliedFilters((prev) => ({
+                            ...prev,
+                            priceMin: "",
+                            priceMax: "",
+                          }));
+                          setPriceMin("");
+                          setPriceMax("");
+                        }}
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                  {(appliedFilters.paymentMin || appliedFilters.paymentMax) && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-black text-white rounded-full text-xs">
+                      <Check className="w-3 h-3 text-red-600" />$
+                      {appliedFilters.paymentMin || "0"}-$
+                      {appliedFilters.paymentMax || "Any"}/mo
+                      <button
+                        onClick={() =>
+                          setAppliedFilters((prev) => ({
+                            ...prev,
+                            paymentMin: "",
+                            paymentMax: "",
+                          }))
+                        }
+                        className="ml-1 text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
                 </div>
               )}
             </div>
