@@ -867,7 +867,7 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </div>
 
-            {/* Condition Filter */}
+                {/* Condition Filter */}
             <FilterSection
               title="Condition"
               isCollapsed={collapsedFilters.condition}
