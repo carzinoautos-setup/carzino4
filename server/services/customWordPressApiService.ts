@@ -105,17 +105,6 @@ export class CustomWordPressApiService {
         // Treat 0 or empty string as no price available
         const formattedPrice = (price && parseInt(price) > 0) ? `$${parseInt(price).toLocaleString()}` : null;
 
-        // DEBUG: Log price transformation for first few vehicles
-        if (vehicles.indexOf(vehicle) < 3) {
-          console.log(`🔍 DEBUG PRICE: Vehicle ID ${vehicle.id}:`, {
-            'vehicle.acf?.price': vehicle.acf?.price,
-            'vehicle.price': vehicle.price,
-            'vehicle.regular_price': vehicle.regular_price,
-            'final_price': price,
-            'formattedPrice': formattedPrice,
-            'acf_keys': vehicle.acf ? Object.keys(vehicle.acf) : 'no acf'
-          });
-        }
 
         // Get mileage - ensure it's not zero/empty
         const mileage = vehicle.acf?.mileage || vehicle.acf?.odometer;
