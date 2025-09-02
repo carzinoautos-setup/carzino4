@@ -460,8 +460,6 @@ export default function HomePage() {
     setPriceMax("");
     setYearMin("");
     setYearMax("");
-    setMileageMin("");
-    setMileageMax("");
     setPaymentMin("");
     setPaymentMax("");
     setTermLength("72");
