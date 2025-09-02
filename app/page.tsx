@@ -1989,12 +1989,12 @@ export default function HomePage() {
                     <span className="text-sm font-medium">Filters</span>
                   </button>
 
-                  <div className="hidden lg:flex items-center gap-2">
+                  <div className="hidden lg:flex flex-col">
                     <h1 className="text-lg font-semibold text-gray-900">
-                      {totalResults.toLocaleString()} Vehicles Found
+                      New and Used Vehicles for sale
                     </h1>
                     <span className="text-sm text-gray-500">
-                      Page {currentPage} of {totalPages}
+                      {totalResults.toLocaleString()} Matches
                     </span>
                   </div>
                 </div>
