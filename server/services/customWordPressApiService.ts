@@ -286,11 +286,11 @@ export class CustomWordPressApiService {
                         vehicle.acf?.account_name_seller ||
                         vehicle.acf?.dealer_name;
 
-        // If the dealer name is just a generic "Dealer Account #XXXXX", try to extract a cleaner name
+        // If the dealer name is just a generic "Dealer Account #XXXXX", create a cleaner display
         if (dealerName && dealerName.startsWith('Dealer Account #')) {
-          // Keep the original name but also store account number for filtering
           const accountNum = vehicle.acf?.account_number_seller;
-          dealerName = dealerName; // Keep original for now, but we could customize this
+          // Create a cleaner display name - you can customize this format
+          dealerName = accountNum ? `Seller Account ${accountNum}` : dealerName;
         }
         const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number;
 
