@@ -174,22 +174,25 @@ export class CustomWordPressApiService {
         });
 
         vehicles = vehicles.filter(vehicle => {
-          // Get dealer/account information from vehicle - prioritize acount_name_seller (misspelled field)
+          // Get account relationship field and dealer name
+          const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number || "";
           const dealerName = vehicle.acf?.acount_name_seller || vehicle.acf?.dealer_name || "";
-          const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
 
-          // Check if this vehicle matches any of the selected dealers
-          // We check both dealer name and account number to handle the relationship properly
-          const matchesByName = filters.dealer.some(selectedDealer =>
-            dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
-            selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
-          );
-
-          const matchesByAccount = filters.dealer.some(selectedDealer =>
-            accountNumber && accountNumber.toString() === selectedDealer
-          );
-
-          return matchesByName || matchesByAccount;
+          // Filter primarily by account_number_seller relationship
+          return filters.dealer.some(selectedDealer => {
+            // First try to match by account number (the relationship field)
+            if (accountNumber && accountNumber.toString() === selectedDealer) {
+              return true;
+            }
+            // Then try to match by dealer name (for cases where dealer name is selected)
+            if (dealerName && (
+              dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
+              selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
+            )) {
+              return true;
+            }
+            return false;
+          });
         });
 
         console.log("🏢 DEALER FILTER RESULTS:", {
@@ -209,22 +212,25 @@ export class CustomWordPressApiService {
 
         const originalCount = vehicles.length;
         vehicles = vehicles.filter(vehicle => {
-          // Get dealer/account information from vehicle - prioritize acount_name_seller (misspelled field)
+          // Get account relationship field and dealer name
+          const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number || "";
           const dealerName = vehicle.acf?.acount_name_seller || vehicle.acf?.dealer_name || "";
-          const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
 
-          // Check if this vehicle matches any of the selected dealers
-          // We check both dealer name and account number to handle the relationship properly
-          const matchesByName = filters.dealer.some(selectedDealer =>
-            dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
-            selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
-          );
-
-          const matchesByAccount = filters.dealer.some(selectedDealer =>
-            accountNumber && accountNumber.toString() === selectedDealer
-          );
-
-          return matchesByName || matchesByAccount;
+          // Filter primarily by account_number_seller relationship
+          return filters.dealer.some(selectedDealer => {
+            // First try to match by account number (the relationship field)
+            if (accountNumber && accountNumber.toString() === selectedDealer) {
+              return true;
+            }
+            // Then try to match by dealer name (for cases where dealer name is selected)
+            if (dealerName && (
+              dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
+              selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
+            )) {
+              return true;
+            }
+            return false;
+          });
         });
 
         console.log("🏢 DEALER FILTER RESULTS:", {
