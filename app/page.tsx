@@ -816,6 +816,10 @@ export default function HomePage() {
               appliedFilters.mileage ||
               appliedFilters.priceMin ||
               appliedFilters.priceMax ||
+              appliedFilters.yearMin ||
+              appliedFilters.yearMax ||
+              appliedFilters.mileageMin ||
+              appliedFilters.mileageMax ||
               appliedFilters.paymentMin ||
               appliedFilters.paymentMax) && (
               <div className="mb-4 pb-4 border-b border-gray-200">
