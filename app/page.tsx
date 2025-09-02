@@ -98,22 +98,33 @@ export default function HomePage() {
   const [interestRate, setInterestRate] = useState("8");
   const [downPayment, setDownPayment] = useState("2000");
 
-  // Applied filters state
+  // Applied filters state - includes all ACF fields
   const [appliedFilters, setAppliedFilters] = useState({
+    // Core vehicle filters
     condition: [] as string[],
     make: [] as string[],
     model: [] as string[],
     trim: [] as string[],
-    vehicleType: [] as string[],
-    driveType: [] as string[],
-    mileage: "",
+    year: [] as string[],
+
+    // Technical specs
+    vehicleType: [] as string[], // maps to body_style
+    driveType: [] as string[],   // maps to drivetrain
+    transmission: [] as string[],
+    fuel_type: [] as string[],
+
+    // Colors
     exteriorColor: [] as string[],
     interiorColor: [] as string[],
+
+    // Dealer/location
     sellerType: [] as string[],
-    transmission: [] as string[],
-    dealer: [] as string[],
-    city: [] as string[],
-    state: [] as string[],
+    dealer: [] as string[],      // maps to account_number_seller
+    city: [] as string[],        // maps to city_seller
+    state: [] as string[],       // maps to state_seller
+
+    // Ranges
+    mileage: "",
     priceMin: "",
     priceMax: "",
     paymentMin: "",
@@ -1093,7 +1104,7 @@ export default function HomePage() {
                 <option value="">Any Mileage</option>
                 <option value="Under 15,000">Under 15,000</option>
                 <option value="15,000 – 30,000">15,000 – 30,000</option>
-                <option value="30,000 – 60,000">30,000 – 60,000</option>
+                <option value="30,000 – 60,000">30,000 ��� 60,000</option>
                 <option value="60,000 – 100,000">60,000 – 100,000</option>
                 <option value="Over 100,000">Over 100,000</option>
               </select>
