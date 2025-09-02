@@ -34,7 +34,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         pages.push(i);
       }
     } else {
-      if (window.innerWidth < 640) {
+      if (typeof window !== 'undefined' && window.innerWidth < 640) {
         // Mobile: Show only current page and adjacent pages
         if (safeCurrentPage === 1) {
           pages.push(1, 2, "...", safeTotalPages);
