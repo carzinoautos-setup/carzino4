@@ -690,13 +690,13 @@ function MySQLVehiclesOriginalStyleInner() {
       <div className="flex flex-col lg:flex-row min-h-screen max-w-[1325px] mx-auto">
         {/* Mobile Filter Overlay */}
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden ${mobileFiltersOpen ? "" : "hidden"}`}
+          className={`mobile-filter-overlay lg:hidden ${mobileFiltersOpen ? "open" : ""}`}
           onClick={() => setMobileFiltersOpen(false)}
         ></div>
 
         {/* Sidebar */}
         <div
-          className={`bg-white border-r border-gray-200 fixed inset-y-0 left-0 z-50 lg:relative lg:block ${mobileFiltersOpen ? "block" : "hidden"}`}
+          className={`bg-white border-r border-gray-200 mobile-filter-sidebar hidden lg:block ${mobileFiltersOpen ? "open" : ""}`}
           style={{ width: "280px" }}
         >
           <div className="lg:hidden flex justify-between items-center mb-4 pb-4 border-b px-4 pt-4">
