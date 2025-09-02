@@ -249,6 +249,25 @@ export default function HomePage() {
     }
   };
 
+  // Debug WordPress filtering directly
+  const debugWordPressFiltering = async () => {
+    console.log("🔬 Debug WordPress filtering...");
+
+    try {
+      const debugResponse = await fetch('/api/wp/debug-filters?make=Ford');
+      const debugData = await debugResponse.json();
+
+      console.log("🔬 WordPress Debug Results:", debugData);
+      setApiTestResult({
+        ...apiTestResult,
+        debug: debugData.debug
+      });
+
+    } catch (error) {
+      console.error("❌ WordPress debug failed:", error);
+    }
+  };
+
   // API fetch function
   const fetchCombinedData = useCallback(async () => {
     if (!isMountedRef.current) return;
