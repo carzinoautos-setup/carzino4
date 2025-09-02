@@ -66,6 +66,10 @@ interface Vehicle {
   zip_seller?: string;
   phone: string;
   seller_type: string;
+
+  // Location data for radius filtering
+  car_location_latitude?: number;
+  car_location_longitude?: number;
 }
 
 export default function HomePage() {
