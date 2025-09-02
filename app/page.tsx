@@ -377,20 +377,31 @@ export default function HomePage() {
 
   const clearAllFilters = () => {
     setAppliedFilters({
+      // Core vehicle filters
       condition: [],
       make: [],
       model: [],
       trim: [],
+      year: [],
+
+      // Technical specs
       vehicleType: [],
       driveType: [],
-      mileage: "",
+      transmission: [],
+      fuel_type: [],
+
+      // Colors
       exteriorColor: [],
       interiorColor: [],
+
+      // Dealer/location
       sellerType: [],
-      transmission: [],
       dealer: [],
       city: [],
       state: [],
+
+      // Ranges
+      mileage: "",
       priceMin: "",
       priceMax: "",
       paymentMin: "",
