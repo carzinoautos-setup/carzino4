@@ -108,10 +108,13 @@ export async function GET(request: NextRequest) {
 
     console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
 
+    console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
+    console.log('🔗 Fetching filters from:', filtersUrl.toString());
+
     // Fetch vehicles and filters in parallel
     const [vehiclesResponse, filtersResponse] = await Promise.all([
       fetch(vehiclesUrl.toString()),
-      fetch(`${WP_BASE_URL}/filters`)
+      fetch(filtersUrl.toString())
     ]);
 
     if (!vehiclesResponse.ok) {
