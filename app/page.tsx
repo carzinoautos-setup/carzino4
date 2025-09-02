@@ -1286,12 +1286,24 @@ export default function HomePage() {
                         onChange={(e) => {
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
+                            // Immediately clear dependent trim options
+                            setFilterOptions(prev => ({
+                              ...prev,
+                              trims: []
+                            }));
+
                             setAppliedFilters(prev => ({
                               ...prev,
                               model: [...prev.model, model.name],
                               trim: [] // Clear trims when model changes
                             }));
                           } else {
+                            // Immediately clear dependent trim options
+                            setFilterOptions(prev => ({
+                              ...prev,
+                              trims: []
+                            }));
+
                             removeAppliedFilter("model", model.name);
                           }
                         }}
