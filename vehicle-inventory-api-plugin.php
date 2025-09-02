@@ -558,25 +558,6 @@ function via_debug_filters(WP_REST_Request $request) {
     ), 200);
 }
 
-/**
- * Clear filter cache
- */
-function via_clear_filter_cache() {
-    global $wpdb;
-
-    // Delete all transients with our prefix
-    $wpdb->query($wpdb->prepare("
-        DELETE FROM {$wpdb->options}
-        WHERE option_name LIKE %s
-    ", '_transient_via_filters_%'));
-
-    $wpdb->query($wpdb->prepare("
-        DELETE FROM {$wpdb->options}
-        WHERE option_name LIKE %s
-    ", '_transient_timeout_via_filters_%'));
-
-    error_log('VIA: Cleared all filter cache transients');
-}
 
 /**
  * Plugin activation
