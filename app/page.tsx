@@ -260,11 +260,16 @@ export default function HomePage() {
       console.log("🔬 WordPress Debug Results:", debugData);
       setApiTestResult({
         ...apiTestResult,
-        debug: debugData.debug
+        debug: debugData.debug,
+        debugComplete: true
       });
 
     } catch (error) {
       console.error("❌ WordPress debug failed:", error);
+      setApiTestResult({
+        ...apiTestResult,
+        debugError: error.message
+      });
     }
   };
 
