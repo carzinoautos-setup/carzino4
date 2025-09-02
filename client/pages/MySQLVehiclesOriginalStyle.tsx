@@ -629,14 +629,60 @@ function MySQLVehiclesOriginalStyleInner() {
             grid-template-columns: 1fr;
             gap: 16px;
           }
-          
+
           .main-container {
             padding: 0;
           }
-          
+
           .vehicle-card {
             border-radius: 8px;
             margin: 0 12px;
+          }
+        }
+
+        @media (max-width: 1023px) {
+          .mobile-filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 35;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+          }
+
+          .mobile-filter-overlay.open {
+            opacity: 1;
+            visibility: visible;
+          }
+
+          .mobile-filter-sidebar {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: white;
+            z-index: 40;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            display: block !important;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .mobile-filter-sidebar.open {
+            transform: translateX(0);
+          }
+
+          .mobile-chevron {
+            width: 22px !important;
+            height: 22px !important;
           }
         }
       `}</style>
