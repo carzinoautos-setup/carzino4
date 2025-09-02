@@ -171,6 +171,60 @@ export default function HomePage() {
   const isMountedRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Direct WordPress API test function
+  const testWordPressAPI = async () => {
+    console.log("🧪 Testing WordPress API directly...");
+
+    try {
+      // Test 1: Get all filters (no conditions)
+      const allFiltersResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters');
+      const allFiltersData = await allFiltersResponse.json();
+
+      // Test 2: Get filters with Toyota selected
+      const toyotaFiltersResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota');
+      const toyotaFiltersData = await toyotaFiltersResponse.json();
+
+      const testResults = {
+        allFilters: {
+          success: allFiltersData.success,
+          totalMakes: allFiltersData.filters?.make?.length || 0,
+          totalModels: allFiltersData.filters?.model?.length || 0,
+          sampleModels: allFiltersData.filters?.model?.slice(0, 5) || []
+        },
+        toyotaFilters: {
+          success: toyotaFiltersData.success,
+          appliedFilters: toyotaFiltersData.applied_filters,
+          totalModels: toyotaFiltersData.filters?.model?.length || 0,
+          models: toyotaFiltersData.filters?.model || [],
+          hasFordModels: toyotaFiltersData.filters?.model?.some((m: any) =>
+            m.name.toLowerCase().includes('f-150') ||
+            m.name.toLowerCase().includes('explorer') ||
+            m.name.toLowerCase().includes('mustang')
+          ) || false,
+          hasChevyModels: toyotaFiltersData.filters?.model?.some((m: any) =>
+            m.name.toLowerCase().includes('silverado') ||
+            m.name.toLowerCase().includes('tahoe') ||
+            m.name.toLowerCase().includes('malibu')
+          ) || false
+        }
+      };
+
+      console.log("🧪 WordPress API Test Results:", testResults);
+      setApiTestResult(testResults);
+
+      if (testResults.toyotaFilters.hasFordModels || testResults.toyotaFilters.hasChevyModels) {
+        console.error("🚨 CONDITIONAL FILTERING IS BROKEN!");
+        console.error("Toyota filter still showing Ford/Chevy models");
+      } else {
+        console.log("✅ Conditional filtering appears to be working correctly");
+      }
+
+    } catch (error) {
+      console.error("❌ WordPress API test failed:", error);
+      setApiTestResult({ error: error.message });
+    }
+  };
+
   // API fetch function
   const fetchCombinedData = useCallback(async () => {
     if (!isMountedRef.current) return;
