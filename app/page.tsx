@@ -1200,6 +1200,50 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
+            {/* Year Filter */}
+            <FilterSection
+              title="Filter by Year"
+              isCollapsed={collapsedFilters.year}
+              onToggle={() => toggleFilter("year")}
+            >
+              <div className="flex gap-1">
+                <select
+                  value={yearMin}
+                  onChange={(e) => {
+                    setCurrentPage(1);
+                    setYearMin(e.target.value);
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      yearMin: e.target.value
+                    }));
+                  }}
+                  className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white"
+                >
+                  <option value="">Min Year</option>
+                  {Array.from({ length: 35 }, (_, i) => 2024 - i).map(year => (
+                    <option key={year} value={year.toString()}>{year}</option>
+                  ))}
+                </select>
+                <select
+                  value={yearMax}
+                  onChange={(e) => {
+                    setCurrentPage(1);
+                    setYearMax(e.target.value);
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      yearMax: e.target.value
+                    }));
+                  }}
+                  className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white"
+                >
+                  <option value="">Max Year</option>
+                  {Array.from({ length: 35 }, (_, i) => 2024 - i).map(year => (
+                    <option key={year} value={year.toString()}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </FilterSection>
+
             {/* Price Filter */}
             <FilterSection
               title="Filter by Price"
