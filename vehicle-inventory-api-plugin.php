@@ -204,20 +204,8 @@ function via_get_conditional_filters(WP_REST_Request $request) {
         return new WP_REST_Response($cached_filters, 200);
     }
     
-    // Extract applied filters from request
-    $applied_filters = array();
-    $filter_keys = array('make', 'model', 'trim', 'year', 'condition', 'transmission', 
-                         'body_style', 'drivetrain', 'fuel_type', 'exterior_color', 
-                         'interior_color', 'certified', 'account_name_seller', 
-                         'city_seller', 'state_seller');
-    
-    foreach ($filter_keys as $key) {
-        $value = $request->get_param($key);
-        if (!empty($value)) {
-            $applied_filters[$key] = $value;
-        }
-    }
-    
+    error_log('VIA: Applied filters: ' . print_r($applied_filters, true));
+
     // STEP 1: Get narrowed vehicle IDs based on applied filters (YOUR REQUESTED LOGIC)
     $vehicle_ids = via_get_filtered_vehicle_ids($applied_filters);
     
