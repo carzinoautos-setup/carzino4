@@ -1239,6 +1239,117 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
+            {/* Payment Calculator Filter */}
+            <FilterSection
+              title="Search by Payment"
+              isCollapsed={collapsedFilters.payment}
+              onToggle={() => toggleFilter("payment")}
+            >
+              <div className="space-y-3">
+                <div className="flex gap-1">
+                  <div className="relative w-1/2">
+                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                    <input
+                      type="text"
+                      placeholder="100"
+                      value={paymentMin}
+                      onChange={(e) => setPaymentMin(e.target.value)}
+                      className="w-full pl-6 pr-8 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                    />
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">/mo</span>
+                  </div>
+                  <div className="relative w-1/2">
+                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                    <input
+                      type="text"
+                      placeholder="2,000"
+                      value={paymentMax}
+                      onChange={(e) => setPaymentMax(e.target.value)}
+                      className="w-full pl-6 pr-8 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                    />
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">/mo</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-1">
+                  <select
+                    value={termLength}
+                    onChange={(e) => setTermLength(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white"
+                  >
+                    <option value="36">36 Months</option>
+                    <option value="48">48 Months</option>
+                    <option value="60">60 Months</option>
+                    <option value="72">72 Months</option>
+                    <option value="84">84 Months</option>
+                  </select>
+                  <select
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white"
+                  >
+                    <option value="3">3% APR</option>
+                    <option value="4">4% APR</option>
+                    <option value="5">5% APR</option>
+                    <option value="6">6% APR</option>
+                    <option value="7">7% APR</option>
+                    <option value="8">8% APR</option>
+                    <option value="9">9% APR</option>
+                    <option value="10">10% APR</option>
+                    <option value="12">12% APR</option>
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                  <input
+                    type="text"
+                    placeholder={downPayment ? "" : "2,000 Down Payment"}
+                    value={downPayment}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^\d,]/g, '');
+                      setDownPayment(value);
+                    }}
+                    className="w-full pl-6 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setPaymentMin("");
+                      setPaymentMax("");
+                      setTermLength("72");
+                      setInterestRate("8");
+                      setDownPayment("2000");
+                      setAppliedFilters(prev => ({
+                        ...prev,
+                        paymentMin: "",
+                        paymentMax: ""
+                      }));
+                      setCurrentPage(1);
+                    }}
+                    className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 text-sm"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrentPage(1);
+                      setAppliedFilters(prev => ({
+                        ...prev,
+                        paymentMin: paymentMin,
+                        paymentMax: paymentMax
+                      }));
+                    }}
+                    className="flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </FilterSection>
+
             {/* Year Range Filter */}
             <FilterSection
               title="Year Range"
