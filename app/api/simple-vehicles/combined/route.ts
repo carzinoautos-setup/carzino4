@@ -1,7 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// For now, let's create a simple mock response to get the app working
-// This matches the expected structure from the frontend
+const WP_BASE_URL = "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1";
+
+interface WooCommerceVehicle {
+  id: number;
+  name: string;
+  permalink?: string;
+  stock_status?: string;
+  featured_image?: string;
+  acf: {
+    make?: string;
+    model?: string;
+    trim?: string;
+    year?: string;
+    price?: number;
+    vin?: string;
+    mileage?: number;
+    body_style?: string;
+    drivetrain?: string;
+    fuel_type?: string;
+    transmission?: string;
+    condition?: string;
+    exterior_color?: string;
+    interior_color?: string;
+    account_number_seller?: string;
+    account_name_seller?: string;
+    business_name_seller?: string;
+    city_seller?: string;
+    state_seller?: string;
+    zip_seller?: string;
+  };
+}
+
+// Transform WooCommerce vehicle data to frontend format
+function transformVehicleData(vehicle: WooCommerceVehicle): any {
+  const acf = vehicle.acf || {};
+
+  return {
+    id: vehicle.id,
+    featured: vehicle.stock_status === 'featured' || false,
+    viewed: false,
+    images: vehicle.featured_image ? [vehicle.featured_image] : ['/placeholder.svg'],
+    badges: vehicle.stock_status === 'featured' ? ['FEATURED'] : [],
+    title: vehicle.name || `${acf.year || ''} ${acf.make || ''} ${acf.model || ''} ${acf.trim || ''}`.trim(),
+    mileage: acf.mileage ? acf.mileage.toLocaleString() : 'N/A',
+    transmission: acf.transmission || 'N/A',
+    doors: '4', // Default, can be added to ACF later
+    year: acf.year || 'N/A',
+    drivetrain: acf.drivetrain || 'N/A',
+    fuel_type: acf.fuel_type || 'N/A',
+    body_style: acf.body_style || 'N/A',
+    exterior_color: acf.exterior_color || 'N/A',
+    interior_color: acf.interior_color || 'N/A',
+    condition: acf.condition || 'Used',
+    vin: acf.vin || 'N/A',
+    salePrice: acf.price ? `$${acf.price.toLocaleString()}` : 'Call for Price',
+    payment: acf.price ? `$${Math.round(acf.price / 60)}` : null, // Rough estimate
+    dealer: acf.account_name_seller || acf.business_name_seller || 'Dealer',
+    location: `${acf.city_seller || ''}, ${acf.state_seller || ''}`.replace(/^,\s*|,\s*$/g, '') || 'Location N/A',
+    phone: '(555) 123-4567', // Add to ACF later if needed
+    seller_type: 'Dealer',
+    seller_account_number: acf.account_number_seller || '',
+    city_seller: acf.city_seller || '',
+    state_seller: acf.state_seller || '',
+    zip_seller: acf.zip_seller || '',
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,125 +75,101 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '25');
 
-    // Mock response data that matches what the frontend expects
-    const mockResponse = {
+    // Build vehicles API URL with filters
+    const vehiclesUrl = new URL(`${WP_BASE_URL}/vehicles`);
+    vehiclesUrl.searchParams.set('per_page', pageSize.toString());
+    vehiclesUrl.searchParams.set('page', page.toString());
+
+    // Add filters from request
+    for (const [key, value] of searchParams.entries()) {
+      if (key !== 'page' && key !== 'pageSize' && value) {
+        // Map frontend filter names to WordPress API names
+        const filterMapping: { [key: string]: string } = {
+          'vehicleType': 'body_style',
+          'driveType': 'drivetrain',
+          'exteriorColor': 'exterior_color',
+          'interiorColor': 'interior_color',
+          'sellerType': 'seller_type'
+        };
+
+        const apiKey = filterMapping[key] || key;
+        vehiclesUrl.searchParams.set(apiKey, value);
+      }
+    }
+
+    console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
+
+    // Fetch vehicles and filters in parallel
+    const [vehiclesResponse, filtersResponse] = await Promise.all([
+      fetch(vehiclesUrl.toString()),
+      fetch(`${WP_BASE_URL}/filters`)
+    ]);
+
+    if (!vehiclesResponse.ok) {
+      throw new Error(`Vehicles API error: ${vehiclesResponse.status} ${vehiclesResponse.statusText}`);
+    }
+
+    if (!filtersResponse.ok) {
+      throw new Error(`Filters API error: ${filtersResponse.status} ${filtersResponse.statusText}`);
+    }
+
+    const vehiclesData = await vehiclesResponse.json();
+    const filtersData = await filtersResponse.json();
+
+    console.log('✅ WordPress API Response:', {
+      vehiclesSuccess: vehiclesData.success,
+      vehiclesCount: vehiclesData.data?.length || 0,
+      filtersSuccess: filtersData.success
+    });
+
+    // Transform vehicles to frontend format
+    const transformedVehicles = vehiclesData.success && vehiclesData.data
+      ? vehiclesData.data.map((vehicle: WooCommerceVehicle) => transformVehicleData(vehicle))
+      : [];
+
+    // Calculate pagination
+    const totalRecords = vehiclesData.pagination?.total || transformedVehicles.length;
+    const totalPages = vehiclesData.pagination?.total_pages || Math.ceil(totalRecords / pageSize);
+
+    const response = {
       success: true,
       data: {
-        vehicles: [
-          {
-            id: 1,
-            featured: true,
-            viewed: false,
-            images: ['/placeholder.svg'],
-            badges: ['FEATURED'],
-            title: '2023 Toyota Camry LE',
-            mileage: '15,000',
-            transmission: 'Automatic',
-            doors: '4',
-            salePrice: '$28,900',
-            payment: '$450',
-            dealer: 'Sample Auto Dealer',
-            location: 'Seattle, WA',
-            phone: '(555) 123-4567',
-            seller_type: 'Dealer',
-            seller_account_number: 'D12345',
-            city_seller: 'Seattle',
-            state_seller: 'WA',
-            zip_seller: '98101'
-          }
-        ],
+        vehicles: transformedVehicles,
         meta: {
-          totalRecords: 1,
-          totalPages: 1,
+          totalRecords,
+          totalPages,
           currentPage: page,
           pageSize: pageSize
         },
-        filters: {
-          makes: [
-            { name: 'Toyota', count: 150 },
-            { name: 'Honda', count: 120 },
-            { name: 'Ford', count: 100 },
-            { name: 'Chevrolet', count: 90 },
-            { name: 'Nissan', count: 80 }
-          ],
-          models: [
-            { name: 'Camry', count: 25 },
-            { name: 'Corolla', count: 20 },
-            { name: 'RAV4', count: 30 }
-          ],
-          trims: [
-            { name: 'LE', count: 15 },
-            { name: 'XLE', count: 10 },
-            { name: 'Limited', count: 8 }
-          ],
-          conditions: [
-            { name: 'New', count: 50 },
-            { name: 'Used', count: 200 },
-            { name: 'Certified', count: 30 }
-          ],
-          vehicleTypes: [
-            { name: 'Sedan', count: 100 },
-            { name: 'SUV', count: 80 },
-            { name: 'Truck', count: 60 }
-          ],
-          driveTypes: [
-            { name: 'FWD', count: 120 },
-            { name: 'AWD', count: 80 },
-            { name: 'RWD', count: 50 }
-          ],
-          transmissions: [
-            { name: 'Automatic', count: 180 },
-            { name: 'Manual', count: 20 },
-            { name: 'CVT', count: 40 }
-          ],
-          exteriorColors: [
-            { name: 'White', count: 60 },
-            { name: 'Black', count: 50 },
-            { name: 'Silver', count: 40 },
-            { name: 'Gray', count: 35 }
-          ],
-          interiorColors: [
-            { name: 'Black', count: 80 },
-            { name: 'Gray', count: 60 },
-            { name: 'Beige', count: 40 }
-          ],
-          sellerTypes: [
-            { name: 'Dealer', count: 200 },
-            { name: 'Private Seller', count: 50 }
-          ],
-          dealers: [
-            { name: 'Sample Auto Dealer', count: 25 },
-            { name: 'Metro Motors', count: 20 },
-            { name: 'City Cars', count: 15 }
-          ],
-          states: [
-            { name: 'WA', count: 100 },
-            { name: 'CA', count: 80 },
-            { name: 'OR', count: 30 }
-          ],
-          cities: [
-            { name: 'Seattle', count: 50 },
-            { name: 'Tacoma', count: 25 },
-            { name: 'Bellevue', count: 20 }
-          ],
-          totalVehicles: 280
+        filters: filtersData.success ? filtersData.filters : {
+          makes: [], models: [], trims: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
         }
       }
     };
 
-    console.log('✅ Simple vehicles combined API - returning mock data');
-    return NextResponse.json(mockResponse);
+    console.log('✅ Combined API response prepared successfully');
+    return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error in simple-vehicles combined API route:', error);
+    console.error('❌ Error in WooCommerce API route:', error);
+
+    // Return error with empty data structure
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
+        error: 'Failed to fetch from WooCommerce API',
         message: error instanceof Error ? error.message : 'Unknown error',
         data: {
           vehicles: [],
-          meta: { totalRecords: 0, totalPages: 0, currentPage: 1, pageSize: 25 },
+          meta: {
+            totalRecords: 0,
+            totalPages: 0,
+            currentPage: parseInt(request.nextUrl.searchParams.get('page') || '1'),
+            pageSize: parseInt(request.nextUrl.searchParams.get('pageSize') || '25')
+          },
           filters: {
             makes: [], models: [], trims: [], conditions: [],
             vehicleTypes: [], driveTypes: [], transmissions: [],
