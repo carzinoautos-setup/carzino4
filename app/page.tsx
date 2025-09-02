@@ -716,7 +716,7 @@ export default function HomePage() {
   const availableStates = filterOptions.states || [];
   const availableCities = filterOptions.cities || [];
 
-  console.log("�� DEBUG: Filter options from API:", {
+  console.log("🔍 DEBUG: Filter options from API:", {
     selectedMakes: appliedFilters.make,
     apiModelsCount: availableModels.length,
     apiTrimsCount: availableTrims.length,
@@ -1270,26 +1270,33 @@ export default function HomePage() {
               onToggle={() => toggleFilter("condition")}
             >
               <div className="space-y-1">
-                {["New", "Used", "Certified"].map((condition) => (
-                  <label key={condition} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.condition.includes(condition)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            condition: [...prev.condition, condition]
-                          }));
-                        } else {
-                          removeAppliedFilter("condition", condition);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{condition}</span>
-                  </label>
-                ))}
+                {availableConditions.length > 0 ? (
+                  availableConditions.map((condition, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.condition.includes(condition.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              condition: [...prev.condition, condition.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("condition", condition.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{condition.name}</span>
+                      <span className="carzino-filter-count ml-1">({condition.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    {appliedFilters.make.length > 0 ? "No conditions available for selected vehicles" : "Select filters to see condition options"}
+                  </div>
+                )}
               </div>
             </FilterSection>
 
