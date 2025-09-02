@@ -1,8 +1,5 @@
-import { builder } from '@builder.io/sdk'
+import { getBuilderContent } from '../lib/builder'
 import { RenderBuilderContent } from '../components/builder/RenderBuilderContent'
-
-// Initialize Builder.io
-builder.init(process.env.BUILDER_PUBLIC_KEY!)
 
 interface PageProps {
   params: {
@@ -13,14 +10,8 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const urlPath = '/' + (params?.page?.join('/') || '')
   
-  // Fetch Builder.io content for this page
-  const content = await builder
-    .get('page', {
-      userAttributes: {
-        urlPath,
-      },
-    })
-    .toPromise()
+  // Fetch Builder.io content for this page using the configured helper
+  const content = await getBuilderContent('page', urlPath)
 
   return (
     <div>
