@@ -225,6 +225,13 @@ export async function GET(request: NextRequest) {
       dealers: [], states: [], cities: [], totalVehicles: 0
     };
 
+    console.log('🚨 DEBUG: WordPress API conditional filtering check:', {
+      hasAppliedFilters: Object.keys(appliedFilters).length > 0,
+      appliedFiltersCount: Object.keys(appliedFilters).length,
+      modelsReturned: transformedFilters.models.length,
+      sampleModels: transformedFilters.models.slice(0, 3)
+    });
+
     console.log('🔍 DEBUG: Transformed filter counts:', {
       makes: transformedFilters.makes.length,
       models: transformedFilters.models.length,
