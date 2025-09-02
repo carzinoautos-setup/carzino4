@@ -113,7 +113,14 @@ export class CustomWordPressApiService {
           business_name_seller: apiResponse.data[0].acf.business_name_seller,
           dealer_name: apiResponse.data[0].acf.dealer_name,
           account_number_seller: apiResponse.data[0].acf.account_number_seller,
-          seller_account_number: apiResponse.data[0].acf.seller_account_number
+          seller_account_number: apiResponse.data[0].acf.seller_account_number,
+          // Check for other potential name fields
+          seller_name: apiResponse.data[0].acf.seller_name,
+          company_name: apiResponse.data[0].acf.company_name,
+          dealership_name: apiResponse.data[0].acf.dealership_name,
+          all_acf_keys: Object.keys(apiResponse.data[0].acf || {}).filter(key =>
+            key.includes('name') || key.includes('business') || key.includes('company') || key.includes('dealer')
+          )
         } : 'no ACF'
       });
 
