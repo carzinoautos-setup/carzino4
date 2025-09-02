@@ -726,12 +726,14 @@ export default function HomePage() {
               appliedFilters.make.length > 0 ||
               appliedFilters.model.length > 0 ||
               appliedFilters.trim.length > 0 ||
+              appliedFilters.year.length > 0 ||
               appliedFilters.vehicleType.length > 0 ||
               appliedFilters.driveType.length > 0 ||
+              appliedFilters.transmission.length > 0 ||
+              appliedFilters.fuel_type.length > 0 ||
               appliedFilters.exteriorColor.length > 0 ||
               appliedFilters.interiorColor.length > 0 ||
               appliedFilters.sellerType.length > 0 ||
-              appliedFilters.transmission.length > 0 ||
               appliedFilters.dealer.length > 0 ||
               appliedFilters.city.length > 0 ||
               appliedFilters.state.length > 0 ||
