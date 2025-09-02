@@ -313,10 +313,10 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           ) : (
             <div className="text-center w-full">
               <div className="carzino-price-label text-gray-500 mb-0">
-                No Sale Price Listed
+                No price listed
               </div>
               <div className="carzino-price-value text-gray-900">
-                Call for Price
+                Call for sale price
               </div>
             </div>
           )}
