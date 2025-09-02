@@ -92,6 +92,7 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState("all");
   const [favorites, setFavorites] = useState<{ [key: number]: Vehicle }>({});
   const [keeperMessage, setKeeperMessage] = useState<number | null>(null);
+  const [apiTestResult, setApiTestResult] = useState<any>(null);
 
   // Price and payment state
   const [priceMin, setPriceMin] = useState("");
