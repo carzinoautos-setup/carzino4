@@ -436,25 +436,27 @@ export default function HomePage() {
     { name: "Wagon", count: 43 },
   ];
 
-  // Filter options with counts
+  // Filter options with counts - includes all ACF fields
   const [filterOptions, setFilterOptions] = useState<{
     makes: { name: string; count: number }[];
     models: { name: string; count: number }[];
     trims: { name: string; count: number }[];
+    years: { name: string; count: number }[];
     conditions: { name: string; count: number }[];
-    vehicleTypes: { name: string; count: number }[];
-    driveTypes: { name: string; count: number }[];
+    vehicleTypes: { name: string; count: number }[]; // body_style
+    driveTypes: { name: string; count: number }[];   // drivetrain
     transmissions: { name: string; count: number }[];
+    fuelTypes: { name: string; count: number }[];    // fuel_type
     exteriorColors: { name: string; count: number }[];
     interiorColors: { name: string; count: number }[];
     sellerTypes: { name: string; count: number }[];
-    dealers: { name: string; count: number }[];
-    states: { name: string; count: number }[];
-    cities: { name: string; count: number }[];
+    dealers: { name: string; count: number }[];      // account_name_seller display
+    states: { name: string; count: number }[];       // state_seller
+    cities: { name: string; count: number }[];       // city_seller
     totalVehicles: number;
   }>({
-    makes: [], models: [], trims: [], conditions: [],
-    vehicleTypes: [], driveTypes: [], transmissions: [],
+    makes: [], models: [], trims: [], years: [], conditions: [],
+    vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
     exteriorColors: [], interiorColors: [], sellerTypes: [],
     dealers: [], states: [], cities: [], totalVehicles: 0
   });
@@ -1104,7 +1106,7 @@ export default function HomePage() {
                 <option value="">Any Mileage</option>
                 <option value="Under 15,000">Under 15,000</option>
                 <option value="15,000 – 30,000">15,000 – 30,000</option>
-                <option value="30,000 – 60,000">30,000 ��� 60,000</option>
+                <option value="30,000 – 60,000">30,000 – 60,000</option>
                 <option value="60,000 – 100,000">60,000 – 100,000</option>
                 <option value="Over 100,000">Over 100,000</option>
               </select>
