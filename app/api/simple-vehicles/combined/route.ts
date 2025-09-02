@@ -80,6 +80,9 @@ export async function GET(request: NextRequest) {
     vehiclesUrl.searchParams.set('per_page', pageSize.toString());
     vehiclesUrl.searchParams.set('page', page.toString());
 
+    // Build filters URL for dependent filtering
+    const filtersUrl = new URL(`${WP_BASE_URL}/filters`);
+
     // Add filters from request
     for (const [key, value] of searchParams.entries()) {
       if (key !== 'page' && key !== 'pageSize' && value) {
@@ -89,11 +92,17 @@ export async function GET(request: NextRequest) {
           'driveType': 'drivetrain',
           'exteriorColor': 'exterior_color',
           'interiorColor': 'interior_color',
-          'sellerType': 'seller_type'
+          'sellerType': 'seller_type',
+          'account_number_seller': 'account_number_seller'
         };
 
         const apiKey = filterMapping[key] || key;
         vehiclesUrl.searchParams.set(apiKey, value);
+
+        // Also pass key filters to the filters endpoint for dependent filtering
+        if (['make', 'model', 'year'].includes(key)) {
+          filtersUrl.searchParams.set(apiKey, value);
+        }
       }
     }
 
