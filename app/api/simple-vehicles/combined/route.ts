@@ -233,18 +233,25 @@ export async function GET(request: NextRequest) {
       dealers: transformedFilters.dealers.length
     });
 
+    // Build applied filters object for specification compliance
+    const appliedFilters: { [key: string]: string } = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key !== 'page' && key !== 'pageSize' && key !== 'sort' && key !== 'sortBy' && value) {
+        appliedFilters[key] = value;
+      }
+    }
+
     const response = {
       success: true,
-      data: {
-        vehicles: transformedVehicles,
-        meta: {
-          totalRecords,
-          totalPages,
-          currentPage: page,
-          pageSize: pageSize
-        },
-        filters: transformedFilters
-      }
+      data: transformedVehicles,
+      pagination: {
+        total: totalRecords,
+        page: page,
+        per_page: pageSize,
+        total_pages: totalPages
+      },
+      filters: transformedFilters,
+      applied_filters: appliedFilters
     };
 
     console.log('✅ Combined API response prepared successfully');
