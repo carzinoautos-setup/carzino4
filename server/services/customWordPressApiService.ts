@@ -489,8 +489,9 @@ export class CustomWordPressApiService {
       if (filters.sellerType && filters.sellerType.length > 0) {
         url.searchParams.set('seller_type', filters.sellerType.join(','));
       }
-      // Note: We'll handle dealer filtering client-side since it needs to map dealer names to account IDs
-      // The dealer filter will be applied after fetching vehicles
+      if (filters.dealer && filters.dealer.length > 0) {
+        url.searchParams.set('account_number_seller', filters.dealer.join(','));
+      }
       if (filters.city && filters.city.length > 0) {
         url.searchParams.set('city_seller', filters.city.join(','));
       }
