@@ -122,6 +122,12 @@ export async function GET(request: NextRequest) {
       filtersSuccess: filtersData.success
     });
 
+    console.log('🔍 DEBUG: Raw filters data structure:', {
+      hasFilters: !!filtersData.filters,
+      filterKeys: filtersData.filters ? Object.keys(filtersData.filters) : [],
+      sampleMakes: filtersData.filters?.make?.slice(0, 3)
+    });
+
     // Transform vehicles to frontend format
     const transformedVehicles = vehiclesData.success && vehiclesData.data
       ? vehiclesData.data.map((vehicle: WooCommerceVehicle) => transformVehicleData(vehicle))
