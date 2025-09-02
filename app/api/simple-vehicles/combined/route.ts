@@ -123,9 +123,14 @@ export async function GET(request: NextRequest) {
     if (zipCode && radius) {
       vehiclesUrl.searchParams.set('zipCode', zipCode);
       vehiclesUrl.searchParams.set('radius', radius);
-      // Also add to filters URL to get location-filtered options
+      // Pass location filters to filters endpoint for location-aware conditional filtering
       filtersUrl.searchParams.set('zipCode', zipCode);
       filtersUrl.searchParams.set('radius', radius);
+    }
+
+    // Pass sorting parameter to filters endpoint if needed for conditional filtering
+    if (sortBy && sortBy !== 'relevance') {
+      filtersUrl.searchParams.set('sort', sortBy);
     }
 
     console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
