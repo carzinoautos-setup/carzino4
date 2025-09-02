@@ -269,6 +269,32 @@ export class CustomWordPressApiService {
         });
       }
 
+      // Extract unique dealers from vehicle data as fallback
+      const uniqueDealers = new Map();
+      vehicles.forEach(vehicle => {
+        const dealerName = vehicle.acf?.acount_name_seller || vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name;
+        const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number;
+
+        if (dealerName && accountNumber) {
+          const key = `${dealerName}_${accountNumber}`;
+          if (!uniqueDealers.has(key)) {
+            uniqueDealers.set(key, {
+              name: dealerName,
+              acount_name_seller: dealerName,
+              account_number_seller: accountNumber,
+              count: 0
+            });
+          }
+          uniqueDealers.get(key).count++;
+        }
+      });
+
+      const dealersFromVehicles = Array.from(uniqueDealers.values());
+      console.log("🏢 Extracted dealers from vehicle data:", {
+        count: dealersFromVehicles.length,
+        dealers: dealersFromVehicles.slice(0, 3) // Show first 3 for debugging
+      });
+
       // Transform vehicles to expected format using new ACF structure
       const transformedVehicles = vehicles.map(vehicle => {
         // Get price from multiple possible fields with better logic
@@ -371,7 +397,8 @@ export class CustomWordPressApiService {
             pageSize: paginationInfo.per_page,
             hasNextPage: paginationInfo.page < paginationInfo.total_pages,
             hasPreviousPage: paginationInfo.page > 1
-          }
+          },
+          dealers: dealersFromVehicles // Add extracted dealers to response
         };
       }
       
