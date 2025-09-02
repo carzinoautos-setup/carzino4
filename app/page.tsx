@@ -98,8 +98,6 @@ export default function HomePage() {
   const [priceMax, setPriceMax] = useState("");
   const [yearMin, setYearMin] = useState("");
   const [yearMax, setYearMax] = useState("");
-  const [mileageMin, setMileageMin] = useState("");
-  const [mileageMax, setMileageMax] = useState("");
   const [paymentMin, setPaymentMin] = useState("");
   const [paymentMax, setPaymentMax] = useState("");
   const [termLength, setTermLength] = useState("72");
