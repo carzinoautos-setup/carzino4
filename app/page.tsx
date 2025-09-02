@@ -486,9 +486,26 @@ export default function HomePage() {
           }
         }
 
+        // CRITICAL FIX: Properly set filter options from API response
         setFilterOptions(filters);
+
+        console.log("🎯 FILTER UPDATE: Setting new filter options:", {
+          makesCount: filters.makes?.length || 0,
+          modelsCount: filters.models?.length || 0,
+          trimsCount: filters.trims?.length || 0,
+          sampleMakes: filters.makes?.slice(0, 3)?.map(m => m.name) || [],
+          sampleModels: filters.models?.slice(0, 5)?.map(m => m.name) || []
+        });
       } else {
         setError(data.message || 'Failed to load vehicles');
+
+        // Clear filter options on error
+        setFilterOptions({
+          makes: [], models: [], trims: [], years: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
+        });
       }
     } catch (err) {
       console.error("❌ API Error:", err);
