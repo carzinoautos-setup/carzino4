@@ -545,10 +545,12 @@ export default function HomePage() {
   const displayedMakes = showMoreMakes ? allMakes : allMakes.slice(0, 8);
 
   // Get available models based on selected makes
+  // The filterOptions.models should already be filtered by the API based on selected makes
   const availableModels = appliedFilters.make.length > 0 ?
     (filterOptions.models || []) : [];
 
   // Get available trims based on selected models
+  // The filterOptions.trims should already be filtered by the API based on selected makes/models
   const availableTrims = appliedFilters.model.length > 0 ?
     (filterOptions.trims || []) : [];
 
