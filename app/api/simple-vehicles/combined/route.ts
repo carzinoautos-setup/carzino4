@@ -80,6 +80,8 @@ function transformVehicleData(vehicle: WooCommerceVehicle): any {
     doors: '4',
     year: acf.year || 'N/A',
     transmission: acf.transmission || 'Auto',
+    drivetrain: acf.drivetrain || 'FWD',
+    condition: acf.condition || 'Used',
     salePrice: acf.price ? `$${acf.price.toLocaleString()}` : 'Call for Price',
     payment: acf.price ? `$${Math.round(acf.price / 60)}` : null,
     dealer: acf.account_name_seller || acf.business_name_seller || acf.dealer_name || 'Dealer',
