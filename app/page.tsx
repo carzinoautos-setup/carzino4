@@ -177,11 +177,11 @@ export default function HomePage() {
 
     try {
       // Test 1: Get all filters (no conditions)
-      const allFiltersResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters');
+      const allFiltersResponse = await fetch('/api/wp/filters');
       const allFiltersData = await allFiltersResponse.json();
 
       // Test 2: Get filters with Toyota selected
-      const toyotaFiltersResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota');
+      const toyotaFiltersResponse = await fetch('/api/wp/filters?make=Toyota');
       const toyotaFiltersData = await toyotaFiltersResponse.json();
 
       const testResults = {
@@ -231,11 +231,11 @@ export default function HomePage() {
 
     try {
       // Method 1: Use the via_build_filters=1 parameter
-      const cacheResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/?via_build_filters=1');
+      const cacheResponse = await fetch('/api/wp/rebuild-filters');
       console.log("✅ Cache clear response:", cacheResponse.status);
 
       // Method 2: Also try the API endpoint if it exists
-      const apiCacheResponse = await fetch('https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/rebuild-filters');
+      const apiCacheResponse = await fetch('/api/wp/rebuild-filters');
       const apiCacheData = await apiCacheResponse.json();
       console.log("✅ API cache clear response:", apiCacheData);
 
