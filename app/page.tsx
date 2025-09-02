@@ -894,13 +894,21 @@ export default function HomePage() {
 
             {/* Debug Status - Remove in production */}
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress API Test</div>
-              <button
-                onClick={testWordPressAPI}
-                className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 mb-2"
-              >
-                Test Conditional Filtering
-              </button>
+              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress API Debug Tools</div>
+              <div className="flex gap-2 mb-2">
+                <button
+                  onClick={testWordPressAPI}
+                  className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
+                >
+                  Test Conditional Filtering
+                </button>
+                <button
+                  onClick={clearWordPressCache}
+                  className="bg-orange-600 text-white px-3 py-1 rounded text-xs hover:bg-orange-700"
+                >
+                  Clear WP Cache
+                </button>
+              </div>
               {apiTestResult && (
                 <div className="text-xs text-yellow-700 mt-2">
                   <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
@@ -911,6 +919,9 @@ export default function HomePage() {
                       : "✅ Working: Only Toyota models with Toyota filter"
                     }
                   </div>
+                  {apiTestResult.error && (
+                    <div className="text-red-600 font-semibold">❌ API Error: {apiTestResult.error}</div>
+                  )}
                 </div>
               )}
             </div>
