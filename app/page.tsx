@@ -1430,25 +1430,30 @@ export default function HomePage() {
                         onChange={(e) => {
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
-                            // Immediately clear dependent trim options
-                            setFilterOptions(prev => ({
-                              ...prev,
-                              trims: []
-                            }));
+                            console.log("🔍 DEBUG: Adding model:", model.name);
 
                             setAppliedFilters(prev => ({
                               ...prev,
                               model: [...prev.model, model.name],
                               trim: [] // Clear trims when model changes
                             }));
+
+                            // Force API refresh after model selection
+                            setTimeout(() => {
+                              console.log("🔄 Force refreshing data after model selection");
+                              fetchCombinedData();
+                            }, 100);
+
                           } else {
-                            // Immediately clear dependent trim options
-                            setFilterOptions(prev => ({
-                              ...prev,
-                              trims: []
-                            }));
+                            console.log("🔍 DEBUG: Removing model:", model.name);
 
                             removeAppliedFilter("model", model.name);
+
+                            // Force API refresh after model removal
+                            setTimeout(() => {
+                              console.log("🔄 Force refreshing data after model removal");
+                              fetchCombinedData();
+                            }, 100);
                           }
                         }}
                       />
