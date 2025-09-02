@@ -1347,9 +1347,9 @@ export default function HomePage() {
                           setAppliedFilters(prev => {
                             const newFilters = {
                               ...prev,
-                              make: [...prev.make, make.name],
-                              model: [], // Clear models when make changes
-                              trim: []   // Clear trims when make changes
+                              make: [...prev.make, make.name]
+                              // Don't clear models/trims when adding additional makes
+                              // Let the backend conditional filtering handle what's available
                             };
                             console.log("🔍 DEBUG: New applied filters:", newFilters);
                             return newFilters;
@@ -1357,7 +1357,16 @@ export default function HomePage() {
 
                         } else {
                           console.log("🔍 DEBUG: Removing make:", make.name);
-                          removeAppliedFilter("make", make.name);
+                          setAppliedFilters(prev => {
+                            const newMakes = prev.make.filter(m => m !== make.name);
+                            return {
+                              ...prev,
+                              make: newMakes,
+                              // Only clear dependent filters if NO makes are selected
+                              model: newMakes.length === 0 ? [] : prev.model,
+                              trim: newMakes.length === 0 ? [] : prev.trim
+                            };
+                          });
                         }
                       }}
                     />
