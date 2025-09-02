@@ -136,7 +136,36 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
       <div className="p-3 flex-1 flex flex-col">
         <div className="flex gap-2 mb-2 items-center justify-between">
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center flex-wrap">
+            {/* Condition Badge */}
+            {vehicle.condition && (
+              <span
+                className="carzino-badge-label px-2 py-1 rounded font-medium"
+                style={{
+                  borderRadius: "7px",
+                  backgroundColor: "#f9fafb",
+                  color: "rgb(21, 41, 109)",
+                }}
+              >
+                {vehicle.condition}
+              </span>
+            )}
+
+            {/* Drivetrain Badge */}
+            {vehicle.drivetrain && (
+              <span
+                className="carzino-badge-label px-2 py-1 rounded font-medium"
+                style={{
+                  borderRadius: "7px",
+                  backgroundColor: "#f9fafb",
+                  color: "rgb(21, 41, 109)",
+                }}
+              >
+                {vehicle.drivetrain}
+              </span>
+            )}
+
+            {/* Original badges from vehicle.badges array */}
             {vehicle.badges.map((badge, index) => (
               <span
                 key={index}
@@ -150,6 +179,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 {badge}
               </span>
             ))}
+
+            {/* Viewed Badge */}
             {vehicle.viewed && (
               <span
                 className="carzino-badge-label px-2 py-1 rounded font-medium inline-flex items-center"
