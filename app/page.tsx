@@ -1105,7 +1105,13 @@ export default function HomePage() {
                     <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
                       {item}
-                      <button onClick={() => removeAppliedFilter("condition", item)} className="ml-1 text-white hover:text-gray-300">×</button>
+                      <button onClick={() => {
+                        setCurrentPage(1);
+                        setAppliedFilters(prev => ({
+                          ...prev,
+                          condition: prev.condition.filter(c => c !== item)
+                        }));
+                      }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   ))}
                   {appliedFilters.make.map((item) => (
