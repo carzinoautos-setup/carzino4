@@ -1469,27 +1469,9 @@ export default function HomePage() {
                     </label>
                   ))
                 ) : (
-                  ["AWD", "4WD", "FWD", "RWD"].map((driveType) => (
-                    <label key={driveType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.driveType.includes(driveType)}
-                        onChange={(e) => {
-                          setCurrentPage(1); // Reset to first page when filters change
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              driveType: [...prev.driveType, driveType]
-                            }));
-                          } else {
-                            removeAppliedFilter("driveType", driveType);
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{driveType}</span>
-                    </label>
-                  ))
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    {appliedFilters.make.length > 0 ? "No drive types available for selected vehicles" : "Select filters to see drive type options"}
+                  </div>
                 )}
               </div>
             </FilterSection>
