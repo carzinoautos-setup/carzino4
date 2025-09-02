@@ -1828,7 +1828,10 @@ export default function HomePage() {
                               transmission: [...prev.transmission, transmission]
                             }));
                           } else {
-                            removeAppliedFilter("transmission", transmission);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: prev.transmission.filter(t => t !== transmission)
+                            }));
                           }
                         }}
                       />
