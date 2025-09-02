@@ -1350,44 +1350,6 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
-            {/* Year Range Filter */}
-            <FilterSection
-              title="Year Range"
-              isCollapsed={collapsedFilters.year}
-              onToggle={() => toggleFilter("year")}
-            >
-              <div className="space-y-2">
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    placeholder="2010"
-                    value={yearMin}
-                    onChange={(e) => setYearMin(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                  <input
-                    type="text"
-                    placeholder="2024"
-                    value={yearMax}
-                    onChange={(e) => setYearMax(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setCurrentPage(1);
-                    setAppliedFilters(prev => ({
-                      ...prev,
-                      yearMin: yearMin,
-                      yearMax: yearMax
-                    }));
-                  }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
-                >
-                  Apply Year Filter
-                </button>
-              </div>
-            </FilterSection>
 
             {/* Mileage Filter */}
             <FilterSection
