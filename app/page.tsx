@@ -1692,8 +1692,8 @@ export default function HomePage() {
               onToggle={() => toggleFilter("fuelType")}
             >
               <div className="space-y-1">
-                {(filterOptions.fuelTypes && filterOptions.fuelTypes.length > 0) ? (
-                  filterOptions.fuelTypes.map((fuelType, index) => (
+                {availableFuelTypes.length > 0 ? (
+                  availableFuelTypes.map((fuelType, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
