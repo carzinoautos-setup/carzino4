@@ -1343,13 +1343,13 @@ export default function HomePage() {
                         if (e.target.checked) {
                           console.log("🔍 DEBUG: Adding make:", make.name);
 
-                          // Immediately clear dependent filter options to prevent showing stale data
-                          setFilterOptions(prev => ({
-                            ...prev,
-                            models: [],
-                            trims: [],
-                            years: []
-                          }));
+                          // CRITICAL: Immediately clear ALL filter options to force fresh API call
+                          setFilterOptions({
+                            makes: [], models: [], trims: [], years: [], conditions: [],
+                            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+                            exteriorColors: [], interiorColors: [], sellerTypes: [],
+                            dealers: [], states: [], cities: [], totalVehicles: 0
+                          });
 
                           setAppliedFilters(prev => {
                             const newFilters = {
@@ -1361,18 +1361,31 @@ export default function HomePage() {
                             console.log("🔍 DEBUG: New applied filters:", newFilters);
                             return newFilters;
                           });
+
+                          // Force immediate API refresh
+                          setTimeout(() => {
+                            console.log("🔄 Force refreshing data after make selection");
+                            fetchCombinedData();
+                          }, 100);
+
                         } else {
                           console.log("🔍 DEBUG: Removing make:", make.name);
 
-                          // Immediately clear dependent filter options
-                          setFilterOptions(prev => ({
-                            ...prev,
-                            models: [],
-                            trims: [],
-                            years: []
-                          }));
+                          // CRITICAL: Clear ALL filter options
+                          setFilterOptions({
+                            makes: [], models: [], trims: [], years: [], conditions: [],
+                            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+                            exteriorColors: [], interiorColors: [], sellerTypes: [],
+                            dealers: [], states: [], cities: [], totalVehicles: 0
+                          });
 
                           removeAppliedFilter("make", make.name);
+
+                          // Force immediate API refresh
+                          setTimeout(() => {
+                            console.log("🔄 Force refreshing data after make removal");
+                            fetchCombinedData();
+                          }, 100);
                         }
                       }}
                     />
