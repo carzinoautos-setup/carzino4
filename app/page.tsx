@@ -1802,7 +1802,10 @@ export default function HomePage() {
                               transmission: [...prev.transmission, transmission.name]
                             }));
                           } else {
-                            removeAppliedFilter("transmission", transmission.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: prev.transmission.filter(t => t !== transmission.name)
+                            }));
                           }
                         }}
                       />
