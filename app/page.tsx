@@ -1211,6 +1211,15 @@ export default function HomePage() {
                         setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
                           console.log("🔍 DEBUG: Adding make:", make.name);
+
+                          // Immediately clear dependent filter options to prevent showing stale data
+                          setFilterOptions(prev => ({
+                            ...prev,
+                            models: [],
+                            trims: [],
+                            years: []
+                          }));
+
                           setAppliedFilters(prev => {
                             const newFilters = {
                               ...prev,
@@ -1223,6 +1232,15 @@ export default function HomePage() {
                           });
                         } else {
                           console.log("🔍 DEBUG: Removing make:", make.name);
+
+                          // Immediately clear dependent filter options
+                          setFilterOptions(prev => ({
+                            ...prev,
+                            models: [],
+                            trims: [],
+                            years: []
+                          }));
+
                           removeAppliedFilter("make", make.name);
                         }
                       }}
