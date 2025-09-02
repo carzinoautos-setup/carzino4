@@ -258,11 +258,19 @@ function via_get_filtered_vehicle_ids($applied_filters) {
         'posts_per_page' => -1, // Get all matching IDs
         'meta_query' => array('relation' => 'AND')
     );
-    
+
+    error_log('VIA: Base args before filtering: ' . print_r($base_args, true));
+    error_log('VIA: Applied filters to process: ' . print_r($applied_filters, true));
+
     // Apply filters to narrow the pool (YOUR REQUESTED LOGIC)
     $base_args = via_apply_filters_to_query($base_args, $applied_filters);
-    
+
+    error_log('VIA: Final query args: ' . print_r($base_args, true));
+
     $query = new WP_Query($base_args);
+
+    error_log('VIA: WP_Query found ' . $query->found_posts . ' total posts, returning ' . count($query->posts) . ' IDs');
+
     return $query->posts; // Returns array of post IDs
 }
 
