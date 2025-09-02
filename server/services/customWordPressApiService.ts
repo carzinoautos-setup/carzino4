@@ -508,8 +508,15 @@ export class CustomWordPressApiService {
           interiorColors: sortFilterOptions(filtersData.interior_color || []),
           years: sortFilterOptions(filtersData.year || []),
 
-          // Location and dealer filters with correct field mapping - prioritize acount_name_seller (misspelled field)
-          dealers: sortFilterOptions(filtersData.acount_name_seller || filtersData.dealer_name || []),
+          // Location and dealer filters with all possible field mapping options
+          dealers: sortFilterOptions(
+            filtersData.acount_name_seller ||
+            filtersData.account_name_seller ||
+            filtersData.dealer_name ||
+            filtersData.sellers ||
+            filtersData.dealer ||
+            []
+          ),
           cities: sortFilterOptions(filtersData.city_seller || []),
           states: sortFilterOptions(filtersData.state_seller || []),
 
@@ -577,7 +584,11 @@ export class CustomWordPressApiService {
       const apiResponse = await response.json();
 
       if (apiResponse.success && apiResponse.filters) {
-        const dealers = apiResponse.filters.acount_name_seller || apiResponse.filters.dealer_name || [];
+        const dealers = apiResponse.filters.acount_name_seller ||
+                        apiResponse.filters.account_name_seller ||
+                        apiResponse.filters.dealer_name ||
+                        apiResponse.filters.sellers ||
+                        apiResponse.filters.dealer || [];
         return {
           success: true,
           data: dealers
