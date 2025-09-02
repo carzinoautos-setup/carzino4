@@ -1431,30 +1431,9 @@ export default function HomePage() {
                     </label>
                   ))
                 ) : (
-                  ["Gasoline", "Hybrid", "Electric", "Diesel"].map((fuelType) => (
-                    <label key={fuelType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.fuel_type.includes(fuelType)}
-                        onChange={(e) => {
-                          setCurrentPage(1);
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              fuel_type: [...prev.fuel_type, fuelType]
-                            }));
-                          } else {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              fuel_type: prev.fuel_type.filter(ft => ft !== fuelType)
-                            }));
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{fuelType}</span>
-                    </label>
-                  ))
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    {appliedFilters.make.length > 0 ? "No fuel types available for selected vehicles" : "Select filters to see fuel type options"}
+                  </div>
                 )}
               </div>
             </FilterSection>
