@@ -1764,7 +1764,10 @@ export default function HomePage() {
                               driveType: [...prev.driveType, driveType.name]
                             }));
                           } else {
-                            removeAppliedFilter("driveType", driveType.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: prev.driveType.filter(dt => dt !== driveType.name)
+                            }));
                           }
                         }}
                       />
