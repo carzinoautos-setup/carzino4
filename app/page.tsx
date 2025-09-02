@@ -1202,44 +1202,42 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
-            {/* Year Filter */}
+            {/* Year Range Filter */}
             <FilterSection
-              title="Year"
+              title="Year Range"
               isCollapsed={collapsedFilters.year}
               onToggle={() => toggleFilter("year")}
             >
-              <div className="space-y-1">
-                {(filterOptions.years && filterOptions.years.length > 0) ? (
-                  filterOptions.years.map((year, index) => (
-                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.year.includes(year.name)}
-                        onChange={(e) => {
-                          setCurrentPage(1);
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              year: [...prev.year, year.name]
-                            }));
-                          } else {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              year: prev.year.filter(y => y !== year.name)
-                            }));
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{year.name}</span>
-                      <span className="carzino-filter-count ml-1">({year.count})</span>
-                    </label>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    Loading years...
-                  </div>
-                )}
+              <div className="space-y-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    placeholder="2010"
+                    value={yearMin}
+                    onChange={(e) => setYearMin(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                  <input
+                    type="text"
+                    placeholder="2024"
+                    value={yearMax}
+                    onChange={(e) => setYearMax(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    setCurrentPage(1);
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      yearMin: yearMin,
+                      yearMax: yearMax
+                    }));
+                  }}
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                >
+                  Apply Year Filter
+                </button>
               </div>
             </FilterSection>
 
