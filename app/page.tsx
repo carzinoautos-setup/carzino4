@@ -454,6 +454,10 @@ export default function HomePage() {
     setAppliedFilters(emptyFilters);
     setPriceMin("");
     setPriceMax("");
+    setYearMin("");
+    setYearMax("");
+    setMileageMin("");
+    setMileageMax("");
     setPaymentMin("");
     setPaymentMax("");
     setTermLength("72");
