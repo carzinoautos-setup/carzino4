@@ -173,7 +173,7 @@ export class CustomWordPressApiService {
         console.log("💳 APPLYING CLIENT-SIDE PAYMENT FILTER:", {
           paymentMin: filters.paymentMin,
           paymentMax: filters.paymentMax,
-          originalCount: dealerFilteredCount,
+          originalCount: priceFilteredCount,
           sortBy: sortBy
         });
 
@@ -251,9 +251,9 @@ export class CustomWordPressApiService {
         });
 
         console.log("💳 PAYMENT FILTER RESULTS:", {
-          originalCount: dealerFilteredCount,
+          originalCount: priceFilteredCount,
           filteredCount: vehicles.length,
-          filteredOut: dealerFilteredCount - vehicles.length,
+          filteredOut: priceFilteredCount - vehicles.length,
           sortBy: sortBy,
           paymentRange: `${filters.paymentMin || 'min'} - ${filters.paymentMax || 'max'}`
         });
