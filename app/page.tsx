@@ -511,10 +511,19 @@ export default function HomePage() {
   const displayedMakes = showMoreMakes ? allMakes : allMakes.slice(0, 8);
 
   // Get available models based on selected makes
-  const availableModels = filterOptions.models || [];
+  const availableModels = appliedFilters.make.length > 0 ?
+    (filterOptions.models || []) : [];
 
   // Get available trims based on selected models
-  const availableTrims = filterOptions.trims || [];
+  const availableTrims = appliedFilters.model.length > 0 ?
+    (filterOptions.trims || []) : [];
+
+  console.log("🔍 DEBUG: Filter dependencies:", {
+    selectedMakes: appliedFilters.make,
+    availableModelsCount: availableModels.length,
+    selectedModels: appliedFilters.model,
+    availableTrimsCount: availableTrims.length
+  });
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
 
