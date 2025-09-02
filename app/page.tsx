@@ -273,6 +273,30 @@ export default function HomePage() {
     }
   };
 
+  // Test backend API directly to verify conditional filtering works
+  const testBackendAPI = async () => {
+    console.log("🧪 Testing backend API conditional filtering...");
+
+    try {
+      const testResponse = await fetch('/api/test-backend');
+      const testData = await testResponse.json();
+
+      console.log("🧪 Backend API Test Results:", testData);
+      setApiTestResult({
+        ...apiTestResult,
+        backendTests: testData.tests,
+        backendTestComplete: true
+      });
+
+    } catch (error) {
+      console.error("❌ Backend API test failed:", error);
+      setApiTestResult({
+        ...apiTestResult,
+        backendTestError: error.message
+      });
+    }
+  };
+
   // API fetch function
   const fetchCombinedData = useCallback(async () => {
     if (!isMountedRef.current) return;
