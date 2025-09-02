@@ -232,7 +232,7 @@ export default function HomePage() {
     try {
       // Method 1: Use the via_build_filters=1 parameter
       const cacheResponse = await fetch('/api/wp/rebuild-filters');
-      console.log("�� Cache clear response:", cacheResponse.status);
+      console.log("✅ Cache clear response:", cacheResponse.status);
 
       // Method 2: Also try the API endpoint if it exists
       const apiCacheResponse = await fetch('/api/wp/rebuild-filters');
@@ -739,7 +739,7 @@ export default function HomePage() {
   const availableStates = filterOptions.states || [];
   const availableCities = filterOptions.cities || [];
 
-  console.log("��� DEBUG: Filter options from API:", {
+  console.log("🔍 DEBUG: Filter options from API:", {
     selectedMakes: appliedFilters.make,
     apiModelsCount: availableModels.length,
     apiTrimsCount: availableTrims.length,
@@ -1022,30 +1022,26 @@ export default function HomePage() {
               </div>
               {apiTestResult && (
                 <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
+                  <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
+                  <div>Toyota-only models: {apiTestResult.toyotaFilters?.totalModels || 0}</div>
+                  <div className={apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels ? "text-red-600 font-semibold" : "text-green-600"}>
+                    {apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels
+                      ? "❌ CONDITIONAL FILTERING BROKEN: Ford/Chevy models still showing"
+                      : "✅ CONDITIONAL FILTERING WORKING: Only Toyota models shown"
+                    }
+                  </div>
                   {apiTestResult.backendTests && (
-                    <div className="p-2 bg-green-50 border border-green-200 rounded text-xs">
-                      <div className="font-semibold text-green-800 mb-2">🧪 WordPress v5.0 Conditional Filtering:</div>
-                      {apiTestResult.summary && (
-                        <div className="mb-2 p-1 bg-white border rounded">
-                          <div className="font-semibold">Test Summary:</div>
-                          <div>Total: {apiTestResult.summary.totalTests} | Pass: {apiTestResult.summary.passed} | Fail: {apiTestResult.summary.failed}</div>
-                          <div className={apiTestResult.conditionalWorking ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
-                            {apiTestResult.conditionalWorking ? "✅ CONDITIONAL FILTERING WORKING" : "❌ CONDITIONAL FILTERING BROKEN"}
-                          </div>
-                        </div>
-                      )}
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                      <div className="font-semibold text-green-800">🧪 Backend API Verification:</div>
                       {apiTestResult.backendTests.map((test: any, index: number) => (
-                        <div key={index} className="mt-1 p-1 bg-white border rounded">
+                        <div key={index} className="mt-1">
                           <div className="font-semibold">{test.name}:</div>
-                          <div>Makes: {test.makeCount || 'N/A'} | Models: {test.modelCount || 'N/A'}</div>
-                          <div className={test.status === 'pass' ? "text-green-600" : test.status === 'fail' ? "text-red-600" : "text-blue-600"}>
-                            Status: {test.status.toUpperCase()}
-                          </div>
+                          <div>Models: {test.modelCount || 'N/A'}</div>
                           {test.name === 'Toyota Only' && (
-                            <div>
-                              {test.hasFordModels && <div className="text-red-600">- ❌ Still shows Ford models</div>}
-                              {test.hasChevyModels && <div className="text-red-600">- ❌ Still shows Chevy models</div>}
-                              {!test.hasFordModels && !test.hasChevyModels && <div className="text-green-600">- ✅ Only Toyota models shown</div>}
+                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
+                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
+                              {test.hasFordModels && <div>- Still shows Ford models</div>}
+                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
                             </div>
                           )}
                         </div>
