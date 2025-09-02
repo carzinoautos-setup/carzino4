@@ -2057,7 +2057,10 @@ export default function HomePage() {
 
               <div className="lg:hidden mt-3">
                 <div className="text-sm text-gray-600">
-                  {totalResults.toLocaleString()} vehicles • Page {currentPage} of {totalPages}
+                  New and Used Vehicles for sale
+                </div>
+                <div className="text-xs text-gray-500">
+                  {totalResults.toLocaleString()} Matches
                 </div>
               </div>
             </div>
