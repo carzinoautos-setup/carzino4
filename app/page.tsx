@@ -232,7 +232,7 @@ export default function HomePage() {
     try {
       // Method 1: Use the via_build_filters=1 parameter
       const cacheResponse = await fetch('/api/wp/rebuild-filters');
-      console.log("✅ Cache clear response:", cacheResponse.status);
+      console.log("�� Cache clear response:", cacheResponse.status);
 
       // Method 2: Also try the API endpoint if it exists
       const apiCacheResponse = await fetch('/api/wp/rebuild-filters');
@@ -739,7 +739,7 @@ export default function HomePage() {
   const availableStates = filterOptions.states || [];
   const availableCities = filterOptions.cities || [];
 
-  console.log("🔍 DEBUG: Filter options from API:", {
+  console.log("��� DEBUG: Filter options from API:", {
     selectedMakes: appliedFilters.make,
     apiModelsCount: availableModels.length,
     apiTrimsCount: availableTrims.length,
@@ -999,25 +999,25 @@ export default function HomePage() {
                   onClick={testWordPressAPI}
                   className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
                 >
-                  Test WP API
+                  Test API Direct
                 </button>
                 <button
                   onClick={clearWordPressCache}
                   className="bg-orange-600 text-white px-3 py-1 rounded text-xs hover:bg-orange-700"
                 >
-                  Clear Cache
+                  Clear WP Cache
                 </button>
                 <button
                   onClick={debugWordPressFiltering}
                   className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700"
                 >
-                  Debug SQL
+                  Debug WP SQL
                 </button>
                 <button
                   onClick={testBackendAPI}
                   className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
                 >
-                  Test Conditional
+                  Verify Backend
                 </button>
               </div>
               {apiTestResult && (
