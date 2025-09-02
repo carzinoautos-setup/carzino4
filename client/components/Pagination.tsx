@@ -27,7 +27,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   const getPaginationPages = () => {
     const pages = [];
-    const maxPagesToShow = window.innerWidth < 640 ? 3 : 7; // Show fewer pages on mobile
+    const maxPagesToShow = typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 7; // Show fewer pages on mobile
 
     if (safeTotalPages <= maxPagesToShow) {
       for (let i = 1; i <= safeTotalPages; i++) {
