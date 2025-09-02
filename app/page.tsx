@@ -273,26 +273,23 @@ export default function HomePage() {
     }
   };
 
-  // Test the new WordPress conditional filtering directly
+  // Test backend API directly to verify conditional filtering works
   const testBackendAPI = async () => {
-    console.log("🧪 Testing WordPress v5.0 conditional filtering...");
+    console.log("🧪 Testing backend API conditional filtering...");
 
     try {
-      const testResponse = await fetch('/api/test-conditional-filters');
+      const testResponse = await fetch('/api/test-backend');
       const testData = await testResponse.json();
 
-      console.log("🧪 WordPress v5.0 Conditional Filtering Results:", testData);
-
+      console.log("🧪 Backend API Test Results:", testData);
       setApiTestResult({
         ...apiTestResult,
         backendTests: testData.tests,
-        backendTestComplete: true,
-        conditionalWorking: testData.conditionalFilteringWorking,
-        summary: testData.summary
+        backendTestComplete: true
       });
 
     } catch (error) {
-      console.error("❌ WordPress v5.0 conditional test failed:", error);
+      console.error("❌ Backend API test failed:", error);
       setApiTestResult({
         ...apiTestResult,
         backendTestError: error.message
