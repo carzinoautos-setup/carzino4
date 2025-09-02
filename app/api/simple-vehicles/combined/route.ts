@@ -131,6 +131,39 @@ export async function GET(request: NextRequest) {
     const totalRecords = vehiclesData.pagination?.total || transformedVehicles.length;
     const totalPages = vehiclesData.pagination?.total_pages || Math.ceil(totalRecords / pageSize);
 
+    // Transform filters data to match frontend expectations
+    const transformedFilters = filtersData.success && filtersData.filters ? {
+      makes: filtersData.filters.make || [],
+      models: filtersData.filters.model || [],
+      trims: filtersData.filters.trim || [],
+      years: filtersData.filters.year || [],
+      conditions: filtersData.filters.condition || [],
+      vehicleTypes: filtersData.filters.body_style || [],
+      driveTypes: filtersData.filters.drivetrain || [],
+      transmissions: filtersData.filters.transmission || [],
+      fuelTypes: filtersData.filters.fuel_type || [],
+      exteriorColors: filtersData.filters.exterior_color || [],
+      interiorColors: filtersData.filters.interior_color || [],
+      sellerTypes: filtersData.filters.seller_type || [],
+      dealers: filtersData.filters.account_name_seller || [],
+      states: filtersData.filters.state_seller || [],
+      cities: filtersData.filters.city_seller || [],
+      totalVehicles: totalRecords
+    } : {
+      makes: [], models: [], trims: [], years: [], conditions: [],
+      vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+      exteriorColors: [], interiorColors: [], sellerTypes: [],
+      dealers: [], states: [], cities: [], totalVehicles: 0
+    };
+
+    console.log('🔍 DEBUG: Transformed filter counts:', {
+      makes: transformedFilters.makes.length,
+      models: transformedFilters.models.length,
+      years: transformedFilters.years.length,
+      conditions: transformedFilters.conditions.length,
+      dealers: transformedFilters.dealers.length
+    });
+
     const response = {
       success: true,
       data: {
@@ -141,12 +174,7 @@ export async function GET(request: NextRequest) {
           currentPage: page,
           pageSize: pageSize
         },
-        filters: filtersData.success ? filtersData.filters : {
-          makes: [], models: [], trims: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: 0
-        }
+        filters: transformedFilters
       }
     };
 
