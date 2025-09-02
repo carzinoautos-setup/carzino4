@@ -1112,14 +1112,27 @@ export default function HomePage() {
               </div>
               {apiTestResult && (
                 <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
-                  <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
-                  <div>Toyota-only models: {apiTestResult.toyotaFilters?.totalModels || 0}</div>
-                  <div className={apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels ? "text-red-600 font-semibold" : "text-green-600"}>
-                    {apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels
-                      ? "❌ CONDITIONAL FILTERING BROKEN: Ford/Chevy models still showing"
-                      : "✅ CONDITIONAL FILTERING WORKING: Only Toyota models shown"
-                    }
-                  </div>
+                  {apiTestResult.backendTests && (
+                    <div className="p-2 bg-green-50 border border-green-200 rounded text-xs">
+                      <div className="font-semibold text-green-800">🧪 WordPress Conditional Filtering:</div>
+                      {apiTestResult.backendTests.map((test: any, index: number) => (
+                        <div key={index} className="mt-1">
+                          <div className="font-semibold">{test.name}:</div>
+                          <div>Models: {test.modelCount || 'N/A'}</div>
+                          {test.name === 'Toyota Only' && (
+                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
+                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
+                              {test.hasFordModels && <div>- Still shows Ford models</div>}
+                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {apiTestResult.backendTestError && (
+                    <div className="text-red-600 font-semibold">❌ WordPress Test Error: {apiTestResult.backendTestError}</div>
+                  )}
                   {apiTestResult.error && (
                     <div className="text-red-600 font-semibold">❌ API Error: {apiTestResult.error}</div>
                   )}
@@ -1137,27 +1150,6 @@ export default function HomePage() {
                   )}
                   {apiTestResult.debugError && (
                     <div className="text-red-600 font-semibold">❌ Debug Error: {apiTestResult.debugError}</div>
-                  )}
-                  {apiTestResult.backendTests && (
-                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                      <div className="font-semibold text-green-800">🧪 Backend API Verification:</div>
-                      {apiTestResult.backendTests.map((test: any, index: number) => (
-                        <div key={index} className="mt-1">
-                          <div className="font-semibold">{test.name}:</div>
-                          <div>Models: {test.modelCount || 'N/A'}</div>
-                          {test.name === 'Toyota Only' && (
-                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
-                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
-                              {test.hasFordModels && <div>- Still shows Ford models</div>}
-                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {apiTestResult.backendTestError && (
-                    <div className="text-red-600 font-semibold">❌ Backend Test Error: {apiTestResult.backendTestError}</div>
                   )}
                 </div>
               )}
