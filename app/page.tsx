@@ -1008,14 +1008,16 @@ export default function HomePage() {
               </div>
               {apiTestResult && (
                 <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
-                  <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
-                  <div>Toyota-only models: {apiTestResult.toyotaFilters?.totalModels || 0}</div>
-                  <div className={apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels ? "text-red-600 font-semibold" : "text-green-600"}>
-                    {apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels
-                      ? "❌ CONDITIONAL FILTERING BROKEN: Ford/Chevy models still showing"
-                      : "✅ CONDITIONAL FILTERING WORKING: Only Toyota models shown"
+                  <div><strong>Multi-select Filter Tests:</strong></div>
+                  <div>Single make (Toyota): {apiTestResult.singleMake?.totalModels || 0} models</div>
+                  <div>Multi-make (Toyota + Ford): {apiTestResult.multiMake?.totalModels || 0} models</div>
+                  <div className={apiTestResult.multiMake?.hasToyotaModels && apiTestResult.multiMake?.hasFordModels ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+                    {apiTestResult.multiMake?.hasToyotaModels && apiTestResult.multiMake?.hasFordModels
+                      ? "✅ MULTI-SELECT WORKING: Shows both Toyota & Ford models"
+                      : "❌ MULTI-SELECT BROKEN: Not showing both makes properly"
                     }
                   </div>
+                  <div>Multi-model test: {apiTestResult.multiModel?.totalTrims || 0} trims</div>
                   {apiTestResult.backendTests && (
                     <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
                       <div className="font-semibold text-green-800">🧪 Backend API Verification:</div>
