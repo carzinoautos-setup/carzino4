@@ -1733,8 +1733,8 @@ export default function HomePage() {
               onToggle={() => toggleFilter("driveType")}
             >
               <div className="space-y-1">
-                {(filterOptions.driveTypes && filterOptions.driveTypes.length > 0) ? (
-                  filterOptions.driveTypes.map((driveType, index) => (
+                {availableDriveTypes.length > 0 ? (
+                  availableDriveTypes.map((driveType, index) => (
                     <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
