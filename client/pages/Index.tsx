@@ -253,37 +253,11 @@ export default function Index() {
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
 
+  // Vehicle type images - removed Builder.io demo images
+  // Vehicle types will be displayed without images to avoid demo content
   useEffect(() => {
-    const loadImages = async () => {
-      const imageMapping = {
-        Convertible:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F064c51214995430a9384ae9f1722bee9",
-        Coupe:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F1d042ebb458842a8a468794ae563fcc6",
-        Hatchback:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fb06dd82e2c564b7eb30b1d5fa14e0562",
-        Sedan:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F0eccbe1eccb94b3b8eee4d8cfb611864",
-        "SUV / Crossover":
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fffc8b9d69ce743d080a0b5ba9a64e89a",
-        Truck:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fa24133306df2416881f9ea266e4f65c1",
-        "Van / Minivan":
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Ff0d0c6c20e02423dad8eefa6f0ef508a",
-        Wagon:
-          "https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F24bf3ece0537462bbd1edd12a2485c0a?format=webp",
-      };
-
-      const loadedImages: { [key: string]: string } = {};
-
-      for (const [vehicleType, imageUrl] of Object.entries(imageMapping)) {
-        loadedImages[vehicleType] = imageUrl;
-      }
-
-      setVehicleImages(loadedImages);
-    };
-
-    loadImages();
+    // Remove all Builder.io image references
+    setVehicleImages({});
   }, []);
 
   const toggleFilter = (filterName: string) => {
@@ -2691,7 +2665,11 @@ export default function Index() {
                   </button>
                 )}
 
-                <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white">
+                <select
+                  className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
                   <option value="relevance">Sort by Relevance</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>

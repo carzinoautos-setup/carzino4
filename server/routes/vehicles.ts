@@ -3,12 +3,12 @@ import { VehicleService } from "../services/vehicleService.js";
 import { MockVehicleService } from "../services/mockVehicleService.js";
 import { PaginationParams, VehicleFilters } from "../types/vehicle.js";
 
-// Use mock service for immediate testing with sample data
+// Temporarily using MockVehicleService due to MySQL connection issues
 console.log(
-  "🚀 Using MockVehicleService with 50,000 sample vehicles for testing",
+  "🚀 Using MockVehicleService with 50,000 sample vehicles",
 );
 console.log(
-  "   To use real MySQL later, update the routes to use VehicleService",
+  "   MySQL connection lost - switching to mock data for demo",
 );
 
 const vehicleService = new MockVehicleService();

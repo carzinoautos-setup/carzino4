@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Gauge, Settings, ChevronDown, Heart, Check } from "lucide-react";
+import { ChevronDown, Heart, Check } from "lucide-react";
 
 interface Vehicle {
   id: number;
@@ -21,6 +21,9 @@ interface Vehicle {
   phone: string;
   seller_type: string;
   seller_account_number: string;
+  city_seller?: string;
+  state_seller?: string;
+  zip_seller?: string;
 }
 
 interface VehicleCardProps {
@@ -100,7 +103,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           src={vehicle.images ? vehicle.images[0] : ""}
           alt={vehicle.title}
           className="w-full object-cover"
-          style={{ height: "200px" }}
+          style={{ aspectRatio: "450/300", height: "auto" }}
         />
         {vehicle.featured && (
           <div className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1.5 rounded-full carzino-featured-badge font-medium">
@@ -172,9 +175,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               />
             ) : (
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F2b268dcc254a4017a2ef9d9e1c9b3acb?format=webp&width=800"
-                alt="Speedometer"
-                className="w-4 h-4 object-contain"
+                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F0d6e752f5db34ab7b68d449bcd4c943c"
+                alt="Mileage icon"
+                className="w-4 h-4"
               />
             )}
             <span className="text-black font-medium">
@@ -190,9 +193,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               />
             ) : (
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2F209b197e983f494e94b04a7d87b79174?format=webp&width=800"
-                alt="Car parts"
-                className="w-4 h-4 object-contain"
+                src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fc18355c2650647dcb03280d5b23e16b2"
+                alt="Transmission icon"
+                className="w-4 h-4"
               />
             )}
             <span className="text-black font-medium">
@@ -209,9 +212,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                 />
               ) : (
                 <img
-                  src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Ff5793a859e2548bc9bc984fcae57131c?format=webp&width=800"
-                  alt="Car door"
-                  className="w-4 h-4 object-contain"
+                  src="https://cdn.builder.io/api/v1/image/assets%2F4d1f1909a98e4ebc8068632229306ce4%2Fa05174a249a043e3a6e3e280a57e2445"
+                  alt="Door icon"
+                  className="w-4 h-4"
                 />
               )}
             </div>
@@ -232,25 +235,18 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                   {vehicle.salePrice}
                 </div>
               </div>
-              {vehicle.payment && (
-                <>
-                  <div className="w-px h-12 bg-gray-200"></div>
-                  <div className="text-center">
-                    <div className="carzino-price-label text-gray-500 mb-0">
-                      Payments
-                    </div>
-                    <div className="carzino-price-value text-red-600">
-                      {getDisplayPayment()}
-                      <span className="text-xs text-black font-normal">
-                        /mo*
-                      </span>
-                    </div>
-                  </div>
-                </>
-              )}
+              <div className="w-px h-12 bg-gray-200"></div>
+              <div className="text-center">
+                <div className="carzino-price-label text-gray-500 mb-0">
+                  Payments
+                </div>
+                <div className="carzino-price-value text-red-600">
+                  {getDisplayPayment()}
+                </div>
+              </div>
             </>
           ) : (
-            <div className="text-center">
+            <div className="text-center w-full">
               <div className="carzino-price-label text-gray-500 mb-0">
                 No Sale Price Listed
               </div>
@@ -272,7 +268,22 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               className="text-black font-medium truncate"
               style={{ fontSize: "12px" }}
             >
-              {vehicle.location}
+              {/* Format: Tacoma, WA 98466 */}
+              {(() => {
+                const city = vehicle.city_seller;
+                const state = vehicle.state_seller;
+                const zip = vehicle.zip_seller;
+
+                if (city && state && zip) {
+                  return `${city}, ${state} ${zip}`;
+                } else if (city && state) {
+                  return `${city}, ${state}`;
+                } else if (city && zip) {
+                  return `${city} ${zip}`;
+                } else {
+                  return [city, state, zip].filter(Boolean).join(" ") || vehicle.location;
+                }
+              })()}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
@@ -282,6 +293,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             >
               {vehicle.seller_type}
             </div>
+            {vehicle.seller_account_number && (
+              <div className="text-xs text-gray-500 mt-1">
+                Account: {vehicle.seller_account_number}
+              </div>
+            )}
           </div>
         </div>
       </div>

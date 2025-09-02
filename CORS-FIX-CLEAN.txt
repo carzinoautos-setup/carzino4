@@ -1,0 +1,79 @@
+<?php
+
+// CLEAN CORS FIX - COPY THIS EXACTLY
+
+add_action('init', function() {
+    if (isset($_SERVER['HTTP_ORIGIN'])) {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+        exit(0);
+    }
+});
+
+add_action('rest_api_init', function () {
+    register_rest_route('custom/v1', '/vehicles', array(
+        'methods' => 'GET',
+        'callback' => 'get_vehicles_api',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+function get_vehicles_api($request) {
+    $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+    $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 20;
+    
+    $args = array(
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'paged' => $page,
+        'meta_query' => array()
+    );
+    
+    $query = new WP_Query($args);
+    $vehicles = array();
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $post_id = get_the_ID();
+            
+            $acf_fields = get_fields($post_id);
+            
+            $vehicles[] = array(
+                'id' => $post_id,
+                'name' => get_the_title(),
+                'slug' => get_post_field('post_name', $post_id),
+                'price' => get_post_meta($post_id, '_price', true),
+                'stock_status' => get_post_meta($post_id, '_stock_status', true),
+                'acf' => $acf_fields ?: array()
+            );
+        }
+        wp_reset_postdata();
+    }
+    
+    return new WP_REST_Response(array(
+        'success' => true,
+        'data' => $vehicles,
+        'pagination' => array(
+            'total' => $query->found_posts,
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_pages' => $query->max_num_pages
+        )
+    ), 200);
+}
+
+// INSTRUCTIONS:
+// 1. REMOVE ALL PREVIOUS CORS CODE from functions.php
+// 2. ADD THIS CODE TO THE END of functions.php
+// 3. MAKE SURE functions.php STARTS WITH <?php
+// 4. SAVE THE FILE
+// 5. TEST IMMEDIATELY
