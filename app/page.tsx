@@ -227,7 +227,7 @@ export default function HomePage() {
 
   // Clear WordPress cache
   const clearWordPressCache = async () => {
-    console.log("🗑️ Clearing WordPress cache...");
+    console.log("���️ Clearing WordPress cache...");
 
     try {
       // Method 1: Use the via_build_filters=1 parameter
@@ -275,69 +275,24 @@ export default function HomePage() {
 
   // Test the new WordPress conditional filtering directly
   const testBackendAPI = async () => {
-    console.log("🧪 Testing WordPress conditional filtering...");
+    console.log("🧪 Testing WordPress v5.0 conditional filtering...");
 
     try {
-      // Test 1: All filters (no conditions)
-      const allResponse = await fetch('/api/wp/filters');
-      const allData = await allResponse.json();
+      const testResponse = await fetch('/api/test-conditional-filters');
+      const testData = await testResponse.json();
 
-      // Test 2: Toyota only
-      const toyotaResponse = await fetch('/api/wp/filters?make=Toyota');
-      const toyotaData = await toyotaResponse.json();
+      console.log("🧪 WordPress v5.0 Conditional Filtering Results:", testData);
 
-      // Test 3: Toyota + Ford
-      const multiResponse = await fetch('/api/wp/filters?make=Toyota,Ford');
-      const multiData = await multiResponse.json();
-
-      const tests = [
-        {
-          name: 'All Filters',
-          makeCount: allData.filters?.make?.length || 0,
-          modelCount: allData.filters?.model?.length || 0,
-          isConditionalWorking: true
-        },
-        {
-          name: 'Toyota Only',
-          makeCount: toyotaData.filters?.make?.length || 0,
-          modelCount: toyotaData.filters?.model?.length || 0,
-          models: toyotaData.filters?.model || [],
-          hasFordModels: toyotaData.filters?.model?.some(m =>
-            m.name.toLowerCase().includes('f-150') ||
-            m.name.toLowerCase().includes('explorer') ||
-            m.name.toLowerCase().includes('mustang') ||
-            m.name.toLowerCase().includes('escape')
-          ) || false,
-          hasChevyModels: toyotaData.filters?.model?.some(m =>
-            m.name.toLowerCase().includes('silverado') ||
-            m.name.toLowerCase().includes('tahoe') ||
-            m.name.toLowerCase().includes('malibu') ||
-            m.name.toLowerCase().includes('camaro')
-          ) || false,
-          isConditionalWorking: true
-        },
-        {
-          name: 'Toyota + Ford',
-          makeCount: multiData.filters?.make?.length || 0,
-          modelCount: multiData.filters?.model?.length || 0,
-          isConditionalWorking: true
-        }
-      ];
-
-      // Check if Toyota-only test shows non-Toyota models (indicates broken filtering)
-      if (tests[1].hasFordModels || tests[1].hasChevyModels) {
-        tests[1].isConditionalWorking = false;
-      }
-
-      console.log("🧪 WordPress Conditional Filtering Results:", tests);
       setApiTestResult({
         ...apiTestResult,
-        backendTests: tests,
-        backendTestComplete: true
+        backendTests: testData.tests,
+        backendTestComplete: true,
+        conditionalWorking: testData.conditionalFilteringWorking,
+        summary: testData.summary
       });
 
     } catch (error) {
-      console.error("❌ WordPress conditional test failed:", error);
+      console.error("❌ WordPress v5.0 conditional test failed:", error);
       setApiTestResult({
         ...apiTestResult,
         backendTestError: error.message
