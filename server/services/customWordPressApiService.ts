@@ -103,7 +103,17 @@ export class CustomWordPressApiService {
         dataLength: Array.isArray(apiResponse.data) ? apiResponse.data.length : 'N/A',
         totalRecords: apiResponse.pagination?.total,
         fullStructure: Object.keys(apiResponse),
-        sampleVehicle: apiResponse.data?.[0] ? Object.keys(apiResponse.data[0]) : 'none'
+        sampleVehicle: apiResponse.data?.[0] ? Object.keys(apiResponse.data[0]) : 'none',
+        sampleACFFields: apiResponse.data?.[0]?.acf ? Object.keys(apiResponse.data[0].acf).filter(key =>
+          key.includes('dealer') || key.includes('account') || key.includes('seller')
+        ) : 'no ACF',
+        sampleSellerFields: apiResponse.data?.[0]?.acf ? {
+          acount_name_seller: apiResponse.data[0].acf.acount_name_seller,
+          account_name_seller: apiResponse.data[0].acf.account_name_seller,
+          dealer_name: apiResponse.data[0].acf.dealer_name,
+          account_number_seller: apiResponse.data[0].acf.account_number_seller,
+          seller_account_number: apiResponse.data[0].acf.seller_account_number
+        } : 'no ACF'
       });
 
       if (!apiResponse.success || !Array.isArray(apiResponse.data)) {
