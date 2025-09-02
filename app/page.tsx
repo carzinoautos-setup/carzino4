@@ -274,12 +274,6 @@ export default function HomePage() {
       if (appliedFilters.yearMax) {
         apiUrl.searchParams.set('max_year', appliedFilters.yearMax);
       }
-      if (appliedFilters.mileageMin) {
-        apiUrl.searchParams.set('min_mileage', appliedFilters.mileageMin);
-      }
-      if (appliedFilters.mileageMax) {
-        apiUrl.searchParams.set('max_mileage', appliedFilters.mileageMax);
-      }
       if (appliedFilters.paymentMin) {
         apiUrl.searchParams.set('paymentMin', appliedFilters.paymentMin);
       }
