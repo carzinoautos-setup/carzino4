@@ -300,8 +300,8 @@ export default function HomePage() {
         setTotalPages(data.data.meta?.totalPages || 1);
         setTotalResults(data.data.meta?.totalRecords || 0);
         setFilterOptions(data.data.filters || {
-          makes: [], models: [], trims: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [],
+          makes: [], models: [], trims: [], years: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
           exteriorColors: [], interiorColors: [], sellerTypes: [],
           dealers: [], states: [], cities: [], totalVehicles: 0
         });
