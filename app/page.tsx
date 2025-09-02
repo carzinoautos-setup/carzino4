@@ -1079,35 +1079,35 @@ export default function HomePage() {
 
             {/* Debug Status - Remove in production */}
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 Conditional Filtering Test</div>
+              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress Plugin v5.0 - Conditional Filtering Test</div>
               <div className="text-xs text-yellow-700 mb-2">
-                <strong>Expected behavior:</strong> Selecting Toyota should hide all Ford/Chevy models.
-                Selecting Toyota + Ford should show only Toyota and Ford models.
+                <strong>Expected behavior:</strong> WordPress /filters endpoint should return narrowed results.
+                Toyota filter = only Toyota models. Toyota + Ford = only Toyota & Ford models.
               </div>
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={testWordPressAPI}
                   className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
                 >
-                  Test API Direct
+                  Test WP API
                 </button>
                 <button
                   onClick={clearWordPressCache}
                   className="bg-orange-600 text-white px-3 py-1 rounded text-xs hover:bg-orange-700"
                 >
-                  Clear WP Cache
+                  Clear Cache
                 </button>
                 <button
                   onClick={debugWordPressFiltering}
                   className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700"
                 >
-                  Debug WP SQL
+                  Debug SQL
                 </button>
                 <button
                   onClick={testBackendAPI}
                   className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
                 >
-                  Verify Backend
+                  Test Conditional
                 </button>
               </div>
               {apiTestResult && (
