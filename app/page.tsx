@@ -171,56 +171,64 @@ export default function HomePage() {
   const isMountedRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Direct WordPress API test function
+  // Test multi-select filtering functionality
   const testWordPressAPI = async () => {
-    console.log("🧪 Testing WordPress API directly...");
+    console.log("🧪 Testing WordPress multi-select filtering...");
 
     try {
-      // Test 1: Get all filters (no conditions)
-      const allFiltersResponse = await fetch('/api/wp/filters');
-      const allFiltersData = await allFiltersResponse.json();
+      // Test 1: Single make (Toyota)
+      const singleMakeResponse = await fetch('/api/wp/filters?make=Toyota');
+      const singleMakeData = await singleMakeResponse.json();
 
-      // Test 2: Get filters with Toyota selected
-      const toyotaFiltersResponse = await fetch('/api/wp/filters?make=Toyota');
-      const toyotaFiltersData = await toyotaFiltersResponse.json();
+      // Test 2: Multi-make (Toyota + Ford)
+      const multiMakeResponse = await fetch('/api/wp/filters?make=Toyota,Ford');
+      const multiMakeData = await multiMakeResponse.json();
+
+      // Test 3: Multi-model (Camry + F-150)
+      const multiModelResponse = await fetch('/api/wp/filters?model=Camry,F-150');
+      const multiModelData = await multiModelResponse.json();
 
       const testResults = {
-        allFilters: {
-          success: allFiltersData.success,
-          totalMakes: allFiltersData.filters?.make?.length || 0,
-          totalModels: allFiltersData.filters?.model?.length || 0,
-          sampleModels: allFiltersData.filters?.model?.slice(0, 5) || []
+        singleMake: {
+          success: singleMakeData.success,
+          appliedFilters: singleMakeData.applied_filters,
+          totalModels: singleMakeData.filters?.model?.length || 0,
+          sampleModels: singleMakeData.filters?.model?.slice(0, 5) || []
         },
-        toyotaFilters: {
-          success: toyotaFiltersData.success,
-          appliedFilters: toyotaFiltersData.applied_filters,
-          totalModels: toyotaFiltersData.filters?.model?.length || 0,
-          models: toyotaFiltersData.filters?.model || [],
-          hasFordModels: toyotaFiltersData.filters?.model?.some((m: any) =>
-            m.name.toLowerCase().includes('f-150') ||
-            m.name.toLowerCase().includes('explorer') ||
-            m.name.toLowerCase().includes('mustang')
+        multiMake: {
+          success: multiMakeData.success,
+          appliedFilters: multiMakeData.applied_filters,
+          totalModels: multiMakeData.filters?.model?.length || 0,
+          hasToyotaModels: multiMakeData.filters?.model?.some((m: any) =>
+            m.name.toLowerCase().includes('camry') ||
+            m.name.toLowerCase().includes('corolla')
           ) || false,
-          hasChevyModels: toyotaFiltersData.filters?.model?.some((m: any) =>
-            m.name.toLowerCase().includes('silverado') ||
-            m.name.toLowerCase().includes('tahoe') ||
-            m.name.toLowerCase().includes('malibu')
+          hasFordModels: multiMakeData.filters?.model?.some((m: any) =>
+            m.name.toLowerCase().includes('f-150') ||
+            m.name.toLowerCase().includes('explorer')
           ) || false
+        },
+        multiModel: {
+          success: multiModelData.success,
+          appliedFilters: multiModelData.applied_filters,
+          totalTrims: multiModelData.filters?.trim?.length || 0,
+          sampleTrims: multiModelData.filters?.trim?.slice(0, 5) || []
         }
       };
 
-      console.log("🧪 WordPress API Test Results:", testResults);
+      console.log("🧪 Multi-select Test Results:", testResults);
       setApiTestResult(testResults);
 
-      if (testResults.toyotaFilters.hasFordModels || testResults.toyotaFilters.hasChevyModels) {
-        console.error("🚨 CONDITIONAL FILTERING IS BROKEN!");
-        console.error("Toyota filter still showing Ford/Chevy models");
+      // Validate multi-select behavior
+      const isWorking = testResults.multiMake.hasToyotaModels && testResults.multiMake.hasFordModels;
+      if (isWorking) {
+        console.log("✅ Multi-select filtering is working correctly!");
       } else {
-        console.log("✅ Conditional filtering appears to be working correctly");
+        console.error("🚨 Multi-select filtering needs attention");
       }
 
     } catch (error) {
-      console.error("❌ WordPress API test failed:", error);
+      console.error("❌ Multi-select test failed:", error);
       setApiTestResult({ error: error.message });
     }
   };
