@@ -2000,6 +2000,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white">
+                    <Heart className="w-4 h-4 text-red-600" />
+                    <span className="text-sm text-gray-700">{favoritesCount}</span>
+                  </div>
+
                   <div className="relative">
                     <button
                       onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
