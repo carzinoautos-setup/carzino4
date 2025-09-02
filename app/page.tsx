@@ -920,7 +920,16 @@ export default function HomePage() {
                       checked={appliedFilters.make.includes(make.name)}
                       onChange={(e) => {
                         e.stopPropagation();
-                        // Handle make change logic
+                        if (e.target.checked) {
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            make: [...prev.make, make.name],
+                            model: [], // Clear models when make changes
+                            trim: []   // Clear trims when make changes
+                          }));
+                        } else {
+                          removeAppliedFilter("make", make.name);
+                        }
                       }}
                     />
                     <span className="carzino-filter-option">{make.name}</span>
