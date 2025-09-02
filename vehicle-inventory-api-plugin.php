@@ -208,6 +208,7 @@ function via_get_conditional_filters(WP_REST_Request $request) {
 
     // STEP 1: Get narrowed vehicle IDs based on applied filters (YOUR REQUESTED LOGIC)
     $vehicle_ids = via_get_filtered_vehicle_ids($applied_filters);
+    error_log('VIA: Found ' . count($vehicle_ids) . ' vehicle IDs after filtering');
     
     // STEP 2: Build filter counts ONLY from the narrowed pool (YOUR REQUESTED LOGIC)
     $filters = array(
