@@ -1036,6 +1036,36 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
+            {/* Condition Filter */}
+            <FilterSection
+              title="Condition"
+              isCollapsed={collapsedFilters.condition}
+              onToggle={() => toggleFilter("condition")}
+            >
+              <div className="space-y-1">
+                {["New", "Used", "Certified"].map((condition) => (
+                  <label key={condition} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={appliedFilters.condition.includes(condition)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            condition: [...prev.condition, condition]
+                          }));
+                        } else {
+                          removeAppliedFilter("condition", condition);
+                        }
+                      }}
+                    />
+                    <span className="carzino-filter-option">{condition}</span>
+                  </label>
+                ))}
+              </div>
+            </FilterSection>
+
             {/* Make Filter */}
             <FilterSection
               title="Make"
