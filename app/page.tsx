@@ -498,7 +498,7 @@ export default function HomePage() {
         });
       } else {
         setError(data.message || 'Failed to load vehicles');
-        console.error('�� Vehicle data fetch failed:', data);
+        console.error('❌ Vehicle data fetch failed:', data);
       }
     } catch (err) {
       console.error("❌ API Error:", err);
@@ -1112,7 +1112,19 @@ export default function HomePage() {
                     <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
                       {item}
-                      <button onClick={() => removeAppliedFilter("make", item)} className="ml-1 text-white hover:text-gray-300">×</button>
+                      <button onClick={() => {
+                        setCurrentPage(1);
+                        setAppliedFilters(prev => {
+                          const newMakes = prev.make.filter(m => m !== item);
+                          return {
+                            ...prev,
+                            make: newMakes,
+                            // Only clear dependent filters if NO makes are selected
+                            model: newMakes.length === 0 ? [] : prev.model,
+                            trim: newMakes.length === 0 ? [] : prev.trim
+                          };
+                        });
+                      }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   ))}
                   {appliedFilters.model.map((item) => (
