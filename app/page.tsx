@@ -2035,6 +2035,23 @@ export default function HomePage() {
                       </div>
                     )}
                   </div>
+
+                  <div className="relative">
+                    <select
+                      value={resultsPerPage}
+                      onChange={(e) => {
+                        setResultsPerPage(parseInt(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50"
+                    >
+                      <option value="10">View: 10</option>
+                      <option value="25">View: 25</option>
+                      <option value="30">View: 30</option>
+                      <option value="50">View: 50</option>
+                      <option value="100">View: 100</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
