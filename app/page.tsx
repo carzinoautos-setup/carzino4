@@ -426,7 +426,14 @@ export default function HomePage() {
     dealers: [], states: [], cities: [], totalVehicles: 0
   });
 
+  const allMakes = filterOptions.makes || [];
   const displayedMakes = showMoreMakes ? allMakes : allMakes.slice(0, 8);
+
+  // Get available models based on selected makes
+  const availableModels = filterOptions.models || [];
+
+  // Get available trims based on selected models
+  const availableTrims = filterOptions.trims || [];
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
 
