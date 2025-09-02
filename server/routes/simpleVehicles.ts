@@ -363,14 +363,31 @@ export const getCombinedVehicleData: RequestHandler = async (req, res) => {
     const endTime = Date.now();
     console.log(`🚀 COMBINED ENDPOINT: Completed in ${endTime - startTime}ms`);
 
+    // Use dealers from vehicle data if available, otherwise use dealers result
+    const dealersData = vehiclesResult.dealers && vehiclesResult.dealers.length > 0
+      ? vehiclesResult.dealers
+      : dealersResult.data;
+
+    // Update filters with extracted dealers if filters endpoint didn't provide them
+    const updatedFilters = {
+      ...filtersResult.data,
+      dealers: dealersData
+    };
+
+    console.log("🏢 COMBINED: Using dealers from:", {
+      fromVehicleData: vehiclesResult.dealers?.length || 0,
+      fromFiltersEndpoint: dealersResult.data?.length || 0,
+      finalDealerCount: dealersData?.length || 0
+    });
+
     // Return combined response
     res.status(200).json({
       success: true,
       data: {
         vehicles: vehiclesResult.data,
         meta: vehiclesResult.meta,
-        filters: filtersResult.data,
-        dealers: dealersResult.data
+        filters: updatedFilters,
+        dealers: dealersData
       },
       message: `Combined data fetched in ${endTime - startTime}ms`
     });
