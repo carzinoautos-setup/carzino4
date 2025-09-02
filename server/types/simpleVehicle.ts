@@ -45,22 +45,13 @@ export interface SimpleVehicleFilters {
   driveType?: string[];
   transmission?: string[];
   mileage?: string;
-  min_mileage?: string;
-  max_mileage?: string;
   exteriorColor?: string[];
-  interiorColor?: string[];
-  city?: string[];
-  state?: string[];
   sellerType?: string[];
   dealer?: string[];
   priceMin?: string;
   priceMax?: string;
   paymentMin?: string;
   paymentMax?: string;
-  termLength?: string;
-  interestRate?: string;
-  downPayment?: string;
-  search?: string;
 }
 
 export interface SimpleVehiclesApiResponse {

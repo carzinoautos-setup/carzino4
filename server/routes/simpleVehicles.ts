@@ -1,13 +1,13 @@
 import { RequestHandler } from "express";
-import { CustomWordPressApiService } from "../services/customWordPressApiService.js";
+import { SimpleMockVehicleService } from "../services/simpleMockVehicleService.js";
 import {
   SimplePaginationParams,
   SimpleVehicleFilters,
 } from "../types/simpleVehicle.js";
 
-// Using your custom WordPress API for faster response times
-console.log("🚀 Using CustomWordPressApiService - your custom API endpoint");
-const vehicleService = new CustomWordPressApiService();
+// Use simplified mock service for testing
+console.log("🚀 Using SimpleMockVehicleService with original demo format");
+const vehicleService = new SimpleMockVehicleService();
 
 /**
  * GET /api/simple-vehicles
@@ -56,15 +56,6 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     // Parse filter parameters
     const filters: SimpleVehicleFilters = {};
 
-    console.log("🔍 DEBUG: Raw query parameters received:", {
-      make: req.query.make,
-      condition: req.query.condition,
-      vehicleType: req.query.body_type,
-      driveType: req.query.driveType,
-      transmission: req.query.transmission,
-      allQueryParams: Object.keys(req.query)
-    });
-
     // Handle array filters (condition, make, driveType, sellerType)
     if (req.query.condition) {
       filters.condition = (req.query.condition as string).split(",");
@@ -100,8 +91,6 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     // Handle single value filters
     if (req.query.search) filters.search = req.query.search as string;
     if (req.query.mileage) filters.mileage = req.query.mileage as string;
-    if (req.query.min_mileage) filters.min_mileage = req.query.min_mileage as string;
-    if (req.query.max_mileage) filters.max_mileage = req.query.max_mileage as string;
     if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
     if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
     if (req.query.paymentMin)
@@ -109,28 +98,8 @@ export const getSimpleVehicles: RequestHandler = async (req, res) => {
     if (req.query.paymentMax)
       filters.paymentMax = req.query.paymentMax as string;
 
-    // Parse new filter parameters
-    if (req.query.interiorColor) {
-      filters.interiorColor = (req.query.interiorColor as string).split(",");
-    }
-    if (req.query.city) {
-      filters.city = (req.query.city as string).split(",");
-    }
-    if (req.query.state) {
-      filters.state = (req.query.state as string).split(",");
-    }
-
-    // Parse sorting parameter
-    const sortBy = (req.query.sortBy as string) || "relevance";
-
-    console.log("🔍 DEBUG: Parsed filters to send to WooCommerce service:", {
-      filters,
-      sortBy,
-      hasFilters: Object.keys(filters).length > 0
-    });
-
-    // Fetch vehicles from WordPress/WooCommerce
-    const result = await vehicleService.getVehicles(pagination, filters, sortBy);
+    // Fetch vehicles from service (using mock service for now)
+    const result = await vehicleService.getVehicles(filters, pagination);
 
     // Return response
     res.status(200).json(result);
@@ -191,84 +160,16 @@ export const getSimpleVehicleById: RequestHandler = async (req, res) => {
 
 /**
  * GET /api/simple-vehicles/filters
- * Get available filter options (conditionally filtered based on current selections)
+ * Get available filter options
  */
 export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
   try {
-    console.log("🔍 ROUTE: getSimpleFilterOptions called with query:", req.query);
+    const options = await vehicleService.getFilterOptions();
 
-    // Parse filters from query parameters (same logic as main vehicles endpoint)
-    const filters: SimpleVehicleFilters = {};
-
-    // Handle array filters
-    if (req.query.make) {
-      filters.make = (req.query.make as string).split(",");
-    }
-    if (req.query.model) {
-      filters.model = (req.query.model as string).split(",");
-    }
-    if (req.query.trim) {
-      filters.trim = (req.query.trim as string).split(",");
-    }
-    if (req.query.condition) {
-      filters.condition = (req.query.condition as string).split(",");
-    }
-    if (req.query.vehicleType || req.query.body_type) {
-      filters.vehicleType = ((req.query.vehicleType || req.query.body_type) as string).split(",");
-    }
-    if (req.query.driveType) {
-      filters.driveType = (req.query.driveType as string).split(",");
-    }
-    if (req.query.transmission) {
-      filters.transmission = (req.query.transmission as string).split(",");
-    }
-    if (req.query.exteriorColor) {
-      filters.exteriorColor = (req.query.exteriorColor as string).split(",");
-    }
-    if (req.query.sellerType) {
-      filters.sellerType = (req.query.sellerType as string).split(",");
-    }
-    if (req.query.dealer) {
-      filters.dealer = (req.query.dealer as string).split(",");
-    }
-
-    // Handle single value filters
-    if (req.query.search) filters.search = req.query.search as string;
-    if (req.query.mileage) filters.mileage = req.query.mileage as string;
-    if (req.query.min_mileage) filters.min_mileage = req.query.min_mileage as string;
-    if (req.query.max_mileage) filters.max_mileage = req.query.max_mileage as string;
-    if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
-    if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
-
-    // Handle new filter parameters
-    if (req.query.interiorColor) {
-      filters.interiorColor = (req.query.interiorColor as string).split(",");
-    }
-    if (req.query.city) {
-      filters.city = (req.query.city as string).split(",");
-    }
-    if (req.query.state) {
-      filters.state = (req.query.state as string).split(",");
-    }
-
-    console.log("🔍 ROUTE: Parsed applied filters for conditional filtering:", filters);
-    console.log("🔍 ROUTE: Sending filters to service for conditional filter options:", {
-      hasFilters: Object.keys(filters).length > 0,
-      filterKeys: Object.keys(filters)
+    res.status(200).json({
+      success: true,
+      data: options,
     });
-
-    const result = await vehicleService.getFilterOptions(filters);
-
-    console.log("🔍 ROUTE: Sending conditional filter options response:", {
-      success: result.success,
-      makesCount: result.data?.makes?.length,
-      modelsCount: result.data?.models?.length,
-      trimsCount: result.data?.trims?.length,
-      appliedFilters: filters,
-      statusCode: 200
-    });
-
-    res.status(200).json(result);
   } catch (error) {
     console.error("Error in getSimpleFilterOptions route:", error);
     res.status(500).json({
@@ -276,143 +177,10 @@ export const getSimpleFilterOptions: RequestHandler = async (req, res) => {
       message: "Internal server error",
       data: {
         makes: [],
-        models: [],
-        trims: [],
         conditions: [],
         driveTypes: [],
         sellerTypes: [],
       },
-    });
-  }
-};
-
-/**
- * GET /api/simple-vehicles/combined
- * PERFORMANCE OPTIMIZATION: Get vehicles + filters + dealers in single call
- * Reduces 3 API calls to 1 call for significant performance improvement
- */
-export const getCombinedVehicleData: RequestHandler = async (req, res) => {
-  try {
-    console.log("🚀 COMBINED ENDPOINT: Starting combined data fetch");
-    const startTime = Date.now();
-
-    // Parse pagination parameters (same as getSimpleVehicles)
-    const page = parseInt(req.query.page as string) || 1;
-    const pageSize = Math.min(parseInt(req.query.pageSize as string) || 20, 100);
-
-    if (page < 1 || pageSize < 1 || pageSize > 100) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid pagination parameters",
-      });
-    }
-
-    const pagination: SimplePaginationParams = { page, pageSize };
-
-    // Parse filters (same logic as both endpoints)
-    const filters: SimpleVehicleFilters = {};
-
-    // Array filters
-    if (req.query.make) filters.make = (req.query.make as string).split(",");
-    if (req.query.model) filters.model = (req.query.model as string).split(",");
-    if (req.query.trim) filters.trim = (req.query.trim as string).split(",");
-    if (req.query.condition) filters.condition = (req.query.condition as string).split(",");
-    if (req.query.vehicleType || req.query.body_type) {
-      filters.vehicleType = ((req.query.vehicleType || req.query.body_type) as string).split(",");
-    }
-    if (req.query.driveType) filters.driveType = (req.query.driveType as string).split(",");
-    if (req.query.transmission) filters.transmission = (req.query.transmission as string).split(",");
-    if (req.query.exteriorColor) filters.exteriorColor = (req.query.exteriorColor as string).split(",");
-    if (req.query.sellerType) filters.sellerType = (req.query.sellerType as string).split(",");
-    if (req.query.dealer) filters.dealer = (req.query.dealer as string).split(",");
-    if (req.query.interiorColor) filters.interiorColor = (req.query.interiorColor as string).split(",");
-    if (req.query.city) filters.city = (req.query.city as string).split(",");
-    if (req.query.state) filters.state = (req.query.state as string).split(",");
-
-    // Single value filters
-    if (req.query.search) filters.search = req.query.search as string;
-    if (req.query.mileage) filters.mileage = req.query.mileage as string;
-    if (req.query.min_mileage) filters.min_mileage = req.query.min_mileage as string;
-    if (req.query.max_mileage) filters.max_mileage = req.query.max_mileage as string;
-    if (req.query.priceMin) filters.priceMin = req.query.priceMin as string;
-    if (req.query.priceMax) filters.priceMax = req.query.priceMax as string;
-    if (req.query.paymentMin) filters.paymentMin = req.query.paymentMin as string;
-    if (req.query.paymentMax) filters.paymentMax = req.query.paymentMax as string;
-    if (req.query.termLength) filters.termLength = req.query.termLength as string;
-    if (req.query.interestRate) filters.interestRate = req.query.interestRate as string;
-    if (req.query.downPayment) filters.downPayment = req.query.downPayment as string;
-
-    // Parse sort parameter
-    const sortBy = (req.query.sortBy as string) || "relevance";
-
-    console.log("🚀 COMBINED: Fetching all data in parallel");
-
-    console.log("🔍 COMBINED: Sending filters to all service calls for conditional filtering:", {
-      hasFilters: Object.keys(filters).length > 0,
-      filterKeys: Object.keys(filters)
-    });
-
-    // PERFORMANCE: Execute all three calls in parallel instead of sequential
-    // IMPORTANT: Pass filters to getFilterOptions for conditional filtering
-    const [vehiclesResult, filtersResult, dealersResult] = await Promise.all([
-      vehicleService.getVehicles(pagination, filters, sortBy),
-      vehicleService.getFilterOptions(filters), // ✅ NOW PASSING FILTERS FOR CONDITIONAL FILTERING
-      vehicleService.getDealers()
-    ]);
-
-    const endTime = Date.now();
-    console.log(`🚀 COMBINED ENDPOINT: Completed in ${endTime - startTime}ms`);
-
-    // Use dealers from vehicle data if available, otherwise use dealers result
-    const dealersData = vehiclesResult.dealers && vehiclesResult.dealers.length > 0
-      ? vehiclesResult.dealers
-      : dealersResult.data;
-
-    // Update filters with extracted dealers if filters endpoint didn't provide them
-    const updatedFilters = {
-      ...filtersResult.data,
-      dealers: dealersData
-    };
-
-    console.log("🏢 COMBINED: Using dealers from:", {
-      fromVehicleData: vehiclesResult.dealers?.length || 0,
-      fromFiltersEndpoint: dealersResult.data?.length || 0,
-      finalDealerCount: dealersData?.length || 0
-    });
-
-    // Return combined response
-    res.status(200).json({
-      success: true,
-      data: {
-        vehicles: vehiclesResult.data,
-        meta: vehiclesResult.meta,
-        filters: updatedFilters,
-        dealers: dealersData
-      },
-      message: `Combined data fetched in ${endTime - startTime}ms`
-    });
-
-  } catch (error) {
-    console.error("❌ Error in getCombinedVehicleData:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error in combined endpoint",
-      data: {
-        vehicles: [],
-        meta: {
-          totalRecords: 0,
-          totalPages: 0,
-          currentPage: 1,
-          pageSize: 20,
-          hasNextPage: false,
-          hasPreviousPage: false
-        },
-        filters: {
-          makes: [], models: [], trims: [], conditions: [],
-          driveTypes: [], sellerTypes: [], dealers: []
-        },
-        dealers: []
-      }
     });
   }
 };
@@ -423,9 +191,12 @@ export const getCombinedVehicleData: RequestHandler = async (req, res) => {
  */
 export const getDealers: RequestHandler = async (req, res) => {
   try {
-    const result = await vehicleService.getDealers();
+    const dealers = await vehicleService.getDealers();
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      data: dealers,
+    });
   } catch (error) {
     console.error("Error in getDealers route:", error);
     res.status(500).json({
@@ -466,8 +237,8 @@ export const simpleHealthCheck: RequestHandler = async (req, res) => {
   try {
     // Test service connectivity
     const testResult = await vehicleService.getVehicles(
-      { page: 1, pageSize: 1 }, // pagination params
-      {}, // filters
+      {},
+      { page: 1, pageSize: 1 },
     );
 
     res.status(200).json({
@@ -488,23 +259,6 @@ export const simpleHealthCheck: RequestHandler = async (req, res) => {
       timestamp: new Date().toISOString(),
       serviceConnected: false,
       usingMockData: true,
-    });
-  }
-};
-
-/**
- * Test WooCommerce API connection
- */
-export const testWooCommerceApi: RequestHandler = async (req, res) => {
-  try {
-    const result = await (vehicleService as any).testConnection();
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Error testing WooCommerce API:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to test WooCommerce API",
-      error: error.message
     });
   }
 };

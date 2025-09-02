@@ -11,9 +11,6 @@ import MySQLVehiclesOriginalStyle from "./pages/MySQLVehiclesOriginalStyle";
 import { IconDemo } from "./pages/IconDemo";
 import { PaymentCalculatorDemo } from "./pages/PaymentCalculatorDemo";
 import { WooCommerceVehicles } from "./pages/WooCommerceVehicles";
-import WordPressApiTest from "./pages/WordPressApiTest";
-import WordPressVehicles from "./pages/WordPressVehicles";
-import WordPressApiDiagnostic from "./pages/WordPressApiDiagnostic";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,18 +36,6 @@ const App = () => (
           <Route
             path="/woocommerce-vehicles"
             element={<WooCommerceVehicles />}
-          />
-          <Route
-            path="/wordpress-api-test"
-            element={<WordPressApiTest />}
-          />
-          <Route
-            path="/wordpress-vehicles"
-            element={<WordPressVehicles />}
-          />
-          <Route
-            path="/wordpress-diagnostic"
-            element={<WordPressApiDiagnostic />}
           />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -12,11 +12,9 @@ import {
   getSimpleVehicles,
   getSimpleVehicleById,
   getSimpleFilterOptions,
-  getCombinedVehicleData,
   getDealers,
   getVehicleTypes,
   simpleHealthCheck,
-  testWooCommerceApi,
 } from "./routes/simpleVehicles.js";
 import {
   geocodeZip,
@@ -29,8 +27,6 @@ import {
   createDatabaseConnection,
   testDatabaseConnection,
 } from "./db/connection.js";
-import { testWordPressConnection } from "./routes/testConnection.js";
-import { testWordPressApiCall } from "./routes/testWordPressApi.js";
 import {
   calculatePayment,
   calculateBulkPayments,
@@ -38,7 +34,7 @@ import {
   getCacheStats,
   clearCache,
 } from "./routes/payments.js";
-// Defer WordPress sync import to runtime to avoid DB init when not configured
+import WordPressSync from "./scripts/syncWordPressUpdates.js";
 
 // Track WordPress sync status
 const syncStatus = {
@@ -47,25 +43,15 @@ const syncStatus = {
   lastError: null as string | null,
 };
 
-const dbConfigured = !!(
-  process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER
-);
-
 export function createServer() {
   const app = express();
 
-  // Initialize database connection if configured
-  if (dbConfigured) {
-    try {
-      createDatabaseConnection();
-      console.log("🔌 Database connection pool initialized");
-    } catch (error) {
-      console.error("❌ Failed to initialize database:", error);
-    }
-  } else {
-    console.log(
-      "ℹ️ Skipping database initialization (DB_HOST/DB_NAME/DB_USER not set)"
-    );
+  // Initialize database connection
+  try {
+    createDatabaseConnection();
+    console.log("🔌 Database connection pool initialized");
+  } catch (error) {
+    console.error("❌ Failed to initialize database:", error);
   }
 
   // Middleware
@@ -89,14 +75,10 @@ export function createServer() {
   // Simple Vehicle API routes (original demo format)
   app.get("/api/simple-vehicles", getSimpleVehicles);
   app.get("/api/simple-vehicles/filters", getSimpleFilterOptions);
-  app.get("/api/simple-vehicles/combined", getCombinedVehicleData); // PERFORMANCE: 3-in-1 endpoint
   app.get("/api/simple-vehicles/:id", getSimpleVehicleById);
   app.get("/api/dealers", getDealers);
   app.get("/api/vehicle-types", getVehicleTypes);
   app.get("/api/simple-health", simpleHealthCheck);
-  app.get("/api/test-woocommerce", testWooCommerceApi);
-  app.get("/api/test-connection", testWordPressConnection);
-  app.get("/api/test-wordpress-api", testWordPressApiCall);
 
   // Payment calculation routes
   app.post("/api/payments/calculate", calculatePayment);
@@ -127,17 +109,12 @@ export function createServer() {
   // Example API routes (keep for backward compatibility)
   app.get("/api/demo", handleDemo);
 
-  // Test database connection on startup (when configured)
-  if (dbConfigured) {
-    testDatabaseConnection().catch((error) => {
-      console.error(
-        "⚠️  Database connection test failed during startup:",
-        error,
-      );
-    });
-  }
+  // Test database connection on startup
+  testDatabaseConnection().catch((error) => {
+    console.error("⚠️  Database connection test failed during startup:", error);
+  });
 
-  // Initialize WordPress sync system (when DB configured)
+  // Initialize WordPress sync system
   setupWordPressSync();
 
   return app;
@@ -149,18 +126,8 @@ export function createServer() {
  */
 async function setupWordPressSync() {
   try {
-    if (!dbConfigured) {
-      console.log(
-        "ℹ️ Skipping WordPress sync initialization (database not configured)",
-      );
-      return;
-    }
-
     console.log("🔄 Initializing WordPress sync system...");
 
-    const { default: WordPressSync } = await import(
-      "./scripts/syncWordPressUpdates.js"
-    );
     const sync = new WordPressSync();
 
     // Run initial sync check (only if needed)

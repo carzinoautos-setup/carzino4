@@ -10,10 +10,6 @@ interface DatabaseConfig {
   connectionLimit?: number;
   acquireTimeout?: number;
   timeout?: number;
-  reconnect?: boolean;
-  ssl?: any;
-  idleTimeout?: number;
-  maxIdle?: number;
 }
 
 // Create connection pool for better performance
@@ -30,13 +26,9 @@ export function createDatabaseConnection(): mysql.Pool {
     user: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "wordpress",
-    connectionLimit: 5, // Reduced for cloud stability
-    acquireTimeout: 30000,
-    timeout: 30000,
-    reconnect: true, // Auto-reconnect
-    ssl: { rejectUnauthorized: false }, // Enable SSL for Kinsta
-    idleTimeout: 300000, // 5 minutes idle timeout
-    maxIdle: 2, // Maximum idle connections
+    connectionLimit: 10,
+    acquireTimeout: 60000,
+    timeout: 60000,
   };
 
   try {

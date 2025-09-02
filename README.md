@@ -1,229 +1,360 @@
-# Carzino Autos - Next.js + Builder.io
+# Carzino Autos - React Vehicle Management System
 
-A modern vehicle inventory website built with Next.js, Builder.io, and integrated with WooCommerce for live vehicle data.
+A modern, full-stack React application for automotive dealerships with integrated payment calculations, vehicle filtering, and WooCommerce connectivity.
 
-## 🚀 Features
+![Vehicle Management System](https://img.shields.io/badge/React-18.3.1-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
+![Express](https://img.shields.io/badge/Express-5.1.0-green)
+![License](https://img.shields.io/badge/License-Private-red)
 
-- **Builder.io Integration**: Content management and visual editing
-- **Live Vehicle Data**: Direct integration with WooCommerce custom API
-- **Advanced Filtering**: Filter by make, model, condition, price, and more
-- **Responsive Design**: Mobile-first design with Tailwind CSS
-- **Performance Optimized**: Next.js with API routes and React Query
-- **Vercel Deployment**: Production-ready deployment configuration
+## 🚀 **Live Demo**
 
-## 🛠 Tech Stack
+- **Vehicle Listings**: [MySQL Vehicles](https://a473d2afc0654d82ad63098ff3a2e48a-8fa8a87b3bd643ada0be05f0e.fly.dev/mysql-vehicles)
+- **Payment Calculator**: [Payment Demo](https://a473d2afc0654d82ad63098ff3a2e48a-8fa8a87b3bd643ada0be05f0e.fly.dev/payment-demo)
+- **Icon Customization**: [Icon Demo](https://a473d2afc0654d82ad63098ff3a2e48a-8fa8a87b3bd643ada0be05f0e.fly.dev/icon-demo)
+- **WooCommerce Integration**: [WooCommerce Vehicles](https://a473d2afc0654d82ad63098ff3a2e48a-8fa8a87b3bd643ada0be05f0e.fly.dev/woocommerce-vehicles)
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **CMS**: Builder.io for content management
-- **Styling**: Tailwind CSS, Radix UI
-- **State Management**: React Query for API state
-- **API Integration**: WooCommerce custom endpoints
-- **Deployment**: Vercel
+## 📋 **Table of Contents**
 
-## 📦 Getting Started
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Payment Calculator System](#payment-calculator-system)
+- [WooCommerce Integration](#woocommerce-integration)
+- [API Documentation](#api-documentation)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Migration Guides](#migration-guides)
 
-### Prerequisites
+## ✨ **Features**
 
-- Node.js 18+ 
-- npm/yarn/pnpm
-- Builder.io account and API key
-- WooCommerce site with custom API endpoints
+### 🚗 **Vehicle Management**
 
-### Installation
+- **50k+ Vehicle Database** with MySQL backend
+- **Advanced Filtering** by make, model, year, price, condition
+- **Real-time Search** with debounced queries
+- **Responsive Design** for mobile and desktop
+- **Favorites System** with local storage persistence
+- **Pagination** with configurable page sizes
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd carzino-autos-next
-   ```
+### 💰 **Payment Calculator**
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   pnpm install
-   ```
+- **Real-time Payment Calculations** with loan amortization
+- **Dynamic Filtering** by payment affordability
+- **Customizable Parameters** (APR, term, down payment, trade-in)
+- **Bulk Calculations** for vehicle listings
+- **Server-side Caching** for performance optimization
+- **Mobile-optimized Interface**
 
-3. **Set up environment variables**
-   Create a `.env.local` file:
-   ```bash
-   # Builder.io Configuration
-   BUILDER_PUBLIC_KEY=your_builder_io_public_key
-   NEXT_PUBLIC_BUILDER_API_KEY=your_builder_io_public_key
+### 🔧 **Customization**
 
-   # WordPress/WooCommerce API
-   VITE_WP_URL=https://env-uploadbackup62225-czdev.kinsta.cloud
-   NEXT_PUBLIC_WP_URL=https://env-uploadbackup62225-czdev.kinsta.cloud
-   ```
+- **Custom Icon Upload** for vehicle specifications
+- **Drag-and-drop Interface** for icon management
+- **Theme Customization** via TailwindCSS
+- **Component Library** with 50+ pre-built UI components
 
-4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+### 🛒 **WooCommerce Integration**
 
-5. **Open your browser**
-   Visit [http://localhost:3000](http://localhost:3000)
+- **WordPress REST API** connectivity
+- **ACF Field Mapping** for vehicle data
+- **Global Settings** management
+- **Product Synchronization** with custom meta fields
+- **PHP-to-React Migration** tools
 
-## 🏗 Project Structure
+## 🛠 **Tech Stack**
+
+### **Frontend**
+
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **TailwindCSS 3** for styling
+- **Radix UI** for accessible components
+- **React Router 6** for SPA routing
+- **React Query** for data fetching and caching
+- **Lucide React** for icons
+
+### **Backend**
+
+- **Express.js** with TypeScript
+- **MySQL 2** for database connectivity
+- **Zod** for data validation
+- **CORS** for cross-origin requests
+- **Hot Reload** for development
+
+### **Development Tools**
+
+- **PNPM** package manager
+- **Vitest** for testing
+- **Prettier** for code formatting
+- **ESLint** for code quality
+
+## 📁 **Project Structure**
 
 ```
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   ├── vehicles/      # Vehicle data endpoints
-│   │   └── filters/       # Filter options endpoints
-│   ├── vehicles/          # Vehicle listing page
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Home page with Builder.io
-├── components/            # React components
-│   ├── builder/           # Builder.io specific components
-│   ├── vehicles/          # Vehicle-related components
-│   └── ui/                # Reusable UI components
-├── lib/                   # Utilities and configurations
-│   ├── api/               # API service layer
-│   ├── builder.ts         # Builder.io configuration
-│   └── env.ts             # Environment configuration
-└── vercel.json            # Vercel deployment config
+├── client/                     # React SPA frontend
+│   ├── components/            # Reusable UI components
+│   │   ├── ui/               # Base UI component library (50+ components)
+│   │   ├── VehicleCard.tsx   # Vehicle display component
+│   │   ├── FilterSection.tsx # Filter UI component
+│   │   └── IconUploader.tsx  # Custom icon upload component
+│   ├── hooks/                # Custom React hooks
+│   │   ├── usePaymentFilters.ts  # Payment calculation hook
+│   │   └── use-toast.ts      # Toast notification hook
+│   ├── lib/                  # Utility libraries
+│   │   ├── paymentCalculator.ts  # Payment calculation utilities
+│   │   ├── wordpressApi.ts   # WordPress/WooCommerce API client
+│   │   ├── vehicleApi.ts     # Vehicle data API client
+│   │   └── utils.ts          # Common utilities
+│   ├── pages/                # Route components
+│   │   ├── Index.tsx         # Home page
+│   │   ├── MySQLVehiclesOriginalStyle.tsx  # Main vehicle listing
+│   │   ├── PaymentCalculatorDemo.tsx       # Payment calculator demo
+│   │   ├── WooCommerceVehicles.tsx        # WooCommerce integration
+│   │   └── IconDemo.tsx      # Icon customization demo
+│   ├── App.tsx               # App entry point with routing
+│   └── global.css            # TailwindCSS configuration and themes
+├── server/                   # Express API backend
+│   ├── routes/               # API route handlers
+│   │   ├── vehicles.ts       # Vehicle CRUD operations
+│   │   ├── payments.ts       # Payment calculation APIs
+│   │   └── demo.ts           # Demo endpoints
+│   ├── services/             # Business logic services
+│   │   ├── vehicleService.ts # Vehicle data service
+│   │   └── mockVehicleService.ts  # Mock data service
+│   ├── types/                # TypeScript type definitions
+│   │   ├── vehicle.ts        # Vehicle data types
+│   │   └── simpleVehicle.ts  # Simplified vehicle types
+│   ├── db/                   # Database configuration
+│   │   └── connection.ts     # MySQL connection setup
+│   └── index.ts              # Express server setup
+├── shared/                   # Shared types between client/server
+│   └── api.ts                # Common API interfaces
+├── docs/                     # Documentation files
+├── netlify/                  # Netlify deployment configuration
+└── public/                   # Static assets
 ```
 
-## 🔌 API Integration
+## 🚀 **Quick Start**
 
-### WooCommerce Endpoints
+### **Prerequisites**
 
-The app connects to these WooCommerce API endpoints:
+- Node.js 18+
+- PNPM 8+
+- MySQL 8.0+
 
-- **Vehicles**: `/wp-json/custom/v1/vehicles`
-  - Pagination, filtering, and sorting
-  - Live vehicle inventory data
-
-- **Filters**: `/wp-json/custom/v1/filters`
-  - Dynamic filter options based on available inventory
-  - Conditional filtering support
-
-### API Routes
-
-- `GET /api/vehicles` - Fetch vehicles with filters and pagination
-- `GET /api/filters` - Fetch available filter options
-
-## 🎨 Builder.io Integration
-
-### Custom Components
-
-The following components are registered with Builder.io:
-
-- `VehicleCard` - Individual vehicle display
-- `FilterSection` - Filter controls
-- `VehiclesGrid` - Vehicle listing grid
-- `VehicleSearch` - Search functionality
-
-### Content Management
-
-1. **Create Builder.io account** at [builder.io](https://builder.io)
-2. **Add your domain** to Builder.io settings
-3. **Create page content** using the visual editor
-4. **Deploy changes** are automatically reflected
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. **Connect to Vercel**
-   ```bash
-   npm i -g vercel
-   vercel login
-   ```
-
-2. **Deploy**
-   ```bash
-   vercel --prod
-   ```
-
-3. **Set Environment Variables** in Vercel dashboard:
-   - `BUILDER_PUBLIC_KEY`
-   - `NEXT_PUBLIC_BUILDER_API_KEY`
-   - `VITE_WP_URL`
-   - `NEXT_PUBLIC_WP_URL`
-
-### Environment Variables
-
-#### Required
-- `BUILDER_PUBLIC_KEY` - Builder.io public API key
-- `VITE_WP_URL` - WordPress/WooCommerce site URL
-
-#### Optional
-- `WC_CONSUMER_KEY` - WooCommerce consumer key (if using WC REST API)
-- `WC_CONSUMER_SECRET` - WooCommerce consumer secret (if using WC REST API)
-
-## 📱 Usage
-
-### For Content Editors
-
-1. **Edit Content**: Use Builder.io visual editor
-2. **Preview Changes**: See live preview before publishing
-3. **Publish**: Deploy changes instantly
-
-### For Developers
-
-1. **Add Components**: Register new components in `components/builder/`
-2. **API Integration**: Extend API routes in `app/api/`
-3. **Styling**: Use Tailwind CSS classes
-
-## 🔧 Development
-
-### Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript checks
-
-### Key Features
-
-- **Hot Reload**: Instant updates during development
-- **TypeScript**: Full type safety
-- **API Caching**: React Query for efficient data fetching
-- **Responsive**: Mobile-first design
-- **SEO Optimized**: Next.js built-in optimizations
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Builder.io not loading**
-   - Check `BUILDER_PUBLIC_KEY` environment variable
-   - Verify domain is added to Builder.io
-
-2. **Vehicle data not loading**
-   - Check `VITE_WP_URL` environment variable
-   - Verify WooCommerce API endpoints are accessible
-
-3. **Build errors**
-   - Run `npm run type-check` to check TypeScript errors
-   - Check all environment variables are set
-
-### API Testing
-
-Test the API endpoints directly:
+### **Installation**
 
 ```bash
-# Test vehicles endpoint
-curl https://your-vercel-app.vercel.app/api/vehicles
+# Clone the repository
+git clone https://github.com/carzinoautos-setup/builder-NEW.git
+cd builder-NEW
 
-# Test filters endpoint  
-curl https://your-vercel-app.vercel.app/api/filters
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
+
+# Start the development server
+pnpm dev
 ```
 
-## 📄 License
+### **Environment Variables**
 
-This project is proprietary software for Carzino Autos.
+Create a `.env.local` file:
 
-## 🤝 Support
+```bash
+# WordPress/WooCommerce Integration
+VITE_WP_URL=https://your-wordpress-site.com
 
-For technical support or questions:
-- Check the troubleshooting section above
-- Review the API integration documentation
-- Contact the development team
+# Database Configuration (for MySQL features)
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=your_database
+DB_USER=your_user
+DB_PASSWORD=your_password
+```
+
+### **Database Setup**
+
+```bash
+# Run the sample data generator (optional)
+# This creates 50,000 sample vehicle records
+pnpm tsx server/scripts/generateSampleData.ts
+```
+
+## 💰 **Payment Calculator System**
+
+### **Features**
+
+- **Real-time Calculations** using standard loan amortization formulas
+- **Parameter Customization**: APR, loan term, down payment, trade-in value
+- **Payment Range Filtering** to find vehicles within budget
+- **Bulk Calculations** for entire vehicle listings
+- **Server-side Caching** with 5-minute TTL for performance
+
+### **API Endpoints**
+
+```typescript
+POST / api / payments / calculate; // Single payment calculation
+POST / api / payments / bulk; // Bulk vehicle calculations
+POST / api / payments / affordable - price; // Find affordable price range
+GET / api / payments / cache - stats; // Performance monitoring
+DELETE / api / payments / cache; // Cache management
+```
+
+### **Usage Example**
+
+```typescript
+import { usePaymentFilters } from "./hooks/usePaymentFilters";
+
+const {
+  paymentState,
+  updatePaymentState,
+  calculateVehiclePayment,
+  affordablePriceRange,
+} = usePaymentFilters({
+  initialState: {
+    paymentMin: "300",
+    paymentMax: "600",
+    interestRate: "4.9",
+    loanTermMonths: "60",
+    downPayment: "3000",
+  },
+});
+```
+
+## 🛒 **WooCommerce Integration**
+
+### **Overview**
+
+Complete integration with WordPress/WooCommerce for vehicle data management.
+
+### **Setup**
+
+1. Add the WordPress API bridge to your site
+2. Configure ACF fields for vehicle data
+3. Set up REST API endpoints
+4. Connect React app to WordPress
+
+### **Supported Features**
+
+- **Product Synchronization** with custom meta fields
+- **Real-time Data Fetching** via WordPress REST API
+- **Global Settings** management through ACF options
+- **Search and Filtering** across WooCommerce products
+- **Payment Integration** with WordPress data
+
+See [WooCommerce Integration Guide](./WORDPRESS-INTEGRATION-SETUP.md) for detailed setup instructions.
+
+## 📊 **API Documentation**
+
+### **Vehicle Endpoints**
+
+```typescript
+GET    /api/vehicles                    // Get vehicles with filters and pagination
+GET    /api/vehicles/:id                // Get single vehicle by ID
+GET    /api/vehicles/filters            // Get available filter options
+GET    /api/health                      // Database health check
+```
+
+### **Payment Endpoints**
+
+```typescript
+POST / api / payments / calculate; // Calculate monthly payment
+POST / api / payments / bulk; // Bulk payment calculations
+POST / api / payments / affordable - price; // Find affordable price range
+GET / api / payments / cache - stats; // Cache performance stats
+DELETE / api / payments / cache; // Clear payment cache
+```
+
+### **WordPress Endpoints**
+
+```typescript
+GET    /wp-json/carzino/v1/vehicles           // WooCommerce vehicles
+GET    /wp-json/carzino/v1/vehicles/:id       // Single WooCommerce vehicle
+GET    /wp-json/carzino/v1/settings           // Global ACF settings
+POST   /wp-json/carzino/v1/vehicles/affordable // Payment-based vehicle search
+```
+
+## 🚀 **Deployment**
+
+### **Development**
+
+```bash
+pnpm dev        # Start development server
+pnpm test       # Run tests
+pnpm typecheck  # TypeScript validation
+```
+
+### **Production Build**
+
+```bash
+pnpm build      # Build client and server
+pnpm start      # Start production server
+```
+
+### **Deployment Options**
+
+- **Netlify**: Automated deployment with `netlify.toml`
+- **Vercel**: Full-stack deployment support
+- **Docker**: Containerized deployment
+- **Traditional Hosting**: Static build + Node.js server
+
+## 🔄 **Migration Guides**
+
+### **From PHP to React**
+
+- [WordPress Integration Setup](./WORDPRESS-INTEGRATION-SETUP.md)
+- [Environment Variables Setup](./ENVIRONMENT-SETUP.md)
+- [Payment Calculator Migration](./docs/payment-migration.md)
+
+### **Data Migration**
+
+- [WooCommerce Field Mapping](./woocommerce-mapping-template.csv)
+- [Database Schema Migration](./docs/database-migration.md)
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### **Development Guidelines**
+
+- Use TypeScript for all new code
+- Follow the existing code style (Prettier enforced)
+- Add tests for new features
+- Update documentation for API changes
+- Use semantic commit messages
+
+## 📝 **Changelog**
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and version history.
+
+## 📄 **License**
+
+Private repository - All rights reserved.
+
+## 🆘 **Support**
+
+- **Documentation**: Check the `/docs` folder for detailed guides
+- **Issues**: Create a GitHub issue for bugs or feature requests
+- **Development**: See [Contributing Guidelines](#contributing)
+
+## 🏗 **Roadmap**
+
+- [ ] Advanced vehicle comparison features
+- [ ] Financing calculator with multiple lenders
+- [ ] Mobile app development
+- [ ] Advanced analytics dashboard
+- [ ] Multi-location inventory management
+- [ ] Customer CRM integration
 
 ---
 
-**Built with ❤️ for Carzino Autos**
+**Built with ❤️ for the automotive industry**
