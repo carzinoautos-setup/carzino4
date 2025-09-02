@@ -6,10 +6,22 @@ A modern vehicle inventory website built with Next.js, Builder.io, and integrate
 
 - **Builder.io Integration**: Content management and visual editing
 - **Live Vehicle Data**: Direct integration with WooCommerce custom API
+- **✅ Conditional Filtering**: Make → Model → Trim → Year cascading (ACTIVE)
 - **Advanced Filtering**: Filter by make, model, condition, price, and more
 - **Responsive Design**: Mobile-first design with Tailwind CSS
 - **Performance Optimized**: Next.js with API routes and React Query
 - **Vercel Deployment**: Production-ready deployment configuration
+
+## 🔌 **WordPress Plugin Status: ACTIVE**
+
+**✅ Vehicle Inventory API v2.0 is installed and working**
+
+- **Conditional Filtering**: ✅ Working perfectly
+- **API Endpoints**: ✅ All active (`/vehicles`, `/filters`, `/ping`)
+- **Multi-Select Support**: ✅ Toyota,Ford filtering works
+- **Cache System**: ✅ 5-minute TTL with rebuild functionality
+
+**Quick Test**: [Check API Health](https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/ping)
 
 ## 🛠 Tech Stack
 
