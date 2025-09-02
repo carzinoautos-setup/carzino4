@@ -956,6 +956,21 @@ export default function HomePage() {
                   {apiTestResult.error && (
                     <div className="text-red-600 font-semibold">❌ API Error: {apiTestResult.error}</div>
                   )}
+                  {apiTestResult.debug && (
+                    <div className="mt-2 p-2 bg-purple-50 border border-purple-200 rounded text-xs">
+                      <div className="font-semibold text-purple-800">🔬 WordPress SQL Debug:</div>
+                      <div>All vehicles: {apiTestResult.debug.all_vehicles_count}</div>
+                      <div>Ford vehicles: {apiTestResult.debug.filtered_vehicles_count}</div>
+                      <div>All models: {apiTestResult.debug.all_models_count}</div>
+                      <div>Ford models: {apiTestResult.debug.filtered_models_count}</div>
+                      <div className={apiTestResult.debug.filtered_models_count > 0 && apiTestResult.debug.filtered_vehicles_count > 0 ? "text-green-600" : "text-red-600"}>
+                        {apiTestResult.debug.filtered_models_count > 0 ? "✅ SQL filtering working" : "❌ SQL filtering broken"}
+                      </div>
+                    </div>
+                  )}
+                  {apiTestResult.debugError && (
+                    <div className="text-red-600 font-semibold">❌ Debug Error: {apiTestResult.debugError}</div>
+                  )}
                 </div>
               )}
             </div>
