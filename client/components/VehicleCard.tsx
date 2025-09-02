@@ -241,7 +241,19 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               )}
             </div>
             <span className="text-black font-medium">
-              {vehicle.doors.replace(/doors/g, "Doors")}
+              {(() => {
+                const doors = vehicle.doors || "4";
+                // If it's just a number, add "Doors"
+                if (/^\d+$/.test(doors)) {
+                  return `${doors} Doors`;
+                }
+                // If it already contains "doors" (case insensitive), replace with proper case
+                if (/doors/i.test(doors)) {
+                  return doors.replace(/doors/gi, "Doors");
+                }
+                // If it doesn't contain "doors", add it
+                return `${doors} Doors`;
+              })()}
             </span>
           </div>
         </div>
