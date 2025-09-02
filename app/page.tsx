@@ -1109,6 +1109,47 @@ export default function HomePage() {
               </div>
             </FilterSection>
 
+            {/* Year Filter */}
+            <FilterSection
+              title="Year"
+              isCollapsed={collapsedFilters.year}
+              onToggle={() => toggleFilter("year")}
+            >
+              <div className="space-y-1">
+                {(filterOptions.years && filterOptions.years.length > 0) ? (
+                  filterOptions.years.map((year, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.year.includes(year.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1);
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              year: [...prev.year, year.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              year: prev.year.filter(y => y !== year.name)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{year.name}</span>
+                      <span className="carzino-filter-count ml-1">({year.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    Loading years...
+                  </div>
+                )}
+              </div>
+            </FilterSection>
+
             {/* Mileage Filter */}
             <FilterSection
               title="Mileage"
@@ -1133,6 +1174,68 @@ export default function HomePage() {
                 <option value="60,000 – 100,000">60,000 – 100,000</option>
                 <option value="Over 100,000">Over 100,000</option>
               </select>
+            </FilterSection>
+
+            {/* Fuel Type Filter */}
+            <FilterSection
+              title="Fuel Type"
+              isCollapsed={collapsedFilters.fuelType}
+              onToggle={() => toggleFilter("fuelType")}
+            >
+              <div className="space-y-1">
+                {(filterOptions.fuelTypes && filterOptions.fuelTypes.length > 0) ? (
+                  filterOptions.fuelTypes.map((fuelType, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.fuel_type.includes(fuelType.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1);
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              fuel_type: [...prev.fuel_type, fuelType.name]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              fuel_type: prev.fuel_type.filter(ft => ft !== fuelType.name)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{fuelType.name}</span>
+                      <span className="carzino-filter-count ml-1">({fuelType.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Gasoline", "Hybrid", "Electric", "Diesel"].map((fuelType) => (
+                    <label key={fuelType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.fuel_type.includes(fuelType)}
+                        onChange={(e) => {
+                          setCurrentPage(1);
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              fuel_type: [...prev.fuel_type, fuelType]
+                            }));
+                          } else {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              fuel_type: prev.fuel_type.filter(ft => ft !== fuelType)
+                            }));
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{fuelType}</span>
+                    </label>
+                  ))
+                )}
+              </div>
             </FilterSection>
 
             {/* Drive Type Filter */}
