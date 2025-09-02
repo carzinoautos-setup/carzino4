@@ -290,7 +290,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         </div>
 
         <div className="flex justify-center items-start gap-6 mb-1 flex-1">
-          {vehicle.salePrice ? (
+          {vehicle.salePrice && vehicle.salePrice !== "Call for Price" ? (
             <>
               <div className="text-center">
                 <div className="carzino-price-label text-gray-500 mb-0">
