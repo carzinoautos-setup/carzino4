@@ -19,9 +19,7 @@ const nextConfig = {
       },
     ]
   },
-  experimental: {
-    serverComponentsExternalPackages: ['@builder.io/sdk'],
-  },
+  serverExternalPackages: ['@builder.io/sdk'],
 }
 
 module.exports = nextConfig
