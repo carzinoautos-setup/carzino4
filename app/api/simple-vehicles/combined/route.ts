@@ -107,8 +107,6 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
-
-    console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
     console.log('🔗 Fetching filters from:', filtersUrl.toString());
 
     // Fetch vehicles and filters in parallel
