@@ -316,16 +316,16 @@ export default function HomePage() {
       console.log("✅ API Response:", { success: data.success, vehiclesCount: data.data?.vehicles?.length });
 
       if (data.success) {
-        setVehicles(data.data.vehicles || []);
+        setVehicles(data.data || []);
         setApiResponse({
-          data: data.data.vehicles,
-          meta: data.data.meta,
+          data: data.data,
+          meta: data.pagination,
           success: true
         });
-        setTotalPages(data.data.meta?.totalPages || 1);
-        setTotalResults(data.data.meta?.totalRecords || 0);
+        setTotalPages(data.pagination?.total_pages || 1);
+        setTotalResults(data.pagination?.total || 0);
 
-        const filters = data.data.filters || {
+        const filters = data.filters || {
           makes: [], models: [], trims: [], years: [], conditions: [],
           vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
           exteriorColors: [], interiorColors: [], sellerTypes: [],
@@ -338,7 +338,8 @@ export default function HomePage() {
           years: filters.years?.length || 0,
           conditions: filters.conditions?.length || 0,
           dealers: filters.dealers?.length || 0,
-          sampleMakes: filters.makes?.slice(0, 3)
+          sampleMakes: filters.makes?.slice(0, 3),
+          appliedFilters: data.applied_filters
         });
 
         setFilterOptions(filters);
