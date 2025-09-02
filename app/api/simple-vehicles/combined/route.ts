@@ -266,21 +266,20 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'Failed to fetch from WooCommerce API',
         message: error instanceof Error ? error.message : 'Unknown error',
-        data: {
-          vehicles: [],
-          meta: {
-            totalRecords: 0,
-            totalPages: 0,
-            currentPage: parseInt(request.nextUrl.searchParams.get('page') || '1'),
-            pageSize: parseInt(request.nextUrl.searchParams.get('pageSize') || '25')
-          },
-          filters: {
-            makes: [], models: [], trims: [], years: [], conditions: [],
-            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
-            exteriorColors: [], interiorColors: [], sellerTypes: [],
-            dealers: [], states: [], cities: [], totalVehicles: 0
-          }
-        }
+        data: [],
+        pagination: {
+          total: 0,
+          page: parseInt(request.nextUrl.searchParams.get('page') || '1'),
+          per_page: parseInt(request.nextUrl.searchParams.get('pageSize') || '25'),
+          total_pages: 0
+        },
+        filters: {
+          makes: [], models: [], trims: [], years: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
+        },
+        applied_filters: {}
       },
       { status: 500 }
     );
