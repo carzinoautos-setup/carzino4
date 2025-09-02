@@ -2000,28 +2000,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="view-switcher">
-                    <button
-                      onClick={() => setViewMode("all")}
-                      className={viewMode === "all" ? "active" : ""}
-                    >
-                      All Vehicles
-                    </button>
-                    <button
-                      onClick={() => setViewMode("favorites")}
-                      className={viewMode === "favorites" ? "active" : ""}
-                    >
-                      <Heart className="w-4 h-4" />
-                      Favorites ({favoritesCount})
-                    </button>
-                  </div>
-
                   <div className="relative">
                     <button
                       onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
                       className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
                     >
-                      <span className="text-sm">Sort: {getSortDisplayLabel(sortBy)}</span>
+                      <span className="text-sm">Sort</span>
                       <ChevronDown className="w-4 h-4" />
                     </button>
                     {sortDropdownOpen && (
