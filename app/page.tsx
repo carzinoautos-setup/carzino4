@@ -299,12 +299,24 @@ export default function HomePage() {
         });
         setTotalPages(data.data.meta?.totalPages || 1);
         setTotalResults(data.data.meta?.totalRecords || 0);
-        setFilterOptions(data.data.filters || {
+
+        const filters = data.data.filters || {
           makes: [], models: [], trims: [], years: [], conditions: [],
           vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
           exteriorColors: [], interiorColors: [], sellerTypes: [],
           dealers: [], states: [], cities: [], totalVehicles: 0
+        };
+
+        console.log("🔍 DEBUG: Filter options received:", {
+          makes: filters.makes?.length || 0,
+          models: filters.models?.length || 0,
+          years: filters.years?.length || 0,
+          conditions: filters.conditions?.length || 0,
+          dealers: filters.dealers?.length || 0,
+          sampleMakes: filters.makes?.slice(0, 3)
         });
+
+        setFilterOptions(filters);
       } else {
         setError(data.message || 'Failed to load vehicles');
       }
