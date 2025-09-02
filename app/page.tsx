@@ -1004,7 +1004,8 @@ export default function HomePage() {
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              model: [...prev.model, model]
+                              model: [...prev.model, model],
+                              trim: [] // Clear trims when model changes
                             }));
                           } else {
                             removeAppliedFilter("model", model);
