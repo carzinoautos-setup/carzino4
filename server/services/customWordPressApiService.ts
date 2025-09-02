@@ -272,7 +272,7 @@ export class CustomWordPressApiService {
       // Extract unique dealers from vehicle data as fallback
       const uniqueDealers = new Map();
       vehicles.forEach(vehicle => {
-        const dealerName = vehicle.acf?.acount_name_seller || vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name;
+        const dealerName = vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name;
         const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number;
 
         if (dealerName && accountNumber) {
@@ -280,7 +280,7 @@ export class CustomWordPressApiService {
           if (!uniqueDealers.has(key)) {
             uniqueDealers.set(key, {
               name: dealerName,
-              acount_name_seller: dealerName,
+              account_name_seller: dealerName,
               account_number_seller: accountNumber,
               count: 0
             });
@@ -350,7 +350,7 @@ export class CustomWordPressApiService {
           doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
           salePrice: formattedPrice,
           payment: payment,
-          dealer: vehicle.acf?.acount_name_seller || vehicle.acf?.dealer_name || "Carzino Dealer",
+          dealer: vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name || "Carzino Dealer",
           location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
           phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
           seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer",
@@ -535,9 +535,8 @@ export class CustomWordPressApiService {
           interiorColors: sortFilterOptions(filtersData.interior_color || []),
           years: sortFilterOptions(filtersData.year || []),
 
-          // Location and dealer filters with all possible field mapping options
+          // Location and dealer filters with correct field mapping
           dealers: sortFilterOptions(
-            filtersData.acount_name_seller ||
             filtersData.account_name_seller ||
             filtersData.dealer_name ||
             filtersData.sellers ||
@@ -611,8 +610,7 @@ export class CustomWordPressApiService {
       const apiResponse = await response.json();
 
       if (apiResponse.success && apiResponse.filters) {
-        const dealers = apiResponse.filters.acount_name_seller ||
-                        apiResponse.filters.account_name_seller ||
+        const dealers = apiResponse.filters.account_name_seller ||
                         apiResponse.filters.dealer_name ||
                         apiResponse.filters.sellers ||
                         apiResponse.filters.dealer || [];
