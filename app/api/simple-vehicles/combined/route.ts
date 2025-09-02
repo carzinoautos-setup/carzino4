@@ -78,11 +78,17 @@ export async function GET(request: NextRequest) {
     // Parse pagination parameters
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '25');
+    const sortBy = searchParams.get('sortBy') || searchParams.get('sort');
 
     // Build vehicles API URL with filters
     const vehiclesUrl = new URL(`${WP_BASE_URL}/vehicles`);
     vehiclesUrl.searchParams.set('per_page', pageSize.toString());
     vehiclesUrl.searchParams.set('page', page.toString());
+
+    // Add sorting parameter
+    if (sortBy && sortBy !== 'relevance') {
+      vehiclesUrl.searchParams.set('sort', sortBy);
+    }
 
     // Build filters URL for dependent filtering
     const filtersUrl = new URL(`${WP_BASE_URL}/filters`);
