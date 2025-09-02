@@ -177,12 +177,9 @@ export default function HomePage() {
         apiUrl.searchParams.set('sortBy', sortBy);
       }
 
-      // Add ALL filters to API call
+      // Add ALL ACF filters to API call (using correct WordPress field names)
       if (appliedFilters.make.length > 0) {
         apiUrl.searchParams.set('make', appliedFilters.make.join(','));
-      }
-      if (appliedFilters.condition.length > 0) {
-        apiUrl.searchParams.set('condition', appliedFilters.condition.join(','));
       }
       if (appliedFilters.model.length > 0) {
         apiUrl.searchParams.set('model', appliedFilters.model.join(','));
@@ -190,32 +187,47 @@ export default function HomePage() {
       if (appliedFilters.trim.length > 0) {
         apiUrl.searchParams.set('trim', appliedFilters.trim.join(','));
       }
+      if (appliedFilters.year.length > 0) {
+        apiUrl.searchParams.set('year', appliedFilters.year.join(','));
+      }
+      if (appliedFilters.condition.length > 0) {
+        apiUrl.searchParams.set('condition', appliedFilters.condition.join(','));
+      }
+
+      // Technical specs (map to correct ACF field names)
       if (appliedFilters.vehicleType.length > 0) {
-        apiUrl.searchParams.set('body_type', appliedFilters.vehicleType.join(','));
+        apiUrl.searchParams.set('body_style', appliedFilters.vehicleType.join(','));
       }
       if (appliedFilters.driveType.length > 0) {
-        apiUrl.searchParams.set('driveType', appliedFilters.driveType.join(','));
-      }
-      if (appliedFilters.exteriorColor.length > 0) {
-        apiUrl.searchParams.set('exteriorColor', appliedFilters.exteriorColor.join(','));
-      }
-      if (appliedFilters.sellerType.length > 0) {
-        apiUrl.searchParams.set('sellerType', appliedFilters.sellerType.join(','));
+        apiUrl.searchParams.set('drivetrain', appliedFilters.driveType.join(','));
       }
       if (appliedFilters.transmission.length > 0) {
         apiUrl.searchParams.set('transmission', appliedFilters.transmission.join(','));
       }
+      if (appliedFilters.fuel_type.length > 0) {
+        apiUrl.searchParams.set('fuel_type', appliedFilters.fuel_type.join(','));
+      }
+
+      // Colors
+      if (appliedFilters.exteriorColor.length > 0) {
+        apiUrl.searchParams.set('exterior_color', appliedFilters.exteriorColor.join(','));
+      }
       if (appliedFilters.interiorColor.length > 0) {
-        apiUrl.searchParams.set('interiorColor', appliedFilters.interiorColor.join(','));
+        apiUrl.searchParams.set('interior_color', appliedFilters.interiorColor.join(','));
+      }
+
+      // Dealer/location (map to correct ACF field names)
+      if (appliedFilters.sellerType.length > 0) {
+        apiUrl.searchParams.set('seller_type', appliedFilters.sellerType.join(','));
       }
       if (appliedFilters.dealer.length > 0) {
-        apiUrl.searchParams.set('dealer', appliedFilters.dealer.join(','));
+        apiUrl.searchParams.set('account_number_seller', appliedFilters.dealer.join(','));
       }
       if (appliedFilters.city.length > 0) {
-        apiUrl.searchParams.set('city', appliedFilters.city.join(','));
+        apiUrl.searchParams.set('city_seller', appliedFilters.city.join(','));
       }
       if (appliedFilters.state.length > 0) {
-        apiUrl.searchParams.set('state', appliedFilters.state.join(','));
+        apiUrl.searchParams.set('state_seller', appliedFilters.state.join(','));
       }
       if (appliedFilters.mileage) {
         // Convert mileage range text to min/max numeric values for API
