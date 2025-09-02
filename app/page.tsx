@@ -1306,7 +1306,10 @@ export default function HomePage() {
                               condition: [...prev.condition, condition.name]
                             }));
                           } else {
-                            removeAppliedFilter("condition", condition.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              condition: prev.condition.filter(c => c !== condition.name)
+                            }));
                           }
                         }}
                       />
