@@ -390,7 +390,8 @@ export default function HomePage() {
   };
 
   const clearAllFilters = () => {
-    setAppliedFilters({
+    // First, reset all applied filters to empty state
+    const emptyFilters = {
       // Core vehicle filters
       condition: [],
       make: [],
@@ -420,7 +421,9 @@ export default function HomePage() {
       priceMax: "",
       paymentMin: "",
       paymentMax: "",
-    });
+    };
+
+    setAppliedFilters(emptyFilters);
     setPriceMin("");
     setPriceMax("");
     setPaymentMin("");
@@ -431,6 +434,12 @@ export default function HomePage() {
     setZipCode("");
     setRadius("10");
     setCurrentPage(1);
+
+    // Force refresh filter options with no filters applied
+    // This ensures we get all available options back
+    setTimeout(() => {
+      fetchCombinedData();
+    }, 100);
   };
 
   const removeAppliedFilter = (category: string, value: string) => {
