@@ -1025,6 +1025,27 @@ export default function HomePage() {
                   {apiTestResult.debugError && (
                     <div className="text-red-600 font-semibold">❌ Debug Error: {apiTestResult.debugError}</div>
                   )}
+                  {apiTestResult.backendTests && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                      <div className="font-semibold text-green-800">🧪 Backend API Verification:</div>
+                      {apiTestResult.backendTests.map((test: any, index: number) => (
+                        <div key={index} className="mt-1">
+                          <div className="font-semibold">{test.name}:</div>
+                          <div>Models: {test.modelCount || 'N/A'}</div>
+                          {test.name === 'Toyota Only' && (
+                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
+                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
+                              {test.hasFordModels && <div>- Still shows Ford models</div>}
+                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {apiTestResult.backendTestError && (
+                    <div className="text-red-600 font-semibold">❌ Backend Test Error: {apiTestResult.backendTestError}</div>
+                  )}
                 </div>
               )}
             </div>
