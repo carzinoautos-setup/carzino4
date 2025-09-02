@@ -456,10 +456,85 @@ function via_apply_filters_to_query($args, $filters) {
  */
 function via_rebuild_filter_cache(WP_REST_Request $request) {
     via_clear_filter_cache();
-    
+
     return new WP_REST_Response(array(
         'success' => true,
         'message' => 'Filter cache cleared successfully'
+    ), 200);
+}
+
+/**
+ * Debug endpoint to diagnose filtering issues
+ */
+function via_debug_filters(WP_REST_Request $request) {
+    $make = $request->get_param('make') ?: 'Toyota';
+
+    // Test 1: Get all vehicles
+    $all_args = array(
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'fields' => 'ids',
+        'posts_per_page' => -1
+    );
+    $all_query = new WP_Query($all_args);
+    $all_ids = $all_query->posts;
+
+    // Test 2: Get vehicles filtered by make
+    $filtered_args = array(
+        'post_type' => 'product',
+        'post_status' => 'publish',
+        'fields' => 'ids',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => 'make',
+                'value' => $make,
+                'compare' => '='
+            )
+        )
+    );
+    $filtered_query = new WP_Query($filtered_args);
+    $filtered_ids = $filtered_query->posts;
+
+    // Test 3: Get models for all vehicles
+    global $wpdb;
+    $all_models = $wpdb->get_results("
+        SELECT pm.meta_value, COUNT(*) as count
+        FROM {$wpdb->postmeta} pm
+        WHERE pm.meta_key = 'model'
+        AND pm.meta_value != ''
+        GROUP BY pm.meta_value
+        ORDER BY pm.meta_value ASC
+    ");
+
+    // Test 4: Get models for filtered vehicles only
+    if (!empty($filtered_ids)) {
+        $ids_string = implode(',', array_map('intval', $filtered_ids));
+        $filtered_models = $wpdb->get_results("
+            SELECT pm.meta_value, COUNT(*) as count
+            FROM {$wpdb->postmeta} pm
+            WHERE pm.post_id IN ($ids_string)
+            AND pm.meta_key = 'model'
+            AND pm.meta_value != ''
+            GROUP BY pm.meta_value
+            ORDER BY pm.meta_value ASC
+        ");
+    } else {
+        $filtered_models = array();
+    }
+
+    return new WP_REST_Response(array(
+        'success' => true,
+        'debug' => array(
+            'filter_used' => $make,
+            'all_vehicles_count' => count($all_ids),
+            'filtered_vehicles_count' => count($filtered_ids),
+            'all_models_count' => count($all_models),
+            'filtered_models_count' => count($filtered_models),
+            'sample_all_models' => array_slice($all_models, 0, 10),
+            'sample_filtered_models' => array_slice($filtered_models, 0, 10),
+            'has_non_matching_models' => false
+        )
     ), 200);
 }
 
