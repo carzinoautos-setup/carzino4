@@ -813,6 +813,23 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Debug Status - Remove in production */}
+            {(appliedFilters.make.length > 0) && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="text-xs font-semibold text-blue-800 mb-1">🔍 Conditional Filtering Debug</div>
+                <div className="text-xs text-blue-700">
+                  Selected: {appliedFilters.make.join(', ')}<br/>
+                  Models shown: {filterOptions.models?.length || 0}<br/>
+                  Expected: Only {appliedFilters.make.join(' & ')} models
+                </div>
+                {filterOptions.models && filterOptions.models.length > 0 && (
+                  <div className="text-xs text-blue-600 mt-1">
+                    Sample models: {filterOptions.models.slice(0, 3).map(m => m.name).join(', ')}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Applied Filters */}
             {(appliedFilters.condition.length > 0 ||
               appliedFilters.make.length > 0 ||
