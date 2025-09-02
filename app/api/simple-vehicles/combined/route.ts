@@ -56,7 +56,7 @@ function transformVehicleData(vehicle: WooCommerceVehicle): any {
     vin: acf.vin || 'N/A',
     salePrice: acf.price ? `$${acf.price.toLocaleString()}` : 'Call for Price',
     payment: acf.price ? `$${Math.round(acf.price / 60)}` : null, // Rough estimate
-    dealer: acf.account_name_seller || acf.business_name_seller || 'Dealer',
+    dealer: acf.dealer_name || acf.account_name_seller || acf.business_name_seller || 'Dealer',
     location: `${acf.city_seller || ''}, ${acf.state_seller || ''}`.replace(/^,\s*|,\s*$/g, '') || 'Location N/A',
     phone: '(555) 123-4567', // Add to ACF later if needed
     seller_type: 'Dealer',
