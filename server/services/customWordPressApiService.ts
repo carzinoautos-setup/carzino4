@@ -274,10 +274,17 @@ export class CustomWordPressApiService {
       const uniqueDealers = new Map();
       vehicles.forEach(vehicle => {
         // Try multiple fields to find the actual seller/business name
-        const dealerName = vehicle.acf?.business_name_seller ||
-                          vehicle.acf?.acount_name_seller ||
-                          vehicle.acf?.account_name_seller ||
-                          vehicle.acf?.dealer_name;
+        let dealerName = vehicle.acf?.business_name_seller ||
+                        vehicle.acf?.acount_name_seller ||
+                        vehicle.acf?.account_name_seller ||
+                        vehicle.acf?.dealer_name;
+
+        // If the dealer name is just a generic "Dealer Account #XXXXX", try to extract a cleaner name
+        if (dealerName && dealerName.startsWith('Dealer Account #')) {
+          // Keep the original name but also store account number for filtering
+          const accountNum = vehicle.acf?.account_number_seller;
+          dealerName = dealerName; // Keep original for now, but we could customize this
+        }
         const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number;
 
         if (dealerName && accountNumber) {
