@@ -306,7 +306,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                   Payments
                 </div>
                 <div className="carzino-price-value text-red-600">
-                  {getDisplayPayment()}
+                  {getDisplayPayment() || "Call for Price"}
                 </div>
               </div>
             </>
