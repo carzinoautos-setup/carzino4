@@ -30,6 +30,12 @@ add_action('init', function() {
 });
 
 /**
+ * Clear cache immediately on plugin load
+ */
+via_clear_filter_cache();
+error_log('VIA: Plugin loaded, cache cleared');
+
+/**
  * Register REST API endpoints
  */
 add_action('rest_api_init', function() {
@@ -39,18 +45,25 @@ add_action('rest_api_init', function() {
         'callback' => 'via_get_vehicles',
         'permission_callback' => '__return_true'
     ));
-    
+
     // Conditional Filters endpoint - THE KEY FIX
     register_rest_route('custom/v1', '/filters', array(
-        'methods' => 'GET', 
+        'methods' => 'GET',
         'callback' => 'via_get_conditional_filters',
         'permission_callback' => '__return_true'
     ));
-    
+
     // Cache rebuild endpoint
     register_rest_route('custom/v1', '/rebuild-filters', array(
         'methods' => 'GET',
         'callback' => 'via_rebuild_filter_cache',
+        'permission_callback' => '__return_true'
+    ));
+
+    // Debug endpoint to test filtering directly
+    register_rest_route('custom/v1', '/debug-filters', array(
+        'methods' => 'GET',
+        'callback' => 'via_debug_filters',
         'permission_callback' => '__return_true'
     ));
 });
