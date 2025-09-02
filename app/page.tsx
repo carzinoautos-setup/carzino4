@@ -989,7 +989,7 @@ export default function HomePage() {
 
             {/* Debug Status - Remove in production */}
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress Plugin v5.0 - Conditional Filtering Test</div>
+              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 Conditional Filtering Test</div>
               <div className="text-xs text-yellow-700 mb-2">
                 <strong>Expected behavior:</strong> WordPress /filters endpoint should return narrowed results.
                 Toyota filter = only Toyota models. Toyota + Ford = only Toyota & Ford models.
@@ -1194,7 +1194,7 @@ export default function HomePage() {
                     <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
                       {item}
-                      <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300">×</button>
+                      <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300">��</button>
                     </span>
                   ))}
                   {appliedFilters.interiorColor.map((item) => (
