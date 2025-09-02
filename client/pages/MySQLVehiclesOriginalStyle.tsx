@@ -1061,45 +1061,6 @@ function MySQLVehiclesOriginalStyleInner() {
               </div>
             </FilterSection>
 
-            {/* Price Filter */}
-            <FilterSection
-              title="Filter by Price"
-              isCollapsed={collapsedFilters.price}
-              onToggle={() => toggleFilter("price")}
-            >
-              <div className="space-y-2">
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    placeholder="$10,000"
-                    value={priceMin}
-                    onChange={(e) => setPriceMin(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                  <input
-                    type="text"
-                    placeholder="$100,000"
-                    value={priceMax}
-                    onChange={(e) => setPriceMax(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setCurrentPage(1); // Reset to first page when filters change
-                    setAppliedFilters(prev => ({
-                      ...prev,
-                      priceMin: priceMin,
-                      priceMax: priceMax
-                    }));
-                  }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
-                >
-                  Apply Price Filter
-                </button>
-              </div>
-            </FilterSection>
-
             {/* Trim Filter */}
             <FilterSection
               title={`Trim ${appliedFilters.model.length > 0 ? `(${appliedFilters.model.join(", ")})` : ""}`}
@@ -1144,6 +1105,45 @@ function MySQLVehiclesOriginalStyleInner() {
                     {showMoreTrims ? "Show Less" : "Show More"}
                   </button>
                 )}
+              </div>
+            </FilterSection>
+
+            {/* Price Filter */}
+            <FilterSection
+              title="Filter by Price"
+              isCollapsed={collapsedFilters.price}
+              onToggle={() => toggleFilter("price")}
+            >
+              <div className="space-y-2">
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    placeholder="$10,000"
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                  <input
+                    type="text"
+                    placeholder="$100,000"
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(e.target.value)}
+                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    setCurrentPage(1); // Reset to first page when filters change
+                    setAppliedFilters(prev => ({
+                      ...prev,
+                      priceMin: priceMin,
+                      priceMax: priceMax
+                    }));
+                  }}
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
+                >
+                  Apply Price Filter
+                </button>
               </div>
             </FilterSection>
 
