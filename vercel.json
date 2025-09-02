@@ -6,30 +6,5 @@
     "app/api/**/*.ts": {
       "maxDuration": 10
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/woocommerce/:path*",
-      "destination": "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ]
+  }
 }
