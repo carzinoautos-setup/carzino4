@@ -8,22 +8,44 @@ interface Vehicle {
   images: string[];
   badges: string[];
   title: string;
+
+  // Core ACF vehicle fields
+  year: string;
+  make?: string;
+  model?: string;
+  trim?: string;
   mileage: string;
+  condition: string;
+  price?: number;
+  vin: string;
+
+  // Technical specs
   transmission: string;
+  drivetrain: string;
+  fuel_type: string;
+  body_style: string;
+  exterior_color: string;
+  interior_color: string;
+
+  // Legacy/display fields
   doors: string;
-  doorIcon?: string; // Optional custom door icon URL
-  mileageIcon?: string; // Optional custom mileage icon URL
-  transmissionIcon?: string; // Optional custom transmission icon URL
+  doorIcon?: string;
+  mileageIcon?: string;
+  transmissionIcon?: string;
   salePrice: string | null;
   payment: string | null;
-  dealer: string;
-  location: string;
-  phone: string;
-  seller_type: string;
-  seller_account_number: string;
+
+  // Dealer information (using ACF field names)
+  dealer: string; // Display name (account_name_seller or business_name_seller)
+  seller_account_number: string; // For filtering logic
+  account_name_seller?: string;
+  business_name_seller?: string;
+  location: string; // Formatted location string
   city_seller?: string;
   state_seller?: string;
   zip_seller?: string;
+  phone: string;
+  seller_type: string;
 }
 
 interface VehicleCardProps {
