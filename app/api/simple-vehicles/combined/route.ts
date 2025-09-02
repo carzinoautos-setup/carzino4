@@ -205,8 +205,8 @@ export async function GET(request: NextRequest) {
             pageSize: parseInt(request.nextUrl.searchParams.get('pageSize') || '25')
           },
           filters: {
-            makes: [], models: [], trims: [], conditions: [],
-            vehicleTypes: [], driveTypes: [], transmissions: [],
+            makes: [], models: [], trims: [], years: [], conditions: [],
+            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
             exteriorColors: [], interiorColors: [], sellerTypes: [],
             dealers: [], states: [], cities: [], totalVehicles: 0
           }
