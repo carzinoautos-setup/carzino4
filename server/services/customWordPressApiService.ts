@@ -444,7 +444,13 @@ export class CustomWordPressApiService {
         cached: apiResponse.cached || false,
         appliedFilters: Object.keys(filters).length,
         isConditional: Object.keys(filters).length > 0,
-        hasRanges: !!(apiResponse.filters?.price_range || apiResponse.filters?.year_range || apiResponse.filters?.mileage_range)
+        hasRanges: !!(apiResponse.filters?.price_range || apiResponse.filters?.year_range || apiResponse.filters?.mileage_range),
+        dealerFields: {
+          acount_name_seller: apiResponse.filters?.acount_name_seller?.length || 0,
+          dealer_name: apiResponse.filters?.dealer_name?.length || 0,
+          account_name_seller: apiResponse.filters?.account_name_seller?.length || 0,
+          all_dealer_fields: Object.keys(apiResponse.filters || {}).filter(key => key.includes('dealer') || key.includes('account'))
+        }
       });
 
       if (!apiResponse.success || !apiResponse.filters) {
