@@ -498,7 +498,7 @@ export default function HomePage() {
         });
       } else {
         setError(data.message || 'Failed to load vehicles');
-        console.error('❌ Vehicle data fetch failed:', data);
+        console.error('�� Vehicle data fetch failed:', data);
       }
     } catch (err) {
       console.error("❌ API Error:", err);
@@ -1906,7 +1906,10 @@ export default function HomePage() {
                               exteriorColor: [...prev.exteriorColor, color.name]
                             }));
                           } else {
-                            removeAppliedFilter("exteriorColor", color.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: prev.exteriorColor.filter(c => c !== color.name)
+                            }));
                           }
                         }}
                       />
