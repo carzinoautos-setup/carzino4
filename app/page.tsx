@@ -131,6 +131,10 @@ export default function HomePage() {
     mileage: "",
     priceMin: "",
     priceMax: "",
+    yearMin: "",
+    yearMax: "",
+    mileageMin: "",
+    mileageMax: "",
     paymentMin: "",
     paymentMax: "",
   });
@@ -423,6 +427,10 @@ export default function HomePage() {
       mileage: "",
       priceMin: "",
       priceMax: "",
+      yearMin: "",
+      yearMax: "",
+      mileageMin: "",
+      mileageMax: "",
       paymentMin: "",
       paymentMax: "",
     };
