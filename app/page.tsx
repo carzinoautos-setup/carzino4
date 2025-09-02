@@ -344,6 +344,13 @@ export default function HomePage() {
           currentAppliedFilters: appliedFilters
         });
 
+        console.log("🚨 CRITICAL DEBUG: State vs API mismatch check:", {
+          frontendSelectedMakes: appliedFilters.make,
+          apiReturnedFilters: data.applied_filters,
+          shouldShowConditionalModels: appliedFilters.make.length > 0,
+          apiModelsCount: filters.models?.length || 0
+        });
+
         setFilterOptions(filters);
       } else {
         setError(data.message || 'Failed to load vehicles');
