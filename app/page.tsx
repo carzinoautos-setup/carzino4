@@ -1415,13 +1415,22 @@ export default function HomePage() {
 
                             setAppliedFilters(prev => ({
                               ...prev,
-                              model: [...prev.model, model.name],
-                              trim: [] // Clear trims when model changes
+                              model: [...prev.model, model.name]
+                              // Don't clear trims when adding additional models
+                              // Let the backend conditional filtering handle what's available
                             }));
 
                           } else {
                             console.log("🔍 DEBUG: Removing model:", model.name);
-                            removeAppliedFilter("model", model.name);
+                            setAppliedFilters(prev => {
+                              const newModels = prev.model.filter(m => m !== model.name);
+                              return {
+                                ...prev,
+                                model: newModels,
+                                // Only clear trims if NO models are selected
+                                trim: newModels.length === 0 ? [] : prev.trim
+                              };
+                            });
                           }
                         }}
                       />
