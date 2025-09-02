@@ -869,6 +869,28 @@ export default function HomePage() {
             </div>
 
             {/* Debug Status - Remove in production */}
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress API Test</div>
+              <button
+                onClick={testWordPressAPI}
+                className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 mb-2"
+              >
+                Test Conditional Filtering
+              </button>
+              {apiTestResult && (
+                <div className="text-xs text-yellow-700 mt-2">
+                  <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
+                  <div>Toyota-only models: {apiTestResult.toyotaFilters?.totalModels || 0}</div>
+                  <div className={apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels ? "text-red-600 font-semibold" : "text-green-600"}>
+                    {apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels
+                      ? "❌ BROKEN: Ford/Chevy models still showing with Toyota filter"
+                      : "✅ Working: Only Toyota models with Toyota filter"
+                    }
+                  </div>
+                </div>
+              )}
+            </div>
+
             {(appliedFilters.make.length > 0) && (
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="text-xs font-semibold text-blue-800 mb-1">🔍 Conditional Filtering Debug</div>
