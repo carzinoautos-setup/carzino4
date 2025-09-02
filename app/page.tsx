@@ -541,6 +541,19 @@ export default function HomePage() {
     }));
   };
 
+  const getSortDisplayLabel = (sortValue: string) => {
+    const sortOptions = {
+      "relevance": "Relevance",
+      "price_asc": "Price: Low to High",
+      "price_desc": "Price: High to Low",
+      "mileage_asc": "Mileage: Low to High",
+      "mileage_desc": "Mileage: High to Low",
+      "year_asc": "Year: Oldest to Newest",
+      "year_desc": "Year: Newest to Oldest"
+    };
+    return sortOptions[sortValue as keyof typeof sortOptions] || sortValue;
+  };
+
   return (
     <div
       className="min-h-screen bg-white main-container"
