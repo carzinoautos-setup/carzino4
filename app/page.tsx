@@ -1047,13 +1047,19 @@ export default function HomePage() {
                         e.stopPropagation();
                         setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            make: [...prev.make, make.name],
-                            model: [], // Clear models when make changes
-                            trim: []   // Clear trims when make changes
-                          }));
+                          console.log("🔍 DEBUG: Adding make:", make.name);
+                          setAppliedFilters(prev => {
+                            const newFilters = {
+                              ...prev,
+                              make: [...prev.make, make.name],
+                              model: [], // Clear models when make changes
+                              trim: []   // Clear trims when make changes
+                            };
+                            console.log("🔍 DEBUG: New applied filters:", newFilters);
+                            return newFilters;
+                          });
                         } else {
+                          console.log("🔍 DEBUG: Removing make:", make.name);
                           removeAppliedFilter("make", make.name);
                         }
                       }}
