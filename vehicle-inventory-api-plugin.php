@@ -178,11 +178,29 @@ function via_get_vehicles(WP_REST_Request $request) {
  * Implements exactly what the user requested: narrow vehicle pool first, then calculate counts
  */
 function via_get_conditional_filters(WP_REST_Request $request) {
-    // Check for cache first
-    $cache_key = 'via_filters_' . md5(serialize($_GET));
+    // Extract applied filters from request FIRST
+    $applied_filters = array();
+    $filter_keys = array('make', 'model', 'trim', 'year', 'condition', 'transmission',
+                         'body_style', 'drivetrain', 'fuel_type', 'exterior_color',
+                         'interior_color', 'certified', 'account_name_seller',
+                         'city_seller', 'state_seller');
+
+    foreach ($filter_keys as $key) {
+        $value = $request->get_param($key);
+        if (!empty($value)) {
+            $applied_filters[$key] = $value;
+        }
+    }
+
+    // Create cache key from actual applied filters
+    $cache_key = 'via_filters_' . md5(serialize($applied_filters));
     $cached_filters = get_transient($cache_key);
-    
+
+    // DISABLE CACHE FOR DEBUGGING - Remove this line once working
+    $cached_filters = false;
+
     if ($cached_filters !== false) {
+        error_log('VIA: Returning cached filters for key: ' . $cache_key);
         return new WP_REST_Response($cached_filters, 200);
     }
     
