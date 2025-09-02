@@ -87,22 +87,48 @@ A modern vehicle inventory website built with Next.js, Builder.io, and integrate
 
 ## 🔌 API Integration
 
+### ✅ Active WordPress Plugin
+
+**Status**: WordPress plugin is **ACTIVE** and working perfectly
+**Plugin**: Vehicle Inventory API v2.0
+**Location**: `/wp-content/plugins/vehicle-inventory-api/`
+
 ### WooCommerce Endpoints
 
-The app connects to these WooCommerce API endpoints:
+The app connects to these **LIVE** WooCommerce API endpoints:
 
 - **Vehicles**: `/wp-json/custom/v1/vehicles`
-  - Pagination, filtering, and sorting
-  - Live vehicle inventory data
+  - ✅ Pagination, filtering, and sorting working
+  - ✅ Live vehicle inventory data
+  - ✅ Multi-select filtering (e.g., `make=Toyota,Ford`)
+  - ✅ Sorting options: price_asc, price_desc, mileage_asc, year_desc, etc.
 
 - **Filters**: `/wp-json/custom/v1/filters`
-  - Dynamic filter options based on available inventory
-  - Conditional filtering support
+  - ✅ **Conditional filtering WORKING**: Make → Model → Trim → Year cascading
+  - ✅ All filters narrow correctly (body_style, drivetrain, fuel_type, etc.)
+  - ✅ Dynamic filter options based on available inventory
+  - ✅ Multi-select support with proper narrowing
+
+- **Health Check**: `/wp-json/custom/v1/ping`
+  - ✅ API status monitoring
 
 ### API Routes
 
 - `GET /api/vehicles` - Fetch vehicles with filters and pagination
 - `GET /api/filters` - Fetch available filter options
+
+### Conditional Filtering Examples
+
+```bash
+# Get all filter options
+curl "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters"
+
+# Filter by Toyota - only shows Toyota models, trims, years
+curl "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota"
+
+# Multi-select Toyota + Ford - shows only Toyota and Ford options
+curl "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota,Ford"
+```
 
 ## 🎨 Builder.io Integration
 
