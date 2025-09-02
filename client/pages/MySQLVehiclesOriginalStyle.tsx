@@ -307,7 +307,7 @@ function MySQLVehiclesOriginalStyleInner() {
         setError(data.message || 'Failed to load vehicles');
       }
     } catch (err) {
-      console.error("❌ API Error:", err);
+      console.error("�� API Error:", err);
       setError('Failed to fetch vehicles');
     } finally {
       setLoading(false);
@@ -1683,23 +1683,23 @@ function MySQLVehiclesOriginalStyleInner() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={appliedFilters.dealer.includes(dealer.account_name_seller || dealer.name)}
+                        checked={appliedFilters.dealer.includes(dealer.business_name_seller || dealer.name)}
                         onChange={(e) => {
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              dealer: [...prev.dealer, dealer.account_name_seller || dealer.name]
+                              dealer: [...prev.dealer, dealer.business_name_seller || dealer.name]
                             }));
                           } else {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              dealer: prev.dealer.filter(item => item !== (dealer.account_name_seller || dealer.name))
+                              dealer: prev.dealer.filter(item => item !== (dealer.business_name_seller || dealer.name))
                             }));
                           }
                         }}
                       />
-                      <span className="carzino-filter-option">{dealer.account_name_seller || dealer.name}</span>
+                      <span className="carzino-filter-option">{dealer.business_name_seller || dealer.name}</span>
                       <span className="carzino-filter-count ml-1">({dealer.count})</span>
                     </label>
                   ))

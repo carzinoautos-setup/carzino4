@@ -110,6 +110,7 @@ export class CustomWordPressApiService {
         sampleSellerFields: apiResponse.data?.[0]?.acf ? {
           acount_name_seller: apiResponse.data[0].acf.acount_name_seller,
           account_name_seller: apiResponse.data[0].acf.account_name_seller,
+          business_name_seller: apiResponse.data[0].acf.business_name_seller,
           dealer_name: apiResponse.data[0].acf.dealer_name,
           account_number_seller: apiResponse.data[0].acf.account_number_seller,
           seller_account_number: apiResponse.data[0].acf.seller_account_number
@@ -272,7 +273,11 @@ export class CustomWordPressApiService {
       // Extract unique dealers from vehicle data as fallback
       const uniqueDealers = new Map();
       vehicles.forEach(vehicle => {
-        const dealerName = vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name;
+        // Try multiple fields to find the actual seller/business name
+        const dealerName = vehicle.acf?.business_name_seller ||
+                          vehicle.acf?.acount_name_seller ||
+                          vehicle.acf?.account_name_seller ||
+                          vehicle.acf?.dealer_name;
         const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number;
 
         if (dealerName && accountNumber) {
@@ -280,7 +285,8 @@ export class CustomWordPressApiService {
           if (!uniqueDealers.has(key)) {
             uniqueDealers.set(key, {
               name: dealerName,
-              account_name_seller: dealerName,
+              business_name_seller: dealerName,
+              account_name_seller: vehicle.acf?.account_name_seller,
               account_number_seller: accountNumber,
               count: 0
             });
@@ -350,7 +356,10 @@ export class CustomWordPressApiService {
           doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
           salePrice: formattedPrice,
           payment: payment,
-          dealer: vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name || "Carzino Dealer",
+          dealer: vehicle.acf?.business_name_seller ||
+                  vehicle.acf?.acount_name_seller ||
+                  vehicle.acf?.account_name_seller ||
+                  vehicle.acf?.dealer_name || "Carzino Dealer",
           location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
           phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
           seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer",
