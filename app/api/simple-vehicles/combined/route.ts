@@ -165,6 +165,11 @@ export async function GET(request: NextRequest) {
       sampleMakes: filtersData.filters?.make?.slice(0, 3)
     });
 
+    console.log('🔗 DEBUG: Conditional filtering applied:', {
+      filtersUrlParams: filtersUrl.searchParams.toString(),
+      hasConditionalFilters: filtersUrl.searchParams.toString().length > 0
+    });
+
     // Transform vehicles to frontend format
     const transformedVehicles = vehiclesData.success && vehiclesData.data
       ? vehiclesData.data.map((vehicle: WooCommerceVehicle) => transformVehicleData(vehicle))
