@@ -110,6 +110,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Add location-based filtering (radius and zipCode)
+    const zipCode = searchParams.get('zipCode');
+    const radius = searchParams.get('radius');
+    if (zipCode && radius) {
+      vehiclesUrl.searchParams.set('zipCode', zipCode);
+      vehiclesUrl.searchParams.set('radius', radius);
+      // Also add to filters URL to get location-filtered options
+      filtersUrl.searchParams.set('zipCode', zipCode);
+      filtersUrl.searchParams.set('radius', radius);
+    }
+
     console.log('🔗 Fetching vehicles from:', vehiclesUrl.toString());
     console.log('🔗 Fetching filters from:', filtersUrl.toString());
 
