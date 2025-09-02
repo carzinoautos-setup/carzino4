@@ -1699,7 +1699,7 @@ function MySQLVehiclesOriginalStyleInner() {
                           }
                         }}
                       />
-                      <span className="carzino-filter-option">{dealer.name}</span>
+                      <span className="carzino-filter-option">{dealer.account_name_seller || dealer.name}</span>
                       <span className="carzino-filter-count ml-1">({dealer.count})</span>
                     </label>
                   ))
