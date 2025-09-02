@@ -382,7 +382,7 @@ export class CustomWordPressApiService {
           doors: vehicle.acf?.doors ? `${vehicle.acf.doors} doors` : "4 doors",
           salePrice: formattedPrice,
           payment: payment,
-          dealer: vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name || "Carzino Dealer",
+          dealer: vehicle.acf?.acount_name_seller || vehicle.acf?.dealer_name || "Carzino Dealer",
           location: `${vehicle.acf?.city_seller || "Local"}, ${vehicle.acf?.state_seller || "State"}`,
           phone: vehicle.acf?.phone_number_seller || "Contact Dealer",
           seller_type: vehicle.acf?.seller_type || vehicle.acf?.account_type_seller || "Dealer",
@@ -559,8 +559,8 @@ export class CustomWordPressApiService {
           interiorColors: sortFilterOptions(filtersData.interior_color || []),
           years: sortFilterOptions(filtersData.year || []),
 
-          // Location and dealer filters with correct field mapping - prioritize account_name_seller
-          dealers: sortFilterOptions(filtersData.account_name_seller || filtersData.dealer_name || []),
+          // Location and dealer filters with correct field mapping - prioritize acount_name_seller (misspelled field)
+          dealers: sortFilterOptions(filtersData.acount_name_seller || filtersData.dealer_name || []),
           cities: sortFilterOptions(filtersData.city_seller || []),
           states: sortFilterOptions(filtersData.state_seller || []),
 
@@ -628,7 +628,7 @@ export class CustomWordPressApiService {
       const apiResponse = await response.json();
 
       if (apiResponse.success && apiResponse.filters) {
-        const dealers = apiResponse.filters.account_name_seller || apiResponse.filters.dealer_name || [];
+        const dealers = apiResponse.filters.acount_name_seller || apiResponse.filters.dealer_name || [];
         return {
           success: true,
           data: dealers
