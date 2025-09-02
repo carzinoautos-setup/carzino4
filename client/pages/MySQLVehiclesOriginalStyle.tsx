@@ -196,7 +196,7 @@ function MySQLVehiclesOriginalStyleInner() {
         apiUrl.searchParams.set('trim', appliedFilters.trim.join(','));
       }
       if (appliedFilters.vehicleType.length > 0) {
-        apiUrl.searchParams.set('body_style', appliedFilters.vehicleType.join(','));
+        apiUrl.searchParams.set('body_type', appliedFilters.vehicleType.join(','));
       }
       if (appliedFilters.driveType.length > 0) {
         apiUrl.searchParams.set('driveType', appliedFilters.driveType.join(','));
@@ -516,7 +516,8 @@ function MySQLVehiclesOriginalStyleInner() {
   };
 
   const getAvailableBodyTypes = () => {
-    // WordPress API returns conditional body types based on all applied filters
+    // API returns conditional body types based on all applied filters
+    // Use actual body_style values from the database
     return filterOptions.vehicleTypes || [];
   };
 
@@ -1166,25 +1167,9 @@ function MySQLVehiclesOriginalStyleInner() {
                     />
                   ))
                 ) : (
-                  [
-                    { name: "Truck", count: 299 },
-                    { name: "SUV / Crossover", count: 762 },
-                    { name: "Sedan", count: 672 },
-                    { name: "Coupe", count: 96 },
-                    { name: "Hatchback", count: 22 },
-                    { name: "Convertible", count: 15 },
-                    { name: "Van / Minivan", count: 8 },
-                    { name: "Wagon", count: 5 }
-                  ].map((type) => (
-                    <VehicleTypeCard
-                      key={type.name}
-                      type={type.name}
-                      count={type.count}
-                      vehicleImages={vehicleImages}
-                      isSelected={appliedFilters.vehicleType.includes(type.name)}
-                      onToggle={handleVehicleTypeToggle}
-                    />
-                  ))
+                  <div className="col-span-2 text-center text-sm text-gray-500 p-4">
+                    Loading vehicle types...
+                  </div>
                 )}
               </div>
             </FilterSection>
