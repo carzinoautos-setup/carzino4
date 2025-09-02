@@ -77,7 +77,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           <button
             onClick={() => {
               this.setState({ hasError: false, error: undefined });
-              window.location.reload();
+              if (typeof window !== 'undefined') {
+                window.location.reload();
+              }
             }}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
