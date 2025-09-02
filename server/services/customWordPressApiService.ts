@@ -174,8 +174,8 @@ export class CustomWordPressApiService {
         });
 
         vehicles = vehicles.filter(vehicle => {
-          // Get dealer/account information from vehicle
-          const dealerName = vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "";
+          // Get dealer/account information from vehicle - prioritize account_name_seller
+          const dealerName = vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name || "";
           const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
 
           // Check if this vehicle matches any of the selected dealers
@@ -209,8 +209,8 @@ export class CustomWordPressApiService {
 
         const originalCount = vehicles.length;
         vehicles = vehicles.filter(vehicle => {
-          // Get dealer/account information from vehicle
-          const dealerName = vehicle.acf?.dealer_name || vehicle.acf?.account_name_seller || "";
+          // Get dealer/account information from vehicle - prioritize account_name_seller
+          const dealerName = vehicle.acf?.account_name_seller || vehicle.acf?.dealer_name || "";
           const accountNumber = vehicle.acf?.seller_account_number || vehicle.acf?.account_number_seller || "";
 
           // Check if this vehicle matches any of the selected dealers
