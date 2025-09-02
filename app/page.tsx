@@ -894,13 +894,17 @@ export default function HomePage() {
 
             {/* Debug Status - Remove in production */}
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 WordPress API Debug Tools</div>
+              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 Conditional Filtering Test</div>
+              <div className="text-xs text-yellow-700 mb-2">
+                <strong>Expected behavior:</strong> Selecting Toyota should hide all Ford/Chevy models.
+                Selecting Toyota + Ford should show only Toyota and Ford models.
+              </div>
               <div className="flex gap-2 mb-2">
                 <button
                   onClick={testWordPressAPI}
                   className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
                 >
-                  Test Conditional Filtering
+                  Test API Direct
                 </button>
                 <button
                   onClick={clearWordPressCache}
@@ -910,13 +914,13 @@ export default function HomePage() {
                 </button>
               </div>
               {apiTestResult && (
-                <div className="text-xs text-yellow-700 mt-2">
+                <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
                   <div>All filters models: {apiTestResult.allFilters?.totalModels || 0}</div>
                   <div>Toyota-only models: {apiTestResult.toyotaFilters?.totalModels || 0}</div>
                   <div className={apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels ? "text-red-600 font-semibold" : "text-green-600"}>
                     {apiTestResult.toyotaFilters?.hasFordModels || apiTestResult.toyotaFilters?.hasChevyModels
-                      ? "❌ BROKEN: Ford/Chevy models still showing with Toyota filter"
-                      : "✅ Working: Only Toyota models with Toyota filter"
+                      ? "❌ CONDITIONAL FILTERING BROKEN: Ford/Chevy models still showing"
+                      : "✅ CONDITIONAL FILTERING WORKING: Only Toyota models shown"
                     }
                   </div>
                   {apiTestResult.error && (
