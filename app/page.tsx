@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation'
+import OriginalVehiclesPage from './vehicles-original/page'
 
 export default function HomePage() {
-  // Redirect to the original vehicles design
-  redirect('/vehicles-original')
+  return <OriginalVehiclesPage />
 }
