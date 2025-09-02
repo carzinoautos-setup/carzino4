@@ -64,6 +64,10 @@ function transformVehicleData(vehicle: WooCommerceVehicle): any {
     city_seller: acf.city_seller || '',
     state_seller: acf.state_seller || '',
     zip_seller: acf.zip_seller || '',
+
+    // Location data for radius filtering
+    car_location_latitude: acf.car_location_latitude || null,
+    car_location_longitude: acf.car_location_longitude || null,
   };
 }
 
