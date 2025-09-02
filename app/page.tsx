@@ -227,7 +227,7 @@ export default function HomePage() {
 
   // Clear WordPress cache
   const clearWordPressCache = async () => {
-    console.log("���️ Clearing WordPress cache...");
+    console.log("🗑️ Clearing WordPress cache...");
 
     try {
       // Method 1: Use the via_build_filters=1 parameter
@@ -1069,16 +1069,28 @@ export default function HomePage() {
                 <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
                   {apiTestResult.backendTests && (
                     <div className="p-2 bg-green-50 border border-green-200 rounded text-xs">
-                      <div className="font-semibold text-green-800">🧪 WordPress Conditional Filtering:</div>
+                      <div className="font-semibold text-green-800 mb-2">🧪 WordPress v5.0 Conditional Filtering:</div>
+                      {apiTestResult.summary && (
+                        <div className="mb-2 p-1 bg-white border rounded">
+                          <div className="font-semibold">Test Summary:</div>
+                          <div>Total: {apiTestResult.summary.totalTests} | Pass: {apiTestResult.summary.passed} | Fail: {apiTestResult.summary.failed}</div>
+                          <div className={apiTestResult.conditionalWorking ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+                            {apiTestResult.conditionalWorking ? "✅ CONDITIONAL FILTERING WORKING" : "❌ CONDITIONAL FILTERING BROKEN"}
+                          </div>
+                        </div>
+                      )}
                       {apiTestResult.backendTests.map((test: any, index: number) => (
-                        <div key={index} className="mt-1">
+                        <div key={index} className="mt-1 p-1 bg-white border rounded">
                           <div className="font-semibold">{test.name}:</div>
-                          <div>Models: {test.modelCount || 'N/A'}</div>
+                          <div>Makes: {test.makeCount || 'N/A'} | Models: {test.modelCount || 'N/A'}</div>
+                          <div className={test.status === 'pass' ? "text-green-600" : test.status === 'fail' ? "text-red-600" : "text-blue-600"}>
+                            Status: {test.status.toUpperCase()}
+                          </div>
                           {test.name === 'Toyota Only' && (
-                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
-                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
-                              {test.hasFordModels && <div>- Still shows Ford models</div>}
-                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
+                            <div>
+                              {test.hasFordModels && <div className="text-red-600">- ❌ Still shows Ford models</div>}
+                              {test.hasChevyModels && <div className="text-red-600">- ❌ Still shows Chevy models</div>}
+                              {!test.hasFordModels && !test.hasChevyModels && <div className="text-green-600">- ✅ Only Toyota models shown</div>}
                             </div>
                           )}
                         </div>
