@@ -273,23 +273,71 @@ export default function HomePage() {
     }
   };
 
-  // Test backend API directly to verify conditional filtering works
+  // Test the new WordPress conditional filtering directly
   const testBackendAPI = async () => {
-    console.log("🧪 Testing backend API conditional filtering...");
+    console.log("🧪 Testing WordPress conditional filtering...");
 
     try {
-      const testResponse = await fetch('/api/test-backend');
-      const testData = await testResponse.json();
+      // Test 1: All filters (no conditions)
+      const allResponse = await fetch('/api/wp/filters');
+      const allData = await allResponse.json();
 
-      console.log("🧪 Backend API Test Results:", testData);
+      // Test 2: Toyota only
+      const toyotaResponse = await fetch('/api/wp/filters?make=Toyota');
+      const toyotaData = await toyotaResponse.json();
+
+      // Test 3: Toyota + Ford
+      const multiResponse = await fetch('/api/wp/filters?make=Toyota,Ford');
+      const multiData = await multiResponse.json();
+
+      const tests = [
+        {
+          name: 'All Filters',
+          makeCount: allData.filters?.make?.length || 0,
+          modelCount: allData.filters?.model?.length || 0,
+          isConditionalWorking: true
+        },
+        {
+          name: 'Toyota Only',
+          makeCount: toyotaData.filters?.make?.length || 0,
+          modelCount: toyotaData.filters?.model?.length || 0,
+          models: toyotaData.filters?.model || [],
+          hasFordModels: toyotaData.filters?.model?.some(m =>
+            m.name.toLowerCase().includes('f-150') ||
+            m.name.toLowerCase().includes('explorer') ||
+            m.name.toLowerCase().includes('mustang') ||
+            m.name.toLowerCase().includes('escape')
+          ) || false,
+          hasChevyModels: toyotaData.filters?.model?.some(m =>
+            m.name.toLowerCase().includes('silverado') ||
+            m.name.toLowerCase().includes('tahoe') ||
+            m.name.toLowerCase().includes('malibu') ||
+            m.name.toLowerCase().includes('camaro')
+          ) || false,
+          isConditionalWorking: true
+        },
+        {
+          name: 'Toyota + Ford',
+          makeCount: multiData.filters?.make?.length || 0,
+          modelCount: multiData.filters?.model?.length || 0,
+          isConditionalWorking: true
+        }
+      ];
+
+      // Check if Toyota-only test shows non-Toyota models (indicates broken filtering)
+      if (tests[1].hasFordModels || tests[1].hasChevyModels) {
+        tests[1].isConditionalWorking = false;
+      }
+
+      console.log("🧪 WordPress Conditional Filtering Results:", tests);
       setApiTestResult({
         ...apiTestResult,
-        backendTests: testData.tests,
+        backendTests: tests,
         backendTestComplete: true
       });
 
     } catch (error) {
-      console.error("❌ Backend API test failed:", error);
+      console.error("❌ WordPress conditional test failed:", error);
       setApiTestResult({
         ...apiTestResult,
         backendTestError: error.message
@@ -297,7 +345,7 @@ export default function HomePage() {
     }
   };
 
-  // API fetch function
+  // API fetch function - Updated to use WordPress conditional filtering
   const fetchCombinedData = useCallback(async () => {
     if (!isMountedRef.current) return;
 
@@ -305,7 +353,99 @@ export default function HomePage() {
       setLoading(true);
       setError(null);
 
-      // Build API URL - call our backend that properly handles filters
+      // STEP 1: Get conditional filter options first
+      const filtersUrl = new URL('/api/wp/filters', window.location.origin);
+
+      // Add applied filters to get narrowed results
+      if (appliedFilters.make.length > 0) {
+        filtersUrl.searchParams.set('make', appliedFilters.make.join(','));
+      }
+      if (appliedFilters.model.length > 0) {
+        filtersUrl.searchParams.set('model', appliedFilters.model.join(','));
+      }
+      if (appliedFilters.trim.length > 0) {
+        filtersUrl.searchParams.set('trim', appliedFilters.trim.join(','));
+      }
+      if (appliedFilters.year.length > 0) {
+        filtersUrl.searchParams.set('year', appliedFilters.year.join(','));
+      }
+      if (appliedFilters.condition.length > 0) {
+        filtersUrl.searchParams.set('condition', appliedFilters.condition.join(','));
+      }
+      if (appliedFilters.vehicleType.length > 0) {
+        filtersUrl.searchParams.set('body_style', appliedFilters.vehicleType.join(','));
+      }
+      if (appliedFilters.driveType.length > 0) {
+        filtersUrl.searchParams.set('drivetrain', appliedFilters.driveType.join(','));
+      }
+      if (appliedFilters.transmission.length > 0) {
+        filtersUrl.searchParams.set('transmission', appliedFilters.transmission.join(','));
+      }
+      if (appliedFilters.fuel_type.length > 0) {
+        filtersUrl.searchParams.set('fuel_type', appliedFilters.fuel_type.join(','));
+      }
+      if (appliedFilters.exteriorColor.length > 0) {
+        filtersUrl.searchParams.set('exterior_color', appliedFilters.exteriorColor.join(','));
+      }
+      if (appliedFilters.interiorColor.length > 0) {
+        filtersUrl.searchParams.set('interior_color', appliedFilters.interiorColor.join(','));
+      }
+      if (appliedFilters.city.length > 0) {
+        filtersUrl.searchParams.set('city_seller', appliedFilters.city.join(','));
+      }
+      if (appliedFilters.state.length > 0) {
+        filtersUrl.searchParams.set('state_seller', appliedFilters.state.join(','));
+      }
+
+      console.log('🔍 Fetching conditional filters:', filtersUrl.toString());
+
+      const filtersResponse = await fetch(filtersUrl.toString());
+      const filtersData = await filtersResponse.json();
+
+      console.log('✅ WordPress filters response:', {
+        success: filtersData.success,
+        appliedFilters: filtersData.applied_filters,
+        filterCounts: {
+          makes: filtersData.filters?.make?.length || 0,
+          models: filtersData.filters?.model?.length || 0,
+          trims: filtersData.filters?.trim?.length || 0,
+          years: filtersData.filters?.year?.length || 0
+        }
+      });
+
+      if (filtersData.success) {
+        // CRITICAL: Always rebuild filter options from WordPress response
+        const newFilterOptions = {
+          makes: filtersData.filters?.make || [],
+          models: filtersData.filters?.model || [],
+          trims: filtersData.filters?.trim || [],
+          years: filtersData.filters?.year || [],
+          conditions: filtersData.filters?.condition || [],
+          vehicleTypes: filtersData.filters?.body_style || [],
+          driveTypes: filtersData.filters?.drivetrain || [],
+          transmissions: filtersData.filters?.transmission || [],
+          fuelTypes: filtersData.filters?.fuel_type || [],
+          exteriorColors: filtersData.filters?.exterior_color || [],
+          interiorColors: filtersData.filters?.interior_color || [],
+          sellerTypes: filtersData.filters?.account_type_seller || [],
+          dealers: filtersData.filters?.account_name_seller || [],
+          states: filtersData.filters?.state_seller || [],
+          cities: filtersData.filters?.city_seller || [],
+          totalVehicles: 0
+        };
+
+        console.log('🎯 Setting new filter options from WordPress:', {
+          makeCount: newFilterOptions.makes.length,
+          modelCount: newFilterOptions.models.length,
+          trimCount: newFilterOptions.trims.length,
+          sampleMakes: newFilterOptions.makes.slice(0, 3).map(m => m.name),
+          sampleModels: newFilterOptions.models.slice(0, 5).map(m => m.name)
+        });
+
+        setFilterOptions(newFilterOptions);
+      }
+
+      // STEP 2: Get vehicles using existing endpoint
       const apiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
       apiUrl.searchParams.set('page', currentPage.toString());
       apiUrl.searchParams.set('pageSize', resultsPerPage.toString());
@@ -462,54 +602,27 @@ export default function HomePage() {
 
         console.log("🚨 CRITICAL DEBUG: Conditional filtering check:", {
           frontendSelectedMakes: appliedFilters.make,
-          apiReturnedFilters: data.applied_filters,
-          shouldShowConditionalModels: appliedFilters.make.length > 0,
-          apiModelsCount: filters.models?.length || 0,
-          actualApiModels: filters.models?.map(m => m.name).slice(0, 10),
-          nonToyotaModelsStillShowing: filters.models?.filter(m => !m.name.toLowerCase().includes('camry') && !m.name.toLowerCase().includes('corolla') && !m.name.toLowerCase().includes('rav4')).slice(0, 5)
-        });
-
-        // CRITICAL: Check if Toyota is selected but we still see non-Toyota models
-        if (appliedFilters.make.includes('Toyota') && filters.models) {
-          const nonToyotaModels = filters.models.filter(model =>
-            model.name.toLowerCase().includes('f-150') ||
-            model.name.toLowerCase().includes('silverado') ||
-            model.name.toLowerCase().includes('explorer') ||
-            model.name.toLowerCase().includes('mustang')
-          );
-          if (nonToyotaModels.length > 0) {
-            console.error("🚨 CONDITIONAL FILTERING BUG DETECTED:");
-            console.error("Toyota is selected but Ford/Chevy models still showing:", nonToyotaModels);
-            console.error("Applied filters being sent to API:", appliedFilters);
-            console.error("API response applied_filters:", data.applied_filters);
-            console.error("Full API response:", data);
-          }
-        }
-
-        // CRITICAL FIX: Properly set filter options from API response
-        setFilterOptions(filters);
-
-        console.log("🎯 FILTER UPDATE: Setting new filter options:", {
-          makesCount: filters.makes?.length || 0,
-          modelsCount: filters.models?.length || 0,
-          trimsCount: filters.trims?.length || 0,
-          sampleMakes: filters.makes?.slice(0, 3)?.map(m => m.name) || [],
-          sampleModels: filters.models?.slice(0, 5)?.map(m => m.name) || []
+          vehicleData: {
+            count: data.data?.length || 0,
+            totalResults: data.pagination?.total || 0
+          },
+          filterOptionsAlreadySet: 'WordPress filters already processed above'
         });
       } else {
         setError(data.message || 'Failed to load vehicles');
-
-        // Clear filter options on error
-        setFilterOptions({
-          makes: [], models: [], trims: [], years: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: 0
-        });
+        console.error('❌ Vehicle data fetch failed:', data);
       }
     } catch (err) {
       console.error("❌ API Error:", err);
       setError('Failed to fetch vehicles');
+
+      // Clear filter options on error
+      setFilterOptions({
+        makes: [], models: [], trims: [], years: [], conditions: [],
+        vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
+        exteriorColors: [], interiorColors: [], sellerTypes: [],
+        dealers: [], states: [], cities: [], totalVehicles: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -1343,14 +1456,6 @@ export default function HomePage() {
                         if (e.target.checked) {
                           console.log("🔍 DEBUG: Adding make:", make.name);
 
-                          // CRITICAL: Immediately clear ALL filter options to force fresh API call
-                          setFilterOptions({
-                            makes: [], models: [], trims: [], years: [], conditions: [],
-                            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
-                            exteriorColors: [], interiorColors: [], sellerTypes: [],
-                            dealers: [], states: [], cities: [], totalVehicles: 0
-                          });
-
                           setAppliedFilters(prev => {
                             const newFilters = {
                               ...prev,
@@ -1362,30 +1467,9 @@ export default function HomePage() {
                             return newFilters;
                           });
 
-                          // Force immediate API refresh
-                          setTimeout(() => {
-                            console.log("🔄 Force refreshing data after make selection");
-                            fetchCombinedData();
-                          }, 100);
-
                         } else {
                           console.log("🔍 DEBUG: Removing make:", make.name);
-
-                          // CRITICAL: Clear ALL filter options
-                          setFilterOptions({
-                            makes: [], models: [], trims: [], years: [], conditions: [],
-                            vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
-                            exteriorColors: [], interiorColors: [], sellerTypes: [],
-                            dealers: [], states: [], cities: [], totalVehicles: 0
-                          });
-
                           removeAppliedFilter("make", make.name);
-
-                          // Force immediate API refresh
-                          setTimeout(() => {
-                            console.log("🔄 Force refreshing data after make removal");
-                            fetchCombinedData();
-                          }, 100);
                         }
                       }}
                     />
@@ -1438,22 +1522,9 @@ export default function HomePage() {
                               trim: [] // Clear trims when model changes
                             }));
 
-                            // Force API refresh after model selection
-                            setTimeout(() => {
-                              console.log("🔄 Force refreshing data after model selection");
-                              fetchCombinedData();
-                            }, 100);
-
                           } else {
                             console.log("🔍 DEBUG: Removing model:", model.name);
-
                             removeAppliedFilter("model", model.name);
-
-                            // Force API refresh after model removal
-                            setTimeout(() => {
-                              console.log("🔄 Force refreshing data after model removal");
-                              fetchCombinedData();
-                            }, 100);
                           }
                         }}
                       />
