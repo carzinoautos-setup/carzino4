@@ -1046,7 +1046,7 @@ export default function HomePage() {
                     </div>
                   )}
                   {apiTestResult.backendTestError && (
-                    <div className="text-red-600 font-semibold">❌ WordPress Test Error: {apiTestResult.backendTestError}</div>
+                    <div className="text-red-600 font-semibold">❌ Backend Test Error: {apiTestResult.backendTestError}</div>
                   )}
                   {apiTestResult.error && (
                     <div className="text-red-600 font-semibold">❌ API Error: {apiTestResult.error}</div>
