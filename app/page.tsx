@@ -1906,25 +1906,25 @@ export default function HomePage() {
                     {sortDropdownOpen && (
                       <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
                         {[
-                          "Relevance",
-                          "Price: Low to High",
-                          "Price: High to Low",
-                          "Year: Newest First",
-                          "Year: Oldest First",
-                          "Mileage: Low to High",
-                          "Mileage: High to Low"
+                          { value: "relevance", label: "Relevance" },
+                          { value: "price_asc", label: "Price: Low to High" },
+                          { value: "price_desc", label: "Price: High to Low" },
+                          { value: "mileage_asc", label: "Mileage: Low to High" },
+                          { value: "mileage_desc", label: "Mileage: High to Low" },
+                          { value: "year_asc", label: "Year: Oldest to Newest" },
+                          { value: "year_desc", label: "Year: Newest to Oldest" }
                         ].map((option) => (
                           <button
-                            key={option}
+                            key={option.value}
                             onClick={() => {
-                              setSortBy(option);
+                              setSortBy(option.value);
                               setSortDropdownOpen(false);
                             }}
                             className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                              sortBy === option ? 'bg-red-50 text-red-700' : ''
+                              sortBy === option.value ? 'bg-red-50 text-red-700' : ''
                             }`}
                           >
-                            {option}
+                            {option.label}
                           </button>
                         ))}
                       </div>
