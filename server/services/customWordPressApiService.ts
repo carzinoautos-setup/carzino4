@@ -199,7 +199,11 @@ export class CustomWordPressApiService {
           selectedDealers: filters.dealer,
           originalCount: priceFilteredCount,
           filteredCount: vehicles.length,
-          filteredOut: priceFilteredCount - vehicles.length
+          filteredOut: priceFilteredCount - vehicles.length,
+          sampleVehicleAccountInfo: vehicles.length > 0 ? {
+            accountNumber: vehicles[0].acf?.account_number_seller,
+            dealerName: vehicles[0].acf?.acount_name_seller
+          } : 'no vehicles'
         });
       }
 
@@ -237,7 +241,11 @@ export class CustomWordPressApiService {
           selectedDealers: filters.dealer,
           originalCount: originalCount,
           filteredCount: vehicles.length,
-          filteredOut: originalCount - vehicles.length
+          filteredOut: originalCount - vehicles.length,
+          sampleVehicleAccountInfo: vehicles.length > 0 ? {
+            accountNumber: vehicles[0].acf?.account_number_seller,
+            dealerName: vehicles[0].acf?.acount_name_seller
+          } : 'no vehicles'
         });
       }
 
