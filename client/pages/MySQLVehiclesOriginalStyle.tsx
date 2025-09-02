@@ -709,7 +709,7 @@ function MySQLVehiclesOriginalStyleInner() {
             </button>
           </div>
 
-          <div className="p-4 h-full overflow-y-auto">
+          <div className="p-4 h-full overflow-y-auto pb-24">
             {/* Search Section */}
             <div className="hidden lg:block mb-4 pb-4 border-b border-gray-200">
               <div className="relative">
