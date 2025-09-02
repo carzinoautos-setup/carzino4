@@ -701,21 +701,28 @@ export default function HomePage() {
   const allMakes = filterOptions.makes || [];
   const displayedMakes = showMoreMakes ? allMakes : allMakes.slice(0, 8);
 
-  // Get available models based on selected makes
-  // The filterOptions.models should already be filtered by the API based on selected makes
-  const availableModels = appliedFilters.make.length > 0 ?
-    (filterOptions.models || []) : [];
+  // CRITICAL FIX: Always use the API response for models and trims
+  // The API already handles conditional filtering, so we just display what it returns
+  const availableModels = filterOptions.models || [];
+  const availableTrims = filterOptions.trims || [];
+  const availableYears = filterOptions.years || [];
+  const availableConditions = filterOptions.conditions || [];
+  const availableFuelTypes = filterOptions.fuelTypes || [];
+  const availableDriveTypes = filterOptions.driveTypes || [];
+  const availableTransmissions = filterOptions.transmissions || [];
+  const availableExteriorColors = filterOptions.exteriorColors || [];
+  const availableInteriorColors = filterOptions.interiorColors || [];
+  const availableDealers = filterOptions.dealers || [];
+  const availableStates = filterOptions.states || [];
+  const availableCities = filterOptions.cities || [];
 
-  // Get available trims based on selected models
-  // The filterOptions.trims should already be filtered by the API based on selected makes/models
-  const availableTrims = appliedFilters.model.length > 0 ?
-    (filterOptions.trims || []) : [];
-
-  console.log("🔍 DEBUG: Filter dependencies:", {
+  console.log("�� DEBUG: Filter options from API:", {
     selectedMakes: appliedFilters.make,
-    availableModelsCount: availableModels.length,
-    selectedModels: appliedFilters.model,
-    availableTrimsCount: availableTrims.length
+    apiModelsCount: availableModels.length,
+    apiTrimsCount: availableTrims.length,
+    apiYearsCount: availableYears.length,
+    sampleApiModels: availableModels.slice(0, 5).map(m => m.name),
+    filterOptionsTimestamp: Date.now()
   });
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
