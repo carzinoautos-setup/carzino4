@@ -207,47 +207,7 @@ export class CustomWordPressApiService {
         });
       }
 
-      // Apply client-side dealer filtering since we need to map dealer names to account IDs
-      if (filters.dealer && filters.dealer.length > 0) {
-        console.log("🏢 APPLYING CLIENT-SIDE DEALER FILTER:", {
-          dealerNames: filters.dealer,
-          originalCount: vehicles.length
-        });
-
-        const originalCount = vehicles.length;
-        vehicles = vehicles.filter(vehicle => {
-          // Get account relationship field and dealer name
-          const accountNumber = vehicle.acf?.account_number_seller || vehicle.acf?.seller_account_number || "";
-          const dealerName = vehicle.acf?.acount_name_seller || vehicle.acf?.dealer_name || "";
-
-          // Filter primarily by account_number_seller relationship
-          return filters.dealer.some(selectedDealer => {
-            // First try to match by account number (the relationship field)
-            if (accountNumber && accountNumber.toString() === selectedDealer) {
-              return true;
-            }
-            // Then try to match by dealer name (for cases where dealer name is selected)
-            if (dealerName && (
-              dealerName.toLowerCase().includes(selectedDealer.toLowerCase()) ||
-              selectedDealer.toLowerCase().includes(dealerName.toLowerCase())
-            )) {
-              return true;
-            }
-            return false;
-          });
-        });
-
-        console.log("🏢 DEALER FILTER RESULTS:", {
-          selectedDealers: filters.dealer,
-          originalCount: originalCount,
-          filteredCount: vehicles.length,
-          filteredOut: originalCount - vehicles.length,
-          sampleVehicleAccountInfo: vehicles.length > 0 ? {
-            accountNumber: vehicles[0].acf?.account_number_seller,
-            dealerName: vehicles[0].acf?.acount_name_seller
-          } : 'no vehicles'
-        });
-      }
+      // Dealer filtering is now handled by WordPress API using account_number_seller parameter
 
       // Apply client-side payment filtering since WordPress API doesn't support it
       const dealerFilteredCount = vehicles.length;
@@ -410,7 +370,7 @@ export class CustomWordPressApiService {
 
       // Use pagination info from API response, but adjust for client-side filtering
       const paginationInfo = apiResponse.pagination;
-      const isFiltered = (filters.priceMin || filters.priceMax || filters.paymentMin || filters.paymentMax || (filters.dealer && filters.dealer.length > 0));
+      const isFiltered = (filters.priceMin || filters.priceMax || filters.paymentMin || filters.paymentMax);
 
       if (isFiltered) {
         // For client-side filtering, we need to adjust pagination
