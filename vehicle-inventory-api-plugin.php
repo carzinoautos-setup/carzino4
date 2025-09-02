@@ -12,6 +12,32 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Clear filter cache function
+ */
+function via_clear_filter_cache() {
+    global $wpdb;
+
+    // Delete all transients with our prefix
+    $wpdb->query($wpdb->prepare("
+        DELETE FROM {$wpdb->options}
+        WHERE option_name LIKE %s
+    ", '_transient_via_filters_%'));
+
+    $wpdb->query($wpdb->prepare("
+        DELETE FROM {$wpdb->options}
+        WHERE option_name LIKE %s
+    ", '_transient_timeout_via_filters_%'));
+
+    error_log('VIA: Cleared all filter cache transients');
+}
+
+/**
+ * Clear cache immediately on plugin load
+ */
+via_clear_filter_cache();
+error_log('VIA: Plugin loaded, cache cleared');
+
+/**
  * CORS Headers for cross-origin requests
  */
 add_action('init', function() {
@@ -20,7 +46,7 @@ add_action('init', function() {
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
     }
-    
+
     if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -28,12 +54,6 @@ add_action('init', function() {
         exit(0);
     }
 });
-
-/**
- * Clear cache immediately on plugin load
- */
-via_clear_filter_cache();
-error_log('VIA: Plugin loaded, cache cleared');
 
 /**
  * Register REST API endpoints
