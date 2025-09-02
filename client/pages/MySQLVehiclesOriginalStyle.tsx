@@ -133,7 +133,7 @@ function MySQLVehiclesOriginalStyleInner() {
     exteriorColor: true,
     interiorColor: true,
     sellerType: true,
-    dealer: true,
+    dealer: false,
     state: true,
     city: true,
   });
