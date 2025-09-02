@@ -115,7 +115,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         downPayment,
       );
     }
-    return vehicle.payment || "Call for Price";
+    return vehicle.payment || null;
   };
 
   return (
