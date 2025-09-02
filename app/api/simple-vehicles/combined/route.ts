@@ -109,8 +109,9 @@ export async function GET(request: NextRequest) {
         const apiKey = filterMapping[key] || key;
         vehiclesUrl.searchParams.set(apiKey, value);
 
-        // Also pass key filters to the filters endpoint for dependent filtering
-        if (['make', 'model', 'year'].includes(key)) {
+        // Pass ALL filters to the filters endpoint for comprehensive conditional filtering
+        // This enables dynamic narrowing of all filter options based on current selections
+        if (!['page', 'pageSize', 'sort', 'sortBy'].includes(key)) {
           filtersUrl.searchParams.set(apiKey, value);
         }
       }
