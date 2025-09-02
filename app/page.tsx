@@ -1471,7 +1471,10 @@ export default function HomePage() {
                               trim: [...prev.trim, trim.name]
                             }));
                           } else {
-                            removeAppliedFilter("trim", trim.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              trim: prev.trim.filter(t => t !== trim.name)
+                            }));
                           }
                         }}
                       />
