@@ -1854,15 +1854,25 @@ export default function HomePage() {
                       <ChevronDown className="w-4 h-4" />
                     </button>
                     {sortDropdownOpen && (
-                      <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                        {["Relevance", "Price: Low to High", "Price: High to Low", "Year: Newest First", "Year: Oldest First", "Mileage: Low to High", "Mileage: High to Low"].map((option) => (
+                      <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                        {[
+                          "Relevance",
+                          "Price: Low to High",
+                          "Price: High to Low",
+                          "Year: Newest First",
+                          "Year: Oldest First",
+                          "Mileage: Low to High",
+                          "Mileage: High to Low"
+                        ].map((option) => (
                           <button
                             key={option}
                             onClick={() => {
                               setSortBy(option);
                               setSortDropdownOpen(false);
                             }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                              sortBy === option ? 'bg-red-50 text-red-700' : ''
+                            }`}
                           >
                             {option}
                           </button>
