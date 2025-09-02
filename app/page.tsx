@@ -267,10 +267,22 @@ export default function HomePage() {
         }
       }
       if (appliedFilters.priceMin) {
-        apiUrl.searchParams.set('priceMin', appliedFilters.priceMin);
+        apiUrl.searchParams.set('min_price', appliedFilters.priceMin);
       }
       if (appliedFilters.priceMax) {
-        apiUrl.searchParams.set('priceMax', appliedFilters.priceMax);
+        apiUrl.searchParams.set('max_price', appliedFilters.priceMax);
+      }
+      if (appliedFilters.yearMin) {
+        apiUrl.searchParams.set('min_year', appliedFilters.yearMin);
+      }
+      if (appliedFilters.yearMax) {
+        apiUrl.searchParams.set('max_year', appliedFilters.yearMax);
+      }
+      if (appliedFilters.mileageMin) {
+        apiUrl.searchParams.set('min_mileage', appliedFilters.mileageMin);
+      }
+      if (appliedFilters.mileageMax) {
+        apiUrl.searchParams.set('max_mileage', appliedFilters.mileageMax);
       }
       if (appliedFilters.paymentMin) {
         apiUrl.searchParams.set('paymentMin', appliedFilters.paymentMin);
