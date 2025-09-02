@@ -6,9 +6,9 @@ Complete API documentation for the Carzino Autos Vehicle Management System.
 
 - [Base URLs](#base-urls)
 - [Authentication](#authentication)
+- [WordPress Plugin Endpoints](#wordpress-plugin-endpoints)
 - [Vehicle Endpoints](#vehicle-endpoints)
 - [Payment Endpoints](#payment-endpoints)
-- [WordPress Endpoints](#wordpress-endpoints)
 - [Error Handling](#error-handling)
 - [Rate Limiting](#rate-limiting)
 - [Examples](#examples)
@@ -25,7 +25,7 @@ Local: http://localhost:8080/api
 
 ```
 API: https://your-domain.com/api
-WordPress: https://your-wordpress-site.com/wp-json/carzino/v1
+WordPress Plugin: https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1
 ```
 
 ## 🔐 **Authentication**
@@ -35,6 +35,213 @@ Currently, the API uses basic CORS protection. Future versions will include:
 - JWT token authentication
 - Rate limiting per user
 - API key management
+
+## 🔌 **WordPress Plugin Endpoints**
+
+### **🚀 ACTIVE PLUGIN: Vehicle Inventory API v2.0**
+
+**Plugin Location**: `/wp-content/plugins/vehicle-inventory-api/`  
+**Status**: ✅ Active and working with conditional filtering
+
+#### **GET /wp-json/custom/v1/ping**
+
+Health check endpoint to verify the API is active.
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Vehicle API is alive!"
+}
+```
+
+#### **GET /wp-json/custom/v1/vehicles**
+
+Get vehicles with filtering, sorting, and pagination.
+
+**Query Parameters:**
+
+```typescript
+interface VehicleFilters {
+  // Pagination
+  page?: number; // Default: 1
+  per_page?: number; // Default: 10
+
+  // Filtering (supports comma-separated multi-values)
+  make?: string; // e.g., "Toyota" or "Toyota,Ford"
+  model?: string; // e.g., "Camry" or "Camry,Civic"
+  trim?: string; // e.g., "LE,SE"
+  year?: string; // e.g., "2023" or "2022,2023"
+  body_style?: string; // e.g., "Sedan,SUV"
+  drivetrain?: string; // e.g., "FWD,AWD"
+  fuel_type?: string; // e.g., "Gasoline,Hybrid"
+  transmission?: string; // e.g., "Automatic,Manual"
+  condition?: string; // e.g., "New,Used,Certified"
+  certified?: string; // "1" for certified only
+  exterior_color?: string;
+  interior_color?: string;
+  account_name_seller?: string; // Dealer name
+  business_name_seller?: string;
+  city_seller?: string;
+  state_seller?: string;
+
+  // Sorting
+  sort?: 'price_asc' | 'price_desc' | 'mileage_asc' | 'mileage_desc' | 'year_asc' | 'year_desc';
+}
+```
+
+**Example Requests:**
+
+```bash
+# Get all vehicles (page 1, 10 per page)
+GET /wp-json/custom/v1/vehicles
+
+# Filter by Toyota only
+GET /wp-json/custom/v1/vehicles?make=Toyota
+
+# Filter by Toyota and Ford, sort by price low to high
+GET /wp-json/custom/v1/vehicles?make=Toyota,Ford&sort=price_asc
+
+# Complex filtering with pagination
+GET /wp-json/custom/v1/vehicles?make=Toyota&condition=Used,Certified&year=2020,2021,2022&page=2&per_page=20
+```
+
+**Response:**
+
+```typescript
+interface VehiclesResponse {
+  success: boolean;
+  data: Array<{
+    id: number;
+    name: string;
+    permalink: string;
+    stock_status: string;
+    featured_image: string;
+    acf: {
+      make: string;
+      model: string;
+      year: number;
+      trim: string;
+      mileage: number;
+      condition: string;
+      transmission: string;
+      drivetrain: string;
+      fuel_type: string;
+      body_style: string;
+      exterior_color: string;
+      interior_color: string;
+      vin: string;
+      certified: boolean;
+      account_name_seller: string;
+      business_name_seller: string;
+      city_seller: string;
+      state_seller: string;
+      zip_seller: string;
+      price: number;
+    };
+  }>;
+  pagination: {
+    total: number;
+    page: number;
+    per_page: number;
+    total_pages: number;
+  };
+}
+```
+
+#### **GET /wp-json/custom/v1/filters**
+
+🎯 **CONDITIONAL FILTERING ENDPOINT** - Returns filter options that narrow based on applied filters.
+
+**Key Features:**
+- ✅ **Cascading Filters**: Make → Model → Trim → Year properly narrow down
+- ✅ **All Fields Narrow**: body_style, drivetrain, fuel_type, transmission, condition, certified, colors, dealer, city, state all narrow based on current vehicle pool
+- ✅ **Multi-Select Support**: Supports comma-separated values (e.g., `make=Toyota,Ford`)
+
+**Query Parameters:**
+
+All the same parameters as the vehicles endpoint. The filters endpoint will:
+1. **First**: Narrow the vehicle pool based on applied filters
+2. **Then**: Calculate filter counts only from that narrowed pool
+
+**Example Requests:**
+
+```bash
+# Get all available filter options
+GET /wp-json/custom/v1/filters
+
+# Get filter options when Toyota is selected
+# Result: Only Toyota models, trims, years, and related options
+GET /wp-json/custom/v1/filters?make=Toyota
+
+# Get filter options when Toyota AND Ford are selected
+# Result: Only Toyota + Ford models, trims, years, and related options
+GET /wp-json/custom/v1/filters?make=Toyota,Ford
+
+# Complex conditional filtering
+GET /wp-json/custom/v1/filters?make=Toyota&model=Camry&condition=Used
+```
+
+**Response:**
+
+```typescript
+interface FiltersResponse {
+  success: boolean;
+  filters: {
+    make: Array<{ name: string; count: number }>;
+    model: Array<{ name: string; count: number }>;
+    trim: Array<{ name: string; count: number }>;
+    year: Array<{ name: string; count: number }>;
+    body_style: Array<{ name: string; count: number }>;
+    drivetrain: Array<{ name: string; count: number }>;
+    fuel_type: Array<{ name: string; count: number }>;
+    transmission: Array<{ name: string; count: number }>;
+    condition: Array<{ name: string; count: number }>;
+    certified: Array<{ name: string; count: number }>;
+    exterior_color: Array<{ name: string; count: number }>;
+    interior_color: Array<{ name: string; count: number }>;
+    account_name_seller: Array<{ name: string; count: number }>;
+    business_name_seller: Array<{ name: string; count: number }>;
+    city_seller: Array<{ name: string; count: number }>;
+    state_seller: Array<{ name: string; count: number }>;
+  };
+  applied_filters: {
+    [key: string]: string; // Echo back applied filters
+  };
+}
+```
+
+**Example Response (Toyota selected):**
+
+```json
+{
+  "success": true,
+  "filters": {
+    "model": [
+      { "name": "Camry", "count": 12 },
+      { "name": "Corolla", "count": 9 },
+      { "name": "RAV4", "count": 15 }
+    ],
+    "trim": [
+      { "name": "LE", "count": 6 },
+      { "name": "SE", "count": 4 },
+      { "name": "XLE", "count": 8 }
+    ],
+    "year": [
+      { "name": "2023", "count": 10 },
+      { "name": "2022", "count": 15 },
+      { "name": "2021", "count": 11 }
+    ],
+    "body_style": [
+      { "name": "Sedan", "count": 21 },
+      { "name": "SUV", "count": 15 }
+    ]
+  },
+  "applied_filters": {
+    "make": "Toyota"
+  }
+}
+```
 
 ## 🚗 **Vehicle Endpoints**
 
@@ -335,75 +542,6 @@ interface ClearCacheResponse {
 }
 ```
 
-## 🛒 **WordPress Endpoints**
-
-### **GET /wp-json/carzino/v1/vehicles**
-
-Get vehicles from WooCommerce products.
-
-**Query Parameters:**
-
-```typescript
-interface WordPressFilters {
-  page?: number;
-  per_page?: number;
-  filters?: {
-    make?: string;
-    max_price?: number;
-    condition?: string;
-  };
-}
-```
-
-**Response:**
-
-```typescript
-interface WordPressVehiclesResponse {
-  success: boolean;
-  data: Array<{
-    id: number;
-    title: string;
-    price: number;
-    make: string;
-    model: string;
-    year: number;
-    // ... other WooCommerce fields
-  }>;
-  meta: {
-    total: number;
-    page: number;
-    per_page: number;
-    total_pages: number;
-  };
-}
-```
-
-### **GET /wp-json/carzino/v1/vehicles/:id**
-
-Get single vehicle from WooCommerce.
-
-### **GET /wp-json/carzino/v1/settings**
-
-Get global settings from ACF options.
-
-**Response:**
-
-```typescript
-interface WordPressSettingsResponse {
-  success: boolean;
-  data: {
-    default_apr: number;
-    default_sales_tax: number;
-    default_term: number;
-    default_down_pct: number;
-  };
-}
-```
-
-### **POST /wp-json/carzino/v1/vehicles/affordable**
-
-Get vehicles within payment affordability range.
-
 ## ❌ **Error Handling**
 
 ### **Standard Error Response**
@@ -474,25 +612,57 @@ Currently not implemented, but planned for future releases:
 
 ## 📝 **Examples**
 
+### **WordPress Plugin Examples**
+
+**Test API Health:**
+
+```bash
+curl -X GET "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/ping"
+```
+
+**Get All Vehicles:**
+
+```bash
+curl -X GET "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles?page=1&per_page=10"
+```
+
+**Filter by Toyota (conditional filtering):**
+
+```bash
+curl -X GET "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota"
+```
+
+**Complex filtering with sorting:**
+
+```bash
+curl -X GET "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/vehicles?make=Toyota,Honda&condition=Used&sort=price_asc"
+```
+
 ### **JavaScript/TypeScript Examples**
 
-**Fetch Vehicles:**
+**Fetch Vehicles with Conditional Filters:**
 
 ```typescript
-async function getVehicles(filters: VehicleFilters = {}) {
-  const params = new URLSearchParams(
-    Object.entries(filters).filter(([_, value]) => value != null),
-  );
+async function getVehiclesWithFilters(filters: Record<string, string> = {}) {
+  const params = new URLSearchParams(filters);
+  
+  // Get vehicles and filters in parallel
+  const [vehiclesResponse, filtersResponse] = await Promise.all([
+    fetch(`/wp-json/custom/v1/vehicles?${params}`),
+    fetch(`/wp-json/custom/v1/filters?${params}`)
+  ]);
 
-  const response = await fetch(`/api/vehicles?${params}`);
-  const data: VehiclesResponse = await response.json();
+  const vehicles = await vehiclesResponse.json();
+  const filterOptions = await filtersResponse.json();
 
-  if (!data.success) {
-    throw new Error(data.error as string);
-  }
-
-  return data;
+  return { vehicles, filterOptions };
 }
+
+// Usage
+const { vehicles, filterOptions } = await getVehiclesWithFilters({
+  make: 'Toyota',
+  condition: 'Used'
+});
 ```
 
 **Calculate Payment:**
@@ -557,11 +727,14 @@ curl -X POST "http://localhost:8080/api/payments/calculate" \
   }'
 ```
 
-**WordPress Integration:**
+**WordPress Integration with Conditional Filtering:**
 
 ```bash
-curl -X GET "https://your-wordpress-site.com/wp-json/carzino/v1/vehicles" \
+# Test conditional filtering - Toyota only
+curl -X GET "https://env-uploadbackup62225-czdev.kinsta.cloud/wp-json/custom/v1/filters?make=Toyota" \
   -H "Accept: application/json"
+
+# Should return only Toyota models, trims, years, and related options
 ```
 
 ## 🔧 **Development Tools**
@@ -583,13 +756,20 @@ curl -X DELETE "http://localhost:8080/api/payments/cache"
 curl -X GET "http://localhost:8080/api/payments/cache-stats"
 ```
 
+### **WordPress Plugin Cache Rebuild**
+
+```bash
+# Rebuild filter cache (if implemented)
+https://env-uploadbackup62225-czdev.kinsta.cloud/?via_build_filters=1
+```
+
 ## 📊 **Performance Considerations**
 
 ### **Caching Strategy**
 
 - **Payment calculations**: 5-minute TTL
 - **Vehicle data**: No caching (real-time updates)
-- **Filter options**: 1-hour TTL
+- **Filter options**: Cached with transients (5-minute TTL)
 - **WordPress data**: 5-minute TTL
 
 ### **Optimization Tips**
@@ -598,9 +778,37 @@ curl -X GET "http://localhost:8080/api/payments/cache-stats"
 - Implement client-side caching for repeated requests
 - Use pagination for large datasets
 - Consider database indexing for custom filters
+- Use conditional filtering to reduce payload size
+
+## 🚀 **Builder.io Integration Notes**
+
+### **Endpoints to Use:**
+
+- `/wp-json/custom/v1/vehicles` → for vehicle cards
+- `/wp-json/custom/v1/filters` → for building filter menus
+
+### **Vehicle Endpoint Params:**
+
+- `page`, `per_page`
+- Any filter field (`make`, `model`, `trim`, etc.)
+- `sort` values: `price_asc`, `price_desc`, `mileage_asc`, `mileage_desc`, `year_asc`, `year_desc`
+
+### **Filters Endpoint Behavior:**
+
+- ✅ **Cascades correctly**: `?make=Toyota` → only Toyota models/trims/years
+- ✅ **Multi-select support**: `?make=Toyota,Ford` → only Toyota + Ford models/trims/years
+- ✅ **All filters narrow**: body_style, drivetrain, fuel_type, transmission, condition, certified, colors, dealer, city, state all narrow to current vehicle pool
+
+### **Expected Behavior:**
+
+- Selecting Toyota → only Toyota-related values in all filters
+- Selecting Toyota+Ford → only Toyota + Ford-related values in all filters
+- Sorting works with filters applied
+- Conditional filtering works for all cascading relationships
 
 ---
 
 **Last Updated**: 2024-01-XX  
 **API Version**: 2.0.0  
-**Compatibility**: Node.js 18+, MySQL 8.0+
+**WordPress Plugin**: Vehicle Inventory API v2.0 (Active)  
+**Compatibility**: Node.js 18+, MySQL 8.0+, WordPress 5.0+
