@@ -32,42 +32,63 @@ interface WooCommerceVehicle {
   };
 }
 
-// Transform WooCommerce vehicle data to frontend format
+// Transform WooCommerce vehicle data to specification format
 function transformVehicleData(vehicle: WooCommerceVehicle): any {
   const acf = vehicle.acf || {};
 
   return {
+    // Core specification fields
     id: vehicle.id,
+    name: vehicle.name || `${acf.year || ''} ${acf.make || ''} ${acf.model || ''} ${acf.trim || ''}`.trim(),
+    permalink: vehicle.permalink || `#vehicle-${vehicle.id}`,
+    stock_status: vehicle.stock_status || 'instock',
+    featured_image: vehicle.featured_image || '/placeholder.svg',
+
+    // ACF data in specification format
+    acf: {
+      year: acf.year || '',
+      make: acf.make || '',
+      model: acf.model || '',
+      trim: acf.trim || '',
+      price: acf.price || 0,
+      mileage: acf.mileage || 0,
+      body_style: acf.body_style || '',
+      drivetrain: acf.drivetrain || '',
+      fuel_type: acf.fuel_type || '',
+      transmission: acf.transmission || '',
+      condition: acf.condition || 'Used',
+      exterior_color: acf.exterior_color || '',
+      interior_color: acf.interior_color || '',
+      account_number_seller: acf.account_number_seller || '',
+      account_name_seller: acf.account_name_seller || acf.dealer_name || '',
+      business_name_seller: acf.business_name_seller || '',
+      city_seller: acf.city_seller || '',
+      state_seller: acf.state_seller || '',
+      zip_seller: acf.zip_seller || '',
+      vin: acf.vin || '',
+      car_location_latitude: acf.car_location_latitude || null,
+      car_location_longitude: acf.car_location_longitude || null,
+    },
+
+    // Additional fields for frontend compatibility
     featured: vehicle.stock_status === 'featured' || false,
     viewed: false,
     images: vehicle.featured_image ? [vehicle.featured_image] : ['/placeholder.svg'],
     badges: vehicle.stock_status === 'featured' ? ['FEATURED'] : [],
     title: vehicle.name || `${acf.year || ''} ${acf.make || ''} ${acf.model || ''} ${acf.trim || ''}`.trim(),
     mileage: acf.mileage ? acf.mileage.toLocaleString() : 'N/A',
-    transmission: acf.transmission || 'N/A',
-    doors: '4', // Default, can be added to ACF later
+    doors: '4',
     year: acf.year || 'N/A',
-    drivetrain: acf.drivetrain || 'N/A',
-    fuel_type: acf.fuel_type || 'N/A',
-    body_style: acf.body_style || 'N/A',
-    exterior_color: acf.exterior_color || 'N/A',
-    interior_color: acf.interior_color || 'N/A',
-    condition: acf.condition || 'Used',
-    vin: acf.vin || 'N/A',
     salePrice: acf.price ? `$${acf.price.toLocaleString()}` : 'Call for Price',
-    payment: acf.price ? `$${Math.round(acf.price / 60)}` : null, // Rough estimate
-    dealer: acf.dealer_name || acf.account_name_seller || acf.business_name_seller || 'Dealer',
+    payment: acf.price ? `$${Math.round(acf.price / 60)}` : null,
+    dealer: acf.account_name_seller || acf.business_name_seller || acf.dealer_name || 'Dealer',
     location: `${acf.city_seller || ''}, ${acf.state_seller || ''}`.replace(/^,\s*|,\s*$/g, '') || 'Location N/A',
-    phone: '(555) 123-4567', // Add to ACF later if needed
+    phone: '(555) 123-4567',
     seller_type: 'Dealer',
     seller_account_number: acf.account_number_seller || '',
     city_seller: acf.city_seller || '',
     state_seller: acf.state_seller || '',
     zip_seller: acf.zip_seller || '',
-
-    // Location data for radius filtering
-    car_location_latitude: acf.car_location_latitude || null,
-    car_location_longitude: acf.car_location_longitude || null,
   };
 }
 
