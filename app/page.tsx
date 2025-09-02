@@ -339,7 +339,9 @@ export default function HomePage() {
           conditions: filters.conditions?.length || 0,
           dealers: filters.dealers?.length || 0,
           sampleMakes: filters.makes?.slice(0, 3),
-          appliedFilters: data.applied_filters
+          sampleModels: filters.models?.slice(0, 5),
+          appliedFilters: data.applied_filters,
+          currentAppliedFilters: appliedFilters
         });
 
         setFilterOptions(filters);
