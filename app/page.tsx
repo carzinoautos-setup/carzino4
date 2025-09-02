@@ -333,12 +333,31 @@ export default function HomePage() {
           currentAppliedFilters: appliedFilters
         });
 
-        console.log("🚨 CRITICAL DEBUG: State vs API mismatch check:", {
+        console.log("🚨 CRITICAL DEBUG: Conditional filtering check:", {
           frontendSelectedMakes: appliedFilters.make,
           apiReturnedFilters: data.applied_filters,
           shouldShowConditionalModels: appliedFilters.make.length > 0,
-          apiModelsCount: filters.models?.length || 0
+          apiModelsCount: filters.models?.length || 0,
+          actualApiModels: filters.models?.map(m => m.name).slice(0, 10),
+          nonToyotaModelsStillShowing: filters.models?.filter(m => !m.name.toLowerCase().includes('camry') && !m.name.toLowerCase().includes('corolla') && !m.name.toLowerCase().includes('rav4')).slice(0, 5)
         });
+
+        // CRITICAL: Check if Toyota is selected but we still see non-Toyota models
+        if (appliedFilters.make.includes('Toyota') && filters.models) {
+          const nonToyotaModels = filters.models.filter(model =>
+            model.name.toLowerCase().includes('f-150') ||
+            model.name.toLowerCase().includes('silverado') ||
+            model.name.toLowerCase().includes('explorer') ||
+            model.name.toLowerCase().includes('mustang')
+          );
+          if (nonToyotaModels.length > 0) {
+            console.error("🚨 CONDITIONAL FILTERING BUG DETECTED:");
+            console.error("Toyota is selected but Ford/Chevy models still showing:", nonToyotaModels);
+            console.error("Applied filters being sent to API:", appliedFilters);
+            console.error("API response applied_filters:", data.applied_filters);
+            console.error("Full API response:", data);
+          }
+        }
 
         setFilterOptions(filters);
       } else {
