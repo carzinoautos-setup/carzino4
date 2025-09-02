@@ -135,8 +135,6 @@ export default function HomePage() {
     priceMax: "",
     yearMin: "",
     yearMax: "",
-    mileageMin: "",
-    mileageMax: "",
     paymentMin: "",
     paymentMax: "",
   });
