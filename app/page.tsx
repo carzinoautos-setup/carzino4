@@ -460,25 +460,6 @@ export default function HomePage() {
           currentAppliedFilters: appliedFilters
         });
 
-        const filters = data.filters || {
-          makes: [], models: [], trims: [], years: [], conditions: [],
-          vehicleTypes: [], driveTypes: [], transmissions: [], fuelTypes: [],
-          exteriorColors: [], interiorColors: [], sellerTypes: [],
-          dealers: [], states: [], cities: [], totalVehicles: 0
-        };
-
-        console.log("🔍 DEBUG: Filter options received:", {
-          makes: filters.makes?.length || 0,
-          models: filters.models?.length || 0,
-          years: filters.years?.length || 0,
-          conditions: filters.conditions?.length || 0,
-          dealers: filters.dealers?.length || 0,
-          sampleMakes: filters.makes?.slice(0, 3),
-          sampleModels: filters.models?.slice(0, 5),
-          appliedFilters: data.applied_filters,
-          currentAppliedFilters: appliedFilters
-        });
-
         console.log("🚨 CRITICAL DEBUG: Conditional filtering check:", {
           frontendSelectedMakes: appliedFilters.make,
           apiReturnedFilters: data.applied_filters,
