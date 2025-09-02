@@ -1815,6 +1815,24 @@ function MySQLVehiclesOriginalStyleInner() {
             </FilterSection>
 
           </div>
+
+          {/* Mobile Bottom Sticky Bar */}
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50" style={{ bottom: "10%" }}>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setMobileFiltersOpen(false)}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setMobileFiltersOpen(false)}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Main Content Area */}
