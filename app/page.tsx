@@ -1421,45 +1421,6 @@ export default function HomePage() {
               </select>
             </FilterSection>
 
-            {/* Mileage Range Filter */}
-            <FilterSection
-              title="Mileage Range"
-              isCollapsed={true}
-              onToggle={() => toggleFilter("mileageRange")}
-            >
-              <div className="space-y-2">
-                <div className="flex gap-1">
-                  <input
-                    type="text"
-                    placeholder="0"
-                    value={mileageMin}
-                    onChange={(e) => setMileageMin(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                  <input
-                    type="text"
-                    placeholder="200,000"
-                    value={mileageMax}
-                    onChange={(e) => setMileageMax(e.target.value)}
-                    className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-red-600"
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setCurrentPage(1);
-                    setAppliedFilters(prev => ({
-                      ...prev,
-                      mileageMin: mileageMin,
-                      mileageMax: mileageMax
-                    }));
-                  }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
-                >
-                  Apply Mileage Filter
-                </button>
-              </div>
-            </FilterSection>
-
             {/* Fuel Type Filter */}
             <FilterSection
               title="Fuel Type"
