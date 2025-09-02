@@ -954,13 +954,6 @@ export default function HomePage() {
                       <button onClick={() => { setAppliedFilters(prev => ({ ...prev, yearMin: "", yearMax: "" })); setYearMin(""); setYearMax(""); }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   )}
-                  {(appliedFilters.mileageMin || appliedFilters.mileageMax) && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />
-                      Mileage: {appliedFilters.mileageMin || "0"} - {appliedFilters.mileageMax || "Any"}
-                      <button onClick={() => { setAppliedFilters(prev => ({ ...prev, mileageMin: "", mileageMax: "" })); setMileageMin(""); setMileageMax(""); }} className="ml-1 text-white hover:text-gray-300">×</button>
-                    </span>
-                  )}
                   {(appliedFilters.paymentMin || appliedFilters.paymentMax) && (
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
