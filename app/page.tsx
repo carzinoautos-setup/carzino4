@@ -300,7 +300,7 @@ export default function HomePage() {
     }
   };
 
-  // API fetch function - Updated to use WordPress conditional filtering
+  // API fetch function - Using working combined endpoint that includes WordPress conditional filtering
   const fetchCombinedData = useCallback(async () => {
     if (!isMountedRef.current) return;
 
@@ -308,99 +308,7 @@ export default function HomePage() {
       setLoading(true);
       setError(null);
 
-      // STEP 1: Get conditional filter options first
-      const filtersUrl = new URL('/api/wp/filters', window.location.origin);
-
-      // Add applied filters to get narrowed results
-      if (appliedFilters.make.length > 0) {
-        filtersUrl.searchParams.set('make', appliedFilters.make.join(','));
-      }
-      if (appliedFilters.model.length > 0) {
-        filtersUrl.searchParams.set('model', appliedFilters.model.join(','));
-      }
-      if (appliedFilters.trim.length > 0) {
-        filtersUrl.searchParams.set('trim', appliedFilters.trim.join(','));
-      }
-      if (appliedFilters.year.length > 0) {
-        filtersUrl.searchParams.set('year', appliedFilters.year.join(','));
-      }
-      if (appliedFilters.condition.length > 0) {
-        filtersUrl.searchParams.set('condition', appliedFilters.condition.join(','));
-      }
-      if (appliedFilters.vehicleType.length > 0) {
-        filtersUrl.searchParams.set('body_style', appliedFilters.vehicleType.join(','));
-      }
-      if (appliedFilters.driveType.length > 0) {
-        filtersUrl.searchParams.set('drivetrain', appliedFilters.driveType.join(','));
-      }
-      if (appliedFilters.transmission.length > 0) {
-        filtersUrl.searchParams.set('transmission', appliedFilters.transmission.join(','));
-      }
-      if (appliedFilters.fuel_type.length > 0) {
-        filtersUrl.searchParams.set('fuel_type', appliedFilters.fuel_type.join(','));
-      }
-      if (appliedFilters.exteriorColor.length > 0) {
-        filtersUrl.searchParams.set('exterior_color', appliedFilters.exteriorColor.join(','));
-      }
-      if (appliedFilters.interiorColor.length > 0) {
-        filtersUrl.searchParams.set('interior_color', appliedFilters.interiorColor.join(','));
-      }
-      if (appliedFilters.city.length > 0) {
-        filtersUrl.searchParams.set('city_seller', appliedFilters.city.join(','));
-      }
-      if (appliedFilters.state.length > 0) {
-        filtersUrl.searchParams.set('state_seller', appliedFilters.state.join(','));
-      }
-
-      console.log('🔍 Fetching conditional filters:', filtersUrl.toString());
-
-      const filtersResponse = await fetch(filtersUrl.toString());
-      const filtersData = await filtersResponse.json();
-
-      console.log('✅ WordPress filters response:', {
-        success: filtersData.success,
-        appliedFilters: filtersData.applied_filters,
-        filterCounts: {
-          makes: filtersData.filters?.make?.length || 0,
-          models: filtersData.filters?.model?.length || 0,
-          trims: filtersData.filters?.trim?.length || 0,
-          years: filtersData.filters?.year?.length || 0
-        }
-      });
-
-      if (filtersData.success) {
-        // CRITICAL: Always rebuild filter options from WordPress response
-        const newFilterOptions = {
-          makes: filtersData.filters?.make || [],
-          models: filtersData.filters?.model || [],
-          trims: filtersData.filters?.trim || [],
-          years: filtersData.filters?.year || [],
-          conditions: filtersData.filters?.condition || [],
-          vehicleTypes: filtersData.filters?.body_style || [],
-          driveTypes: filtersData.filters?.drivetrain || [],
-          transmissions: filtersData.filters?.transmission || [],
-          fuelTypes: filtersData.filters?.fuel_type || [],
-          exteriorColors: filtersData.filters?.exterior_color || [],
-          interiorColors: filtersData.filters?.interior_color || [],
-          sellerTypes: filtersData.filters?.account_type_seller || [],
-          dealers: filtersData.filters?.account_name_seller || [],
-          states: filtersData.filters?.state_seller || [],
-          cities: filtersData.filters?.city_seller || [],
-          totalVehicles: 0
-        };
-
-        console.log('🎯 Setting new filter options from WordPress:', {
-          makeCount: newFilterOptions.makes.length,
-          modelCount: newFilterOptions.models.length,
-          trimCount: newFilterOptions.trims.length,
-          sampleMakes: newFilterOptions.makes.slice(0, 3).map(m => m.name),
-          sampleModels: newFilterOptions.models.slice(0, 5).map(m => m.name)
-        });
-
-        setFilterOptions(newFilterOptions);
-      }
-
-      // STEP 2: Get vehicles using existing endpoint
+      // Build API URL - call our backend that properly handles filters
       const apiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
       apiUrl.searchParams.set('page', currentPage.toString());
       apiUrl.searchParams.set('pageSize', resultsPerPage.toString());
