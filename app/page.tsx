@@ -147,7 +147,6 @@ export default function HomePage() {
     vehicleType: true,
     condition: false,
     mileage: false,
-    mileageRange: true,
     make: false,
     model: true,
     trim: true,
