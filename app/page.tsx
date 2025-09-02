@@ -117,140 +117,174 @@ export default function HomePage() {
     city: true,
   });
 
-  // Sample vehicle data with your exact structure
-  const sampleVehicles: Vehicle[] = [
-    {
-      id: 1,
-      featured: true,
-      viewed: false,
-      images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=450&h=300&fit=crop"],
-      badges: ["Low Mileage", "Clean Title"],
-      title: "2020 Honda Civic LX",
-      mileage: "25,000",
-      transmission: "Automatic",
-      doors: "4 Doors",
-      salePrice: "$18,500",
-      payment: "$299",
-      dealer: "AutoMax Dealership",
-      location: "Downtown Location",
-      phone: "(555) 123-4567",
-      seller_type: "Dealer",
-      seller_account_number: "D12345",
-      city_seller: "Seattle",
-      state_seller: "WA",
-      zip_seller: "98101",
-    },
-    {
-      id: 2,
-      featured: false,
-      viewed: true,
-      images: ["https://images.unsplash.com/photo-1617788138017-80ad40651399?w=450&h=300&fit=crop"],
-      badges: ["New", "4WD"],
-      title: "2025 Ford F-150 Lariat SuperCrew",
-      mileage: "8",
-      transmission: "Auto",
-      doors: "4 doors",
-      salePrice: "$67,899",
-      payment: "$789",
-      dealer: "Bayside Ford",
-      location: "Lakewood, WA",
-      phone: "(253) 555-0123",
-      seller_type: "Dealer", 
-      seller_account_number: "F67890",
-      city_seller: "Lakewood",
-      state_seller: "WA", 
-      zip_seller: "98499",
-    },
-    {
-      id: 3,
-      featured: false,
-      viewed: false,
-      images: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=450&h=300&fit=crop"],
-      badges: ["Used", "AWD"],
-      title: "2024 Tesla Model 3 Long Range",
-      mileage: "2,847",
-      transmission: "Auto",
-      doors: "4 doors",
-      salePrice: null,
-      payment: null,
-      dealer: "Premium Auto Group",
-      location: "Tacoma, WA",
-      phone: "(253) 555-0187",
-      seller_type: "Dealer",
-      seller_account_number: "T11111",
-      city_seller: "Tacoma",
-      state_seller: "WA",
-      zip_seller: "98402",
-    },
-    {
-      id: 4,
-      featured: false,
-      viewed: true,
-      images: ["https://images.unsplash.com/photo-1563720223185-11003d516935?w=450&h=300&fit=crop"],
-      badges: ["New", "AWD"],
-      title: "2024 Honda CR-V Hybrid EX-L",
-      mileage: "15",
-      transmission: "CVT",
-      doors: "4 doors",
-      salePrice: "$39,899",
-      payment: "$489",
-      dealer: "Downtown Honda",
-      location: "Federal Way, WA",
-      phone: "(253) 555-0156",
-      seller_type: "Dealer",
-      seller_account_number: "H22222",
-      city_seller: "Federal Way",
-      state_seller: "WA",
-      zip_seller: "98003",
-    },
-    {
-      id: 5,
-      featured: true,
-      viewed: true,
-      images: ["https://images.unsplash.com/photo-1494976793431-05c5c2b1b1b1?w=450&h=300&fit=crop"],
-      badges: ["Used", "FWD"],
-      title: "2023 Toyota Camry LE",
-      mileage: "12,450",
-      transmission: "Auto",
-      doors: "4 doors",
-      salePrice: "$28,500",
-      payment: "$395",
-      dealer: "City Toyota",
-      location: "Seattle, WA",
-      phone: "(206) 555-0198",
-      seller_type: "Dealer",
-      seller_account_number: "T33333", 
-      city_seller: "Seattle",
-      state_seller: "WA",
-      zip_seller: "98109",
-    },
-    {
-      id: 6,
-      featured: false,
-      viewed: false,
-      images: ["https://images.unsplash.com/photo-1550355191-aa8a80b41353?w=450&h=300&fit=crop"],
-      badges: ["Certified", "AWD"],
-      title: "2022 BMW X3 xDrive30i",
-      mileage: "18,920",
-      transmission: "Auto",
-      doors: "4 doors",
-      salePrice: null,
-      payment: null,
-      dealer: "Luxury Motors",
-      location: "Bellevue, WA",
-      phone: "(425) 555-0234",
-      seller_type: "Dealer",
-      seller_account_number: "B44444",
-      city_seller: "Bellevue",
-      state_seller: "WA",
-      zip_seller: "98004",
-    },
-  ];
+  // API State
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [apiResponse, setApiResponse] = useState<any>(null);
+
+  // Refs
+  const isMountedRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // API fetch function
+  const fetchCombinedData = useCallback(async () => {
+    if (!isMountedRef.current) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Build API URL - call our backend that properly handles filters
+      const apiUrl = new URL('/api/simple-vehicles/combined', window.location.origin);
+      apiUrl.searchParams.set('page', currentPage.toString());
+      apiUrl.searchParams.set('pageSize', resultsPerPage.toString());
+
+      if (sortBy !== "relevance") {
+        apiUrl.searchParams.set('sortBy', sortBy);
+      }
+
+      // Add ALL filters to API call
+      if (appliedFilters.make.length > 0) {
+        apiUrl.searchParams.set('make', appliedFilters.make.join(','));
+      }
+      if (appliedFilters.condition.length > 0) {
+        apiUrl.searchParams.set('condition', appliedFilters.condition.join(','));
+      }
+      if (appliedFilters.model.length > 0) {
+        apiUrl.searchParams.set('model', appliedFilters.model.join(','));
+      }
+      if (appliedFilters.trim.length > 0) {
+        apiUrl.searchParams.set('trim', appliedFilters.trim.join(','));
+      }
+      if (appliedFilters.vehicleType.length > 0) {
+        apiUrl.searchParams.set('body_type', appliedFilters.vehicleType.join(','));
+      }
+      if (appliedFilters.driveType.length > 0) {
+        apiUrl.searchParams.set('driveType', appliedFilters.driveType.join(','));
+      }
+      if (appliedFilters.exteriorColor.length > 0) {
+        apiUrl.searchParams.set('exteriorColor', appliedFilters.exteriorColor.join(','));
+      }
+      if (appliedFilters.sellerType.length > 0) {
+        apiUrl.searchParams.set('sellerType', appliedFilters.sellerType.join(','));
+      }
+      if (appliedFilters.transmission.length > 0) {
+        apiUrl.searchParams.set('transmission', appliedFilters.transmission.join(','));
+      }
+      if (appliedFilters.interiorColor.length > 0) {
+        apiUrl.searchParams.set('interiorColor', appliedFilters.interiorColor.join(','));
+      }
+      if (appliedFilters.dealer.length > 0) {
+        apiUrl.searchParams.set('dealer', appliedFilters.dealer.join(','));
+      }
+      if (appliedFilters.city.length > 0) {
+        apiUrl.searchParams.set('city', appliedFilters.city.join(','));
+      }
+      if (appliedFilters.state.length > 0) {
+        apiUrl.searchParams.set('state', appliedFilters.state.join(','));
+      }
+      if (appliedFilters.mileage) {
+        // Convert mileage range text to min/max numeric values for API
+        switch (appliedFilters.mileage) {
+          case "Under 15,000":
+            apiUrl.searchParams.set('max_mileage', '15000');
+            break;
+          case "15,000 – 30,000":
+            apiUrl.searchParams.set('min_mileage', '15000');
+            apiUrl.searchParams.set('max_mileage', '30000');
+            break;
+          case "30,000 – 60,000":
+            apiUrl.searchParams.set('min_mileage', '30000');
+            apiUrl.searchParams.set('max_mileage', '60000');
+            break;
+          case "60,000 – 100,000":
+            apiUrl.searchParams.set('min_mileage', '60000');
+            apiUrl.searchParams.set('max_mileage', '100000');
+            break;
+          case "Over 100,000":
+            apiUrl.searchParams.set('min_mileage', '100000');
+            break;
+        }
+      }
+      if (appliedFilters.priceMin) {
+        apiUrl.searchParams.set('priceMin', appliedFilters.priceMin);
+      }
+      if (appliedFilters.priceMax) {
+        apiUrl.searchParams.set('priceMax', appliedFilters.priceMax);
+      }
+      if (appliedFilters.paymentMin) {
+        apiUrl.searchParams.set('paymentMin', appliedFilters.paymentMin);
+      }
+      if (appliedFilters.paymentMax) {
+        apiUrl.searchParams.set('paymentMax', appliedFilters.paymentMax);
+      }
+      if (termLength && termLength !== "72") {
+        apiUrl.searchParams.set('termLength', termLength);
+      }
+      if (interestRate && interestRate !== "8") {
+        apiUrl.searchParams.set('interestRate', interestRate);
+      }
+      if (downPayment && downPayment !== "2000") {
+        apiUrl.searchParams.set('downPayment', downPayment);
+      }
+      if (zipCode) {
+        apiUrl.searchParams.set('zipCode', zipCode);
+      }
+      if (radius !== "10") {
+        apiUrl.searchParams.set('radius', radius);
+      }
+
+      console.log("🔗 API URL:", apiUrl.toString());
+      console.log("🔍 DEBUG: Applied filters being sent:", appliedFilters);
+
+      const response = await fetch(apiUrl.toString());
+      const data = await response.json();
+
+      console.log("✅ API Response:", { success: data.success, vehiclesCount: data.data?.vehicles?.length });
+
+      if (data.success) {
+        setVehicles(data.data.vehicles || []);
+        setApiResponse({
+          data: data.data.vehicles,
+          meta: data.data.meta,
+          success: true
+        });
+        setTotalPages(data.data.meta?.totalPages || 1);
+        setTotalResults(data.data.meta?.totalRecords || 0);
+        setFilterOptions(data.data.filters || {
+          makes: [], models: [], trims: [], conditions: [],
+          vehicleTypes: [], driveTypes: [], transmissions: [],
+          exteriorColors: [], interiorColors: [], sellerTypes: [],
+          dealers: [], states: [], cities: [], totalVehicles: 0
+        });
+      } else {
+        setError(data.message || 'Failed to load vehicles');
+      }
+    } catch (err) {
+      console.error("❌ API Error:", err);
+      setError('Failed to fetch vehicles');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, resultsPerPage, sortBy, appliedFilters, zipCode, radius, termLength, interestRate, downPayment]);
+
+  // Effects
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem("carzino_favorites") || "{}");
     setFavorites(savedFavorites);
   }, []);
+
+  useEffect(() => {
+    fetchCombinedData();
+  }, [fetchCombinedData]);
 
   const saveFavorites = (newFavorites: { [key: number]: Vehicle }) => {
     setFavorites(newFavorites);
@@ -276,7 +310,7 @@ export default function HomePage() {
     if (viewMode === "favorites") {
       vehiclesToDisplay = Object.values(favorites);
     } else {
-      vehiclesToDisplay = sampleVehicles;
+      vehiclesToDisplay = vehicles;
     }
 
     // Sort vehicles to put those without prices at the end
@@ -369,117 +403,28 @@ export default function HomePage() {
     { name: "Wagon", count: 43 },
   ];
 
-  // Make-to-Model mapping for conditional filtering
-  const vehicleDatabase = {
-    Audi: {
-      count: 143,
-      models: [
-        { name: "A3", count: 15 },
-        { name: "A4", count: 38 },
-        { name: "A6", count: 22 },
-        { name: "Q5", count: 31 },
-        { name: "Q7", count: 18 },
-        { name: "Q8", count: 19 },
-      ],
-      trims: [
-        { name: "Premium", count: 45 },
-        { name: "Premium Plus", count: 38 },
-        { name: "Prestige", count: 32 },
-        { name: "S Line", count: 28 },
-      ],
-    },
-    BMW: {
-      count: 189,
-      models: [
-        { name: "3 Series", count: 67 },
-        { name: "5 Series", count: 43 },
-        { name: "X3", count: 34 },
-        { name: "X5", count: 28 },
-        { name: "X7", count: 17 },
-      ],
-      trims: [
-        { name: "Base", count: 52 },
-        { name: "Sport", count: 48 },
-        { name: "Luxury", count: 41 },
-        { name: "M Package", count: 48 },
-      ],
-    },
-    Chevrolet: {
-      count: 287,
-      models: [
-        { name: "Silverado", count: 98 },
-        { name: "Equinox", count: 56 },
-        { name: "Malibu", count: 43 },
-        { name: "Traverse", count: 38 },
-        { name: "Camaro", count: 32 },
-        { name: "Tahoe", count: 20 },
-      ],
-      trims: [
-        { name: "Base", count: 87 },
-        { name: "LT", count: 95 },
-        { name: "LTZ", count: 62 },
-        { name: "Premier", count: 43 },
-      ],
-    },
-    Ford: {
-      count: 523,
-      models: [
-        { name: "F-150", count: 156 },
-        { name: "Escape", count: 87 },
-        { name: "Explorer", count: 76 },
-        { name: "Mustang", count: 64 },
-        { name: "Edge", count: 53 },
-        { name: "Expedition", count: 42 },
-        { name: "Ranger", count: 45 },
-      ],
-      trims: [
-        { name: "Base", count: 134 },
-        { name: "XLT", count: 156 },
-        { name: "Lariat", count: 123 },
-        { name: "Limited", count: 78 },
-        { name: "Platinum", count: 32 },
-      ],
-    },
-    Honda: {
-      count: 234,
-      models: [
-        { name: "Civic", count: 89 },
-        { name: "Accord", count: 67 },
-        { name: "CR-V", count: 45 },
-        { name: "Pilot", count: 23 },
-        { name: "HR-V", count: 10 },
-      ],
-      trims: [
-        { name: "LX", count: 78 },
-        { name: "EX", count: 89 },
-        { name: "EX-L", count: 45 },
-        { name: "Touring", count: 22 },
-      ],
-    },
-    Toyota: {
-      count: 412,
-      models: [
-        { name: "Camry", count: 134 },
-        { name: "Corolla", count: 89 },
-        { name: "RAV4", count: 76 },
-        { name: "Highlander", count: 54 },
-        { name: "Prius", count: 32 },
-        { name: "Tacoma", count: 27 },
-      ],
-      trims: [
-        { name: "L", count: 89 },
-        { name: "LE", count: 123 },
-        { name: "XLE", count: 98 },
-        { name: "Limited", count: 67 },
-        { name: "Platinum", count: 35 },
-      ],
-    },
-  };
-
-  const allMakes = Object.entries(vehicleDatabase).map(([name, data]) => ({
-    name,
-    count: data.count,
-  }));
+  // Filter options with counts
+  const [filterOptions, setFilterOptions] = useState<{
+    makes: { name: string; count: number }[];
+    models: { name: string; count: number }[];
+    trims: { name: string; count: number }[];
+    conditions: { name: string; count: number }[];
+    vehicleTypes: { name: string; count: number }[];
+    driveTypes: { name: string; count: number }[];
+    transmissions: { name: string; count: number }[];
+    exteriorColors: { name: string; count: number }[];
+    interiorColors: { name: string; count: number }[];
+    sellerTypes: { name: string; count: number }[];
+    dealers: { name: string; count: number }[];
+    states: { name: string; count: number }[];
+    cities: { name: string; count: number }[];
+    totalVehicles: number;
+  }>({
+    makes: [], models: [], trims: [], conditions: [],
+    vehicleTypes: [], driveTypes: [], transmissions: [],
+    exteriorColors: [], interiorColors: [], sellerTypes: [],
+    dealers: [], states: [], cities: [], totalVehicles: 0
+  });
 
   const displayedMakes = showMoreMakes ? allMakes : allMakes.slice(0, 8);
   const displayedVehicles = getDisplayedVehicles();
@@ -920,6 +865,7 @@ export default function HomePage() {
                       checked={appliedFilters.make.includes(make.name)}
                       onChange={(e) => {
                         e.stopPropagation();
+                        setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
                           setAppliedFilters(prev => ({
                             ...prev,
@@ -936,7 +882,7 @@ export default function HomePage() {
                     <span className="carzino-filter-count ml-1">({make.count})</span>
                   </label>
                 ))}
-                {allMakes.length > 8 && (
+                {(filterOptions.makes && filterOptions.makes.length > 8) && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -994,25 +940,27 @@ export default function HomePage() {
                     Select a make first to see models
                   </div>
                 ) : (
-                  ["A3", "A4", "A6", "Q5", "Q7", "Civic", "Accord", "CR-V", "F-150", "Mustang", "Camry", "Corolla", "RAV4"].map((model) => (
-                    <label key={model} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                  availableModels.map((model, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={appliedFilters.model.includes(model)}
+                        checked={appliedFilters.model.includes(model.name)}
                         onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              model: [...prev.model, model],
+                              model: [...prev.model, model.name],
                               trim: [] // Clear trims when model changes
                             }));
                           } else {
-                            removeAppliedFilter("model", model);
+                            removeAppliedFilter("model", model.name);
                           }
                         }}
                       />
-                      <span className="carzino-filter-option">{model}</span>
+                      <span className="carzino-filter-option">{model.name}</span>
+                      <span className="carzino-filter-count ml-1">({model.count})</span>
                     </label>
                   ))
                 )}
@@ -1031,24 +979,26 @@ export default function HomePage() {
                     Select a model first to see trims
                   </div>
                 ) : (
-                  ["Base", "LX", "EX", "EX-L", "Touring", "Sport", "Limited", "Premium", "Platinum"].map((trim) => (
-                    <label key={trim} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                  availableTrims.map((trim, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={appliedFilters.trim.includes(trim)}
+                        checked={appliedFilters.trim.includes(trim.name)}
                         onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              trim: [...prev.trim, trim]
+                              trim: [...prev.trim, trim.name]
                             }));
                           } else {
-                            removeAppliedFilter("trim", trim);
+                            removeAppliedFilter("trim", trim.name);
                           }
                         }}
                       />
-                      <span className="carzino-filter-option">{trim}</span>
+                      <span className="carzino-filter-option">{trim.name}</span>
+                      <span className="carzino-filter-count ml-1">({trim.count})</span>
                     </label>
                   ))
                 )}
@@ -1127,26 +1077,52 @@ export default function HomePage() {
               onToggle={() => toggleFilter("driveType")}
             >
               <div className="space-y-1">
-                {["AWD", "4WD", "FWD", "RWD"].map((driveType) => (
-                  <label key={driveType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.driveType.includes(driveType)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            driveType: [...prev.driveType, driveType]
-                          }));
-                        } else {
-                          removeAppliedFilter("driveType", driveType);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{driveType}</span>
-                  </label>
-                ))}
+                {(filterOptions.driveTypes && filterOptions.driveTypes.length > 0) ? (
+                  filterOptions.driveTypes.map((driveType, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.driveType.includes(driveType.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: [...prev.driveType, driveType.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("driveType", driveType.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{driveType.name}</span>
+                      <span className="carzino-filter-count ml-1">({driveType.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["AWD", "4WD", "FWD", "RWD"].map((driveType) => (
+                    <label key={driveType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.driveType.includes(driveType)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              driveType: [...prev.driveType, driveType]
+                            }));
+                          } else {
+                            removeAppliedFilter("driveType", driveType);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{driveType}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1157,26 +1133,52 @@ export default function HomePage() {
               onToggle={() => toggleFilter("transmissionSpeed")}
             >
               <div className="space-y-1">
-                {["Automatic", "Manual", "CVT"].map((transmission) => (
-                  <label key={transmission} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.transmission.includes(transmission)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            transmission: [...prev.transmission, transmission]
-                          }));
-                        } else {
-                          removeAppliedFilter("transmission", transmission);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{transmission}</span>
-                  </label>
-                ))}
+                {(filterOptions.transmissions && filterOptions.transmissions.length > 0) ? (
+                  filterOptions.transmissions.map((transmission, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.transmission.includes(transmission.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: [...prev.transmission, transmission.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("transmission", transmission.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{transmission.name}</span>
+                      <span className="carzino-filter-count ml-1">({transmission.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Automatic", "Manual", "CVT"].map((transmission) => (
+                    <label key={transmission} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.transmission.includes(transmission)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              transmission: [...prev.transmission, transmission]
+                            }));
+                          } else {
+                            removeAppliedFilter("transmission", transmission);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{transmission}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1187,37 +1189,63 @@ export default function HomePage() {
               onToggle={() => toggleFilter("exteriorColor")}
             >
               <div className="space-y-1">
-                {[
-                  { name: "White", color: "#FFFFFF" },
-                  { name: "Black", color: "#000000" },
-                  { name: "Gray", color: "#808080" },
-                  { name: "Silver", color: "#C0C0C0" },
-                  { name: "Blue", color: "#0066CC" },
-                  { name: "Red", color: "#CC0000" }
-                ].map((color) => (
-                  <label key={color.name} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.exteriorColor.includes(color.name)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            exteriorColor: [...prev.exteriorColor, color.name]
-                          }));
-                        } else {
-                          removeAppliedFilter("exteriorColor", color.name);
-                        }
-                      }}
-                    />
-                    <div
-                      className="w-4 h-4 rounded border border-gray-300 mr-2"
-                      style={{ backgroundColor: color.color }}
-                    ></div>
-                    <span className="carzino-filter-option">{color.name}</span>
-                  </label>
-                ))}
+                {(filterOptions.exteriorColors && filterOptions.exteriorColors.length > 0) ? (
+                  filterOptions.exteriorColors.map((color, index) => (
+                    <label key={index} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.exteriorColor.includes(color.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: [...prev.exteriorColor, color.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("exteriorColor", color.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{color.name}</span>
+                      <span className="carzino-filter-count ml-1">({color.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  [
+                    { name: "White", color: "#FFFFFF" },
+                    { name: "Black", color: "#000000" },
+                    { name: "Gray", color: "#808080" },
+                    { name: "Silver", color: "#C0C0C0" },
+                    { name: "Blue", color: "#0066CC" },
+                    { name: "Red", color: "#CC0000" }
+                  ].map((color) => (
+                    <label key={color.name} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.exteriorColor.includes(color.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              exteriorColor: [...prev.exteriorColor, color.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("exteriorColor", color.name);
+                          }
+                        }}
+                      />
+                      <div
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{ backgroundColor: color.color }}
+                      ></div>
+                      <span className="carzino-filter-option">{color.name}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1228,35 +1256,61 @@ export default function HomePage() {
               onToggle={() => toggleFilter("interiorColor")}
             >
               <div className="space-y-1">
-                {[
-                  { name: "Black", color: "#000000" },
-                  { name: "Gray", color: "#808080" },
-                  { name: "Beige", color: "#F5F5DC" },
-                  { name: "Brown", color: "#8B4513" }
-                ].map((color) => (
-                  <label key={color.name} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.interiorColor.includes(color.name)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            interiorColor: [...prev.interiorColor, color.name]
-                          }));
-                        } else {
-                          removeAppliedFilter("interiorColor", color.name);
-                        }
-                      }}
-                    />
-                    <div
-                      className="w-4 h-4 rounded border border-gray-300 mr-2"
-                      style={{ backgroundColor: color.color }}
-                    ></div>
-                    <span className="carzino-filter-option">{color.name}</span>
-                  </label>
-                ))}
+                {(filterOptions.interiorColors && filterOptions.interiorColors.length > 0) ? (
+                  filterOptions.interiorColors.map((color, index) => (
+                    <label key={index} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.interiorColor.includes(color.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: [...prev.interiorColor, color.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("interiorColor", color.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{color.name}</span>
+                      <span className="carzino-filter-count ml-1">({color.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  [
+                    { name: "Black", color: "#000000" },
+                    { name: "Gray", color: "#808080" },
+                    { name: "Beige", color: "#F5F5DC" },
+                    { name: "Brown", color: "#8B4513" }
+                  ].map((color) => (
+                    <label key={color.name} className="flex items-center text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.interiorColor.includes(color.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              interiorColor: [...prev.interiorColor, color.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("interiorColor", color.name);
+                          }
+                        }}
+                      />
+                      <div
+                        className="w-4 h-4 rounded border border-gray-300 mr-2"
+                        style={{ backgroundColor: color.color }}
+                      ></div>
+                      <span className="carzino-filter-option">{color.name}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1267,26 +1321,52 @@ export default function HomePage() {
               onToggle={() => toggleFilter("sellerType")}
             >
               <div className="space-y-1">
-                {["Dealer", "Private Seller", "Fleet"].map((sellerType) => (
-                  <label key={sellerType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.sellerType.includes(sellerType)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            sellerType: [...prev.sellerType, sellerType]
-                          }));
-                        } else {
-                          removeAppliedFilter("sellerType", sellerType);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{sellerType}</span>
-                  </label>
-                ))}
+                {(filterOptions.sellerTypes && filterOptions.sellerTypes.length > 0) ? (
+                  filterOptions.sellerTypes.map((sellerType, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.sellerType.includes(sellerType.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: [...prev.sellerType, sellerType.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("sellerType", sellerType.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{sellerType.name}</span>
+                      <span className="carzino-filter-count ml-1">({sellerType.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Dealer", "Private Seller", "Fleet"].map((sellerType) => (
+                    <label key={sellerType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.sellerType.includes(sellerType)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              sellerType: [...prev.sellerType, sellerType]
+                            }));
+                          } else {
+                            removeAppliedFilter("sellerType", sellerType);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{sellerType}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1297,26 +1377,34 @@ export default function HomePage() {
               onToggle={() => toggleFilter("dealer")}
             >
               <div className="space-y-1">
-                {["AutoMax Dealership", "Bayside Ford", "Premium Auto Group", "Downtown Honda", "City Toyota", "Luxury Motors"].map((dealer) => (
-                  <label key={dealer} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.dealer.includes(dealer)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            dealer: [...prev.dealer, dealer]
-                          }));
-                        } else {
-                          removeAppliedFilter("dealer", dealer);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{dealer}</span>
-                  </label>
-                ))}
+                {(filterOptions.dealers && filterOptions.dealers.length > 0) ? (
+                  filterOptions.dealers.map((dealer, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.dealer.includes(dealer.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              dealer: [...prev.dealer, dealer.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("dealer", dealer.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{dealer.name}</span>
+                      <span className="carzino-filter-count ml-1">({dealer.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
+                    Loading dealers...
+                  </div>
+                )}
               </div>
             </FilterSection>
 
@@ -1327,26 +1415,52 @@ export default function HomePage() {
               onToggle={() => toggleFilter("state")}
             >
               <div className="space-y-1">
-                {["WA", "CA", "OR", "TX", "FL", "NY"].map((state) => (
-                  <label key={state} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.state.includes(state)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            state: [...prev.state, state]
-                          }));
-                        } else {
-                          removeAppliedFilter("state", state);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{state}</span>
-                  </label>
-                ))}
+                {(filterOptions.states && filterOptions.states.length > 0) ? (
+                  filterOptions.states.map((state, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.state.includes(state.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              state: [...prev.state, state.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("state", state.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{state.name}</span>
+                      <span className="carzino-filter-count ml-1">({state.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["WA", "CA", "OR", "TX", "FL", "NY"].map((state) => (
+                    <label key={state} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.state.includes(state)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              state: [...prev.state, state]
+                            }));
+                          } else {
+                            removeAppliedFilter("state", state);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{state}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1357,26 +1471,52 @@ export default function HomePage() {
               onToggle={() => toggleFilter("city")}
             >
               <div className="space-y-1">
-                {["Seattle", "Lakewood", "Tacoma", "Federal Way", "Bellevue", "Everett"].map((city) => (
-                  <label key={city} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="mr-2"
-                      checked={appliedFilters.city.includes(city)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            city: [...prev.city, city]
-                          }));
-                        } else {
-                          removeAppliedFilter("city", city);
-                        }
-                      }}
-                    />
-                    <span className="carzino-filter-option">{city}</span>
-                  </label>
-                ))}
+                {(filterOptions.cities && filterOptions.cities.length > 0) ? (
+                  filterOptions.cities.map((city, index) => (
+                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.city.includes(city.name)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              city: [...prev.city, city.name]
+                            }));
+                          } else {
+                            removeAppliedFilter("city", city.name);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{city.name}</span>
+                      <span className="carzino-filter-count ml-1">({city.count})</span>
+                    </label>
+                  ))
+                ) : (
+                  ["Seattle", "Lakewood", "Tacoma", "Federal Way", "Bellevue", "Everett"].map((city) => (
+                    <label key={city} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={appliedFilters.city.includes(city)}
+                        onChange={(e) => {
+                          setCurrentPage(1); // Reset to first page when filters change
+                          if (e.target.checked) {
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              city: [...prev.city, city]
+                            }));
+                          } else {
+                            removeAppliedFilter("city", city);
+                          }
+                        }}
+                      />
+                      <span className="carzino-filter-option">{city}</span>
+                    </label>
+                  ))
+                )}
               </div>
             </FilterSection>
 
@@ -1573,11 +1713,36 @@ export default function HomePage() {
 
           {/* Vehicle Grid */}
           <div className="p-4">
-            {displayedVehicles.length === 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-red-600" />
+                <p className="text-gray-500 text-lg">Loading vehicles from your WordPress...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-red-600" />
+                <p className="text-gray-500 text-lg mb-4">Error loading vehicles</p>
+                <p className="text-gray-400 text-sm">{error}</p>
+                <button
+                  onClick={() => fetchCombinedData()}
+                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : displayedVehicles.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg">
-                  {viewMode === "favorites" ? "No favorites saved yet" : "No vehicles found"}
+                  {viewMode === "favorites" ? "No favorites saved yet" : "No vehicles found with current filters"}
                 </p>
+                {appliedFilters.make.length > 0 || appliedFilters.condition.length > 0 ? (
+                  <button
+                    onClick={clearAllFilters}
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    Clear All Filters
+                  </button>
+                ) : null}
               </div>
             ) : (
               <div className="grid vehicle-grid">
