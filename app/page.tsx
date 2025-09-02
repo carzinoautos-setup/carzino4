@@ -966,6 +966,12 @@ export default function HomePage() {
                 >
                   Debug WP SQL
                 </button>
+                <button
+                  onClick={testBackendAPI}
+                  className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                >
+                  Verify Backend
+                </button>
               </div>
               {apiTestResult && (
                 <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
