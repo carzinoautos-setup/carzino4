@@ -1457,6 +1457,7 @@ export default function HomePage() {
                         className="mr-2"
                         checked={appliedFilters.model.includes(model.name)}
                         onChange={(e) => {
+                          e.stopPropagation();
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             console.log("🔍 DEBUG: Adding model:", model.name);
@@ -1509,6 +1510,7 @@ export default function HomePage() {
                         className="mr-2"
                         checked={appliedFilters.trim.includes(trim.name)}
                         onChange={(e) => {
+                          e.stopPropagation();
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
