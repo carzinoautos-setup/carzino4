@@ -437,21 +437,23 @@ function get_product_images($post_id) {
     if ($product) {
         $image_ids = $product->get_gallery_image_ids();
         
-        // Add featured image first
+        // Add featured image first (using medium size for 450x300 display)
         $featured_id = $product->get_image_id();
         if ($featured_id) {
             $images[] = array(
                 'id' => $featured_id,
-                'src' => wp_get_attachment_image_url($featured_id, 'full'),
+                'src' => wp_get_attachment_image_url($featured_id, 'medium'),
+                'src_full' => wp_get_attachment_image_url($featured_id, 'full'),
                 'alt' => get_post_meta($featured_id, '_wp_attachment_image_alt', true)
             );
         }
-        
-        // Add gallery images
+
+        // Add gallery images (using medium size for 450x300 display)
         foreach ($image_ids as $image_id) {
             $images[] = array(
                 'id' => $image_id,
-                'src' => wp_get_attachment_image_url($image_id, 'full'),
+                'src' => wp_get_attachment_image_url($image_id, 'medium'),
+                'src_full' => wp_get_attachment_image_url($image_id, 'full'),
                 'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true)
             );
         }
