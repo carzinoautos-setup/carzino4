@@ -21,6 +21,9 @@ import { FilterSection } from "../client/components/FilterSection";
 import { VehicleTypeCard } from "../client/components/VehicleTypeCard";
 import { Pagination } from "../client/components/Pagination";
 
+// Import URL utilities for SEO-friendly URLs
+import { updateURL, generateCarURL } from "../lib/utils";
+
 interface Vehicle {
   id: number;
   featured: boolean;
