@@ -227,17 +227,14 @@ export default function HomePage() {
 
   // Clear WordPress cache
   const clearWordPressCache = async () => {
-    console.log("🗑️ Clearing WordPress cache...");
 
     try {
       // Method 1: Use the via_build_filters=1 parameter
       const cacheResponse = await fetch('/api/wp/rebuild-filters');
-      console.log("✅ Cache clear response:", cacheResponse.status);
 
       // Method 2: Also try the API endpoint if it exists
       const apiCacheResponse = await fetch('/api/wp/rebuild-filters');
       const apiCacheData = await apiCacheResponse.json();
-      console.log("✅ API cache clear response:", apiCacheData);
 
       // Refresh our data after cache clear
       setTimeout(() => {
@@ -245,19 +242,17 @@ export default function HomePage() {
       }, 1000);
 
     } catch (error) {
-      console.error("❌ Cache clear failed:", error);
+      // Cache clear failed
     }
   };
 
   // Debug WordPress filtering directly
   const debugWordPressFiltering = async () => {
-    console.log("🔬 Debug WordPress filtering...");
 
     try {
       const debugResponse = await fetch('/api/wp/debug-filters?make=Ford');
       const debugData = await debugResponse.json();
 
-      console.log("🔬 WordPress Debug Results:", debugData);
       setApiTestResult({
         ...apiTestResult,
         debug: debugData.debug,
