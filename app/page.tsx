@@ -1464,11 +1464,12 @@ export default function HomePage() {
                 <button
                   onClick={() => {
                     setCurrentPage(1);
-                    setAppliedFilters(prev => ({
-                      ...prev,
+                    const newFilters = {
+                      ...appliedFilters,
                       priceMin: priceMin,
                       priceMax: priceMax
-                    }));
+                    };
+                    updateFiltersAndURL(newFilters);
                   }}
                   className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm"
                 >
