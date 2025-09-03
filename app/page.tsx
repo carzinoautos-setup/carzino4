@@ -2451,14 +2451,19 @@ export default function HomePage() {
                   ) : (
                     /* Normal State Controls */
                     <>
-                      <div className="flex items-center justify-center w-12 h-10 border border-gray-300 rounded-md bg-white relative">
-                        <Heart className="w-4 h-4 text-red-600" />
+                      <button
+                        onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
+                        className="flex items-center justify-center w-12 h-10 border border-gray-300 rounded-md bg-white relative hover:bg-gray-50 transition-colors"
+                      >
+                        <Heart className={`w-4 h-4 ${
+                          viewMode === "favorites" ? 'text-red-600 fill-red-600' : 'text-red-600'
+                        }`} />
                         {favoritesCount > 0 && (
                           <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                             {favoritesCount}
                           </span>
                         )}
-                      </div>
+                      </button>
 
                       <div className="relative">
                         <select
