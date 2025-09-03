@@ -125,7 +125,7 @@ export default function HomePage() {
 
     // Dealer/location
     sellerType: [] as string[],
-    dealer: [] as string[],      // maps to account_number_seller
+    dealer: [] as string[],      // stores account IDs for filtering
     city: [] as string[],        // maps to city_seller
     state: [] as string[],       // maps to state_seller
 
@@ -630,7 +630,7 @@ export default function HomePage() {
     exteriorColors: { name: string; count: number }[];
     interiorColors: { name: string; count: number }[];
     sellerTypes: { name: string; count: number }[];
-    dealers: { name: string; count: number }[];      // account_name_seller display
+    dealers: { name: string; count: number; accountId: string }[];      // account_name_seller display with account ID mapping
     states: { name: string; count: number }[];       // state_seller
     cities: { name: string; count: number }[];       // city_seller
     totalVehicles: number;
@@ -1083,13 +1083,17 @@ export default function HomePage() {
                       <button onClick={() => removeAppliedFilter("sellerType", item)} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   ))}
-                  {appliedFilters.dealer.map((item) => (
-                    <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
-                      <Check className="w-3 h-3 text-red-600" />
-                      {item}
-                      <button onClick={() => removeAppliedFilter("dealer", item)} className="ml-1 text-white hover:text-gray-300">×</button>
-                    </span>
-                  ))}
+                  {appliedFilters.dealer.map((item) => {
+                    // Find the dealer name from the account ID for display
+                    const dealerName = filterOptions.dealers.find(d => d.accountId === item || d.name === item)?.name || item;
+                    return (
+                      <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
+                        <Check className="w-3 h-3 text-red-600" />
+                        {dealerName}
+                        <button onClick={() => removeAppliedFilter("dealer", item)} className="ml-1 text-white hover:text-gray-300">×</button>
+                      </span>
+                    );
+                  })}
                   {appliedFilters.city.map((item) => (
                     <span key={item} className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
@@ -1945,16 +1949,20 @@ export default function HomePage() {
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={appliedFilters.dealer.includes(dealer.name)}
+                        checked={appliedFilters.dealer.includes(dealer.accountId || dealer.name)}
                         onChange={(e) => {
                           setCurrentPage(1); // Reset to first page when filters change
+                          const dealerIdentifier = dealer.accountId || dealer.name; // Use account ID if available, fallback to name
                           if (e.target.checked) {
                             setAppliedFilters(prev => ({
                               ...prev,
-                              dealer: [...prev.dealer, dealer.name]
+                              dealer: [...prev.dealer, dealerIdentifier]
                             }));
                           } else {
-                            removeAppliedFilter("dealer", dealer.name);
+                            setAppliedFilters(prev => ({
+                              ...prev,
+                              dealer: prev.dealer.filter(d => d !== dealerIdentifier)
+                            }));
                           }
                         }}
                       />
