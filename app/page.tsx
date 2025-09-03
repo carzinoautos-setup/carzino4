@@ -2371,72 +2371,112 @@ export default function HomePage() {
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col">
                     <h1 className="text-lg font-semibold text-gray-900">
-                      New and Used Vehicles for sale
+                      {viewMode === "favorites" ? "My Favorites" : "New and Used Vehicles for sale"}
                     </h1>
                     <span className="text-sm text-gray-500">
-                      {totalResults.toLocaleString()} Matches
+                      {viewMode === "favorites"
+                        ? `${favoritesCount} Vehicle${favoritesCount !== 1 ? 's' : ''}`
+                        : `${totalResults.toLocaleString()} Matches`
+                      }
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white">
-                    <Heart className="w-4 h-4 text-red-600" />
-                    <span className="text-sm text-gray-700">{favoritesCount}</span>
-                  </div>
-
-                  <div className="relative">
-                    <button
-                      onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                      className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      <span className="text-sm">Sort</span>
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                    {sortDropdownOpen && (
-                      <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                        {[
-                          { value: "relevance", label: "Relevance" },
-                          { value: "price_asc", label: "Price: Low to High" },
-                          { value: "price_desc", label: "Price: High to Low" },
-                          { value: "mileage_asc", label: "Mileage: Low to High" },
-                          { value: "mileage_desc", label: "Mileage: High to Low" },
-                          { value: "year_asc", label: "Year: Oldest to Newest" },
-                          { value: "year_desc", label: "Year: Newest to Oldest" }
-                        ].map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSortBy(option.value);
-                              setSortDropdownOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                              sortBy === option.value ? 'bg-red-50 text-red-700' : ''
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
+                  {viewMode === "favorites" ? (
+                    /* Favorites State Controls */
+                    <>
+                      <button
+                        onClick={() => setViewMode("all")}
+                        className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 bg-white"
+                      >
+                        All Results
+                      </button>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-md text-sm"
+                      >
+                        <Heart className="w-4 h-4 fill-white" />
+                        Saved ({favoritesCount})
+                      </button>
+                      <div className="relative">
+                        <select
+                          value={resultsPerPage}
+                          onChange={(e) => {
+                            setResultsPerPage(parseInt(e.target.value));
+                            setCurrentPage(1);
+                          }}
+                          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50"
+                        >
+                          <option value="10">View: 10</option>
+                          <option value="25">View: 25</option>
+                          <option value="30">View: 30</option>
+                          <option value="50">View: 50</option>
+                          <option value="100">View: 100</option>
+                        </select>
                       </div>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    /* Normal State Controls */
+                    <>
+                      <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white">
+                        <Heart className="w-4 h-4 text-red-600" />
+                        <span className="text-sm text-gray-700">{favoritesCount}</span>
+                      </div>
 
-                  <div className="relative">
-                    <select
-                      value={resultsPerPage}
-                      onChange={(e) => {
-                        setResultsPerPage(parseInt(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50"
-                    >
-                      <option value="10">View: 10</option>
-                      <option value="25">View: 25</option>
-                      <option value="30">View: 30</option>
-                      <option value="50">View: 50</option>
-                      <option value="100">View: 100</option>
-                    </select>
-                  </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                          className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                          <span className="text-sm">Sort by {getSortDisplayLabel(sortBy)}</span>
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                        {sortDropdownOpen && (
+                          <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                            {[
+                              { value: "relevance", label: "Relevance" },
+                              { value: "price_asc", label: "Price: Low to High" },
+                              { value: "price_desc", label: "Price: High to Low" },
+                              { value: "mileage_asc", label: "Mileage: Low to High" },
+                              { value: "mileage_desc", label: "Mileage: High to Low" },
+                              { value: "year_asc", label: "Year: Oldest to Newest" },
+                              { value: "year_desc", label: "Year: Newest to Oldest" }
+                            ].map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => {
+                                  setSortBy(option.value);
+                                  setSortDropdownOpen(false);
+                                }}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                  sortBy === option.value ? 'bg-red-50 text-red-700' : ''
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="relative">
+                        <select
+                          value={resultsPerPage}
+                          onChange={(e) => {
+                            setResultsPerPage(parseInt(e.target.value));
+                            setCurrentPage(1);
+                          }}
+                          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50"
+                        >
+                          <option value="10">View: 10</option>
+                          <option value="25">View: 25</option>
+                          <option value="30">View: 30</option>
+                          <option value="50">View: 50</option>
+                          <option value="100">View: 100</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
