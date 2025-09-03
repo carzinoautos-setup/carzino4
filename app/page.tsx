@@ -2417,6 +2417,22 @@ export default function HomePage() {
                       </button>
                       <div className="relative">
                         <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50 appearance-none pr-8"
+                        >
+                          <option value="relevance">Sort by Relevance</option>
+                          <option value="price_asc">Price: Low to High</option>
+                          <option value="price_desc">Price: High to Low</option>
+                          <option value="mileage_asc">Mileage: Low to High</option>
+                          <option value="mileage_desc">Mileage: High to Low</option>
+                          <option value="year_asc">Year: Oldest to Newest</option>
+                          <option value="year_desc">Year: Newest to Oldest</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
+                      </div>
+                      <div className="relative">
+                        <select
                           value={resultsPerPage}
                           onChange={(e) => {
                             setResultsPerPage(parseInt(e.target.value));
