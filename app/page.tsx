@@ -871,6 +871,23 @@ export default function HomePage() {
             position: -webkit-sticky;
             position: sticky;
           }
+
+          /* Custom select dropdown styling */
+          select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+          }
+
+          /* Pagination improvements */
+          .pagination-container {
+            margin-top: 2rem;
+          }
+
+          /* Heart badge positioning */
+          .heart-badge {
+            position: relative;
+          }
         }
       `}</style>
 
