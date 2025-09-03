@@ -881,7 +881,7 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="p-4 h-full overflow-y-auto pb-24">
+          <div className="p-4 h-full overflow-y-auto pb-24 relative">
             {/* Search Section */}
             <div className="hidden lg:block mb-4 pb-4 border-b border-gray-200">
               <div className="relative">
@@ -2049,6 +2049,25 @@ export default function HomePage() {
                 )}
               </div>
             </FilterSection>
+          </div>
+
+          {/* Mobile Filter Action Buttons - Floating at bottom */}
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3" style={{ bottom: "50px", zIndex: 30 }}>
+            <button
+              onClick={() => setMobileFiltersOpen(false)}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                setMobileFiltersOpen(false);
+                fetchCombinedData();
+              }}
+              className="flex-1 px-4 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700"
+            >
+              Apply Filter
+            </button>
           </div>
         </div>
 
