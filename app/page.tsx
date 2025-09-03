@@ -442,10 +442,8 @@ export default function HomePage() {
 
       } else {
         setError(data.message || 'Failed to load vehicles');
-        console.error('❌ Vehicle data fetch failed:', data);
       }
     } catch (err) {
-      console.error("❌ API Error:", err);
       setError('Failed to fetch vehicles');
 
       // Clear filter options on error
@@ -1326,8 +1324,6 @@ export default function HomePage() {
                         e.stopPropagation();
                         setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
-                          console.log("🔍 DEBUG: Adding make:", make.name);
-
                           setAppliedFilters(prev => {
                             const newFilters = {
                               ...prev,
@@ -1335,12 +1331,10 @@ export default function HomePage() {
                               // Don't clear models/trims when adding additional makes
                               // Let the backend conditional filtering handle what's available
                             };
-                            console.log("🔍 DEBUG: New applied filters:", newFilters);
                             return newFilters;
                           });
 
                         } else {
-                          console.log("🔍 DEBUG: Removing make:", make.name);
                           setAppliedFilters(prev => {
                             const newMakes = prev.make.filter(m => m !== make.name);
                             return {
@@ -1396,8 +1390,6 @@ export default function HomePage() {
                           e.stopPropagation();
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
-                            console.log("🔍 DEBUG: Adding model:", model.name);
-
                             setAppliedFilters(prev => ({
                               ...prev,
                               model: [...prev.model, model.name]
@@ -1406,7 +1398,6 @@ export default function HomePage() {
                             }));
 
                           } else {
-                            console.log("🔍 DEBUG: Removing model:", model.name);
                             setAppliedFilters(prev => {
                               const newModels = prev.model.filter(m => m !== model.name);
                               return {
