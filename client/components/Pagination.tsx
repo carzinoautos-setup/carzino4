@@ -84,25 +84,25 @@ export const Pagination: React.FC<PaginationProps> = ({
           <span className="font-medium">{safeTotalResults}</span> results
         </div>
 
-        <div className="flex items-center justify-center space-x-4 sm:space-x-2 w-full">
+        <div className="flex items-center justify-center gap-3 sm:gap-2 w-full">
           {/* Previous Button */}
           <button
             onClick={() => onPageChange(Math.max(1, safeCurrentPage - 1))}
             disabled={safeCurrentPage === 1}
-            className="flex items-center justify-center w-10 h-10 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed sm:px-4 sm:w-auto"
+            className="flex items-center justify-center min-w-[40px] h-10 px-3 sm:px-4 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
-            <span className="hidden sm:inline sm:ml-1">Previous</span>
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline ml-2">Previous</span>
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center space-x-3 sm:space-x-1">
+          <div className="flex items-center gap-2 sm:gap-1">
             {paginationPages.map((page, index) => {
               if (page === "...") {
                 return (
                   <span
                     key={`ellipsis-${index}`}
-                    className="px-2 py-2 text-gray-500"
+                    className="px-2 py-2 text-gray-500 text-sm"
                   >
                     ...
                   </span>
@@ -113,7 +113,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 <button
                   key={page}
                   onClick={() => onPageChange(page as number)}
-                  className={`w-10 h-10 text-sm font-medium rounded-md flex items-center justify-center ${
+                  className={`w-10 h-10 text-sm font-medium rounded-md flex items-center justify-center transition-colors ${
                     page === safeCurrentPage
                       ? "bg-red-600 text-white border border-red-600"
                       : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
@@ -129,10 +129,10 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => onPageChange(Math.min(safeTotalPages, safeCurrentPage + 1))}
             disabled={safeCurrentPage === safeTotalPages}
-            className="flex items-center justify-center w-10 h-10 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed sm:px-4 sm:w-auto"
+            className="flex items-center justify-center min-w-[40px] h-10 px-3 sm:px-4 text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronRight className="w-5 h-5" />
-            <span className="hidden sm:inline sm:ml-1">Next</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="hidden sm:inline ml-2">Next</span>
           </button>
         </div>
 
