@@ -73,7 +73,6 @@ interface Vehicle {
 }
 
 export default function HomePage() {
-  console.log("🚀 MySQL Vehicles - Loading with original design");
 
   // Core state
   const [currentPage, setCurrentPage] = useState(1);
@@ -173,7 +172,6 @@ export default function HomePage() {
 
   // Test multi-select filtering functionality
   const testWordPressAPI = async () => {
-    console.log("🧪 Testing WordPress multi-select filtering...");
 
     try {
       // Test 1: Single make (Toyota)
@@ -216,19 +214,13 @@ export default function HomePage() {
         }
       };
 
-      console.log("🧪 Multi-select Test Results:", testResults);
       setApiTestResult(testResults);
 
       // Validate multi-select behavior
       const isWorking = testResults.multiMake.hasToyotaModels && testResults.multiMake.hasFordModels;
-      if (isWorking) {
-        console.log("✅ Multi-select filtering is working correctly!");
-      } else {
-        console.error("🚨 Multi-select filtering needs attention");
-      }
+      // Validation completed
 
     } catch (error) {
-      console.error("❌ Multi-select test failed:", error);
       setApiTestResult({ error: error.message });
     }
   };
