@@ -589,23 +589,21 @@ export default function HomePage() {
 
   const removeAppliedFilter = (category: string, value: string) => {
     setCurrentPage(1);
-    setAppliedFilters((prev) => {
-      const newFilters = {
-        ...prev,
-        [category]: (prev[category as keyof typeof prev] as string[]).filter(
-          (item: string) => item !== value,
-        ),
-      };
+    const newFilters = {
+      ...appliedFilters,
+      [category]: (appliedFilters[category as keyof typeof appliedFilters] as string[]).filter(
+        (item: string) => item !== value,
+      ),
+    };
 
-      if (category === "make") {
-        newFilters.model = [];
-        newFilters.trim = [];
-      } else if (category === "model") {
-        newFilters.trim = [];
-      }
+    if (category === "make") {
+      newFilters.model = [];
+      newFilters.trim = [];
+    } else if (category === "model") {
+      newFilters.trim = [];
+    }
 
-      return newFilters;
-    });
+    updateFiltersAndURL(newFilters);
   };
 
   const toggleFilter = (filterName: string) => {
