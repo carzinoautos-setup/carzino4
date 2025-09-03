@@ -74,25 +74,6 @@ interface Vehicle {
 }
 
 export default function HomePage() {
-  const router = useRouter();
-
-  // Redirect to SEO-friendly URLs when filters are applied
-  useEffect(() => {
-    // If the user is on the main page and has applied make/model filters,
-    // redirect them to the SEO-friendly URL structure
-    if (appliedFilters.make.length === 1 && appliedFilters.model.length === 1) {
-      // Redirect to /cars/make/model with query params
-      const make = appliedFilters.make[0].toLowerCase().replace(/\s+/g, '-');
-      const model = appliedFilters.model[0].toLowerCase().replace(/\s+/g, '-');
-      const url = `/cars/${make}/${model}`;
-      router.push(url);
-    } else if (appliedFilters.make.length === 1) {
-      // Redirect to /cars/make with query params
-      const make = appliedFilters.make[0].toLowerCase().replace(/\s+/g, '-');
-      const url = `/cars/${make}`;
-      router.push(url);
-    }
-  }, [appliedFilters.make, appliedFilters.model, router]);
 
   // Core state
   const [currentPage, setCurrentPage] = useState(1);
