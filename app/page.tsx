@@ -461,6 +461,12 @@ export default function HomePage() {
     }
   }, [currentPage, resultsPerPage, sortBy, appliedFilters, zipCode, radius, termLength, interestRate, downPayment]);
 
+  // Update filters and URL together
+  const updateFiltersAndURL = useCallback((newFilters: typeof appliedFilters, replace = false) => {
+    setAppliedFilters(newFilters);
+    updateURL(newFilters, replace);
+  }, []);
+
   // Effects
   useEffect(() => {
     isMountedRef.current = true;
