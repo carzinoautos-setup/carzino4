@@ -2388,12 +2388,12 @@ export default function HomePage() {
                     <>
                       <button
                         onClick={() => setViewMode("all")}
-                        className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 bg-white"
+                        className="px-4 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 bg-white font-medium"
                       >
                         All Results
                       </button>
                       <button
-                        className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-md text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium"
                       >
                         <Heart className="w-4 h-4 fill-white" />
                         Saved ({favoritesCount})
@@ -2418,45 +2418,30 @@ export default function HomePage() {
                   ) : (
                     /* Normal State Controls */
                     <>
-                      <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white">
+                      <div className="flex items-center justify-center w-12 h-10 border border-gray-300 rounded-md bg-white relative">
                         <Heart className="w-4 h-4 text-red-600" />
-                        <span className="text-sm text-gray-700">{favoritesCount}</span>
+                        {favoritesCount > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                            {favoritesCount}
+                          </span>
+                        )}
                       </div>
 
                       <div className="relative">
-                        <button
-                          onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                          className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                        <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white hover:bg-gray-50 appearance-none pr-8"
                         >
-                          <span className="text-sm">Sort by {getSortDisplayLabel(sortBy)}</span>
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                        {sortDropdownOpen && (
-                          <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                            {[
-                              { value: "relevance", label: "Relevance" },
-                              { value: "price_asc", label: "Price: Low to High" },
-                              { value: "price_desc", label: "Price: High to Low" },
-                              { value: "mileage_asc", label: "Mileage: Low to High" },
-                              { value: "mileage_desc", label: "Mileage: High to Low" },
-                              { value: "year_asc", label: "Year: Oldest to Newest" },
-                              { value: "year_desc", label: "Year: Newest to Oldest" }
-                            ].map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() => {
-                                  setSortBy(option.value);
-                                  setSortDropdownOpen(false);
-                                }}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                  sortBy === option.value ? 'bg-red-50 text-red-700' : ''
-                                }`}
-                              >
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                          <option value="relevance">Sort by Relevance</option>
+                          <option value="price_asc">Price: Low to High</option>
+                          <option value="price_desc">Price: High to Low</option>
+                          <option value="mileage_asc">Mileage: Low to High</option>
+                          <option value="mileage_desc">Mileage: High to Low</option>
+                          <option value="year_asc">Year: Oldest to Newest</option>
+                          <option value="year_desc">Year: Newest to Oldest</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
                       </div>
 
                       <div className="relative">
