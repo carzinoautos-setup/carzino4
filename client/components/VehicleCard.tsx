@@ -122,7 +122,28 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
     <div className="bg-white border border-gray-200 rounded-lg lg:rounded-xl overflow-hidden hover:shadow-lg transition-shadow vehicle-card flex flex-col h-full">
       <div className="relative">
         <img
-          src={vehicle.images ? vehicle.images[0] : ""}
+          src={(() => {
+            // Ensure featured image uses 450x300 size
+            const imageUrl = vehicle.images ? vehicle.images[0] : "";
+            if (!imageUrl) return "";
+
+            // If the URL contains WordPress image sizing patterns, prefer medium size
+            // WordPress typically names medium images as: image-450x300.jpg
+            if (imageUrl.includes('.jpg') || imageUrl.includes('.jpeg') || imageUrl.includes('.png')) {
+              const urlParts = imageUrl.split('.');
+              if (urlParts.length >= 2) {
+                const extension = urlParts.pop();
+                const baseName = urlParts.join('.');
+                // If it's already a medium size or contains dimensions, use as-is
+                if (baseName.includes('-450x300') || baseName.includes('-medium')) {
+                  return imageUrl;
+                }
+                // Try to construct medium size URL
+                return `${baseName}-450x300.${extension}`;
+              }
+            }
+            return imageUrl;
+          })()}
           alt={vehicle.title}
           className="w-full object-cover"
           style={{ aspectRatio: "450/300", height: "auto" }}
