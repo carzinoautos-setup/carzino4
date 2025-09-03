@@ -2075,13 +2075,13 @@ export default function HomePage() {
         <div className="flex-1 bg-white">
           {/* Mobile Search Box - Non-sticky */}
           <div className="lg:hidden border-b border-gray-200 bg-white">
-            <div className="px-3 py-3">
+            <div className="px-4 py-3 max-w-full overflow-hidden">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">Vehicles for Sale</h2>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search vehicles..."
-                  className="carzino-search-input w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:border-red-600 text-sm"
+                  className="carzino-search-input w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-md focus:outline-none focus:border-red-600 text-sm"
                 />
                 <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-600">
                   <Search className="w-4 h-4" />
@@ -2118,19 +2118,19 @@ export default function HomePage() {
                 appliedFilters.paymentMax;
 
               return hasFilters && (
-                <div className="px-3 py-2 border-b border-gray-100">
-                  <div className="flex items-center gap-2 overflow-x-auto">
+                <div className="px-4 py-2 border-b border-gray-100 max-w-full overflow-hidden">
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {/* Clear All Button */}
                     <button
                       onClick={clearAllFilters}
-                      className="bg-red-600 text-white px-3 py-1.5 rounded-full text-sm font-medium hover:bg-red-700 flex-shrink-0"
+                      className="bg-red-600 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-red-700 flex-shrink-0 h-8 flex items-center"
                     >
                       Clear All
                     </button>
 
-                    {/* Applied Filter Tags */}
+                    {/* Applied Filter Tags - Same height as Clear All */}
                     {appliedFilters.condition.map((item) => (
-                      <span key={`condition-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`condition-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
                         <button onClick={() => {
                           setCurrentPage(1);
@@ -2138,12 +2138,12 @@ export default function HomePage() {
                             ...prev,
                             condition: prev.condition.filter(c => c !== item)
                           }));
-                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.make.map((item) => (
-                      <span key={`make-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`make-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
                         <button onClick={() => {
                           setCurrentPage(1);
@@ -2156,12 +2156,12 @@ export default function HomePage() {
                               trim: newMakes.length === 0 ? [] : prev.trim
                             };
                           });
-                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.model.map((item) => (
-                      <span key={`model-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`model-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
                         <button onClick={() => {
                           setCurrentPage(1);
@@ -2173,12 +2173,12 @@ export default function HomePage() {
                               trim: newModels.length === 0 ? [] : prev.trim
                             };
                           });
-                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.trim.map((item) => (
-                      <span key={`trim-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`trim-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
                         <button onClick={() => {
                           setCurrentPage(1);
@@ -2186,56 +2186,56 @@ export default function HomePage() {
                             ...prev,
                             trim: prev.trim.filter(t => t !== item)
                           }));
-                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.vehicleType.map((item) => (
-                      <span key={`vehicleType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`vehicleType-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("vehicleType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("vehicleType", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.sellerType.map((item) => (
-                      <span key={`sellerType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`sellerType-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("sellerType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("sellerType", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.exteriorColor.map((item) => (
-                      <span key={`exteriorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`exteriorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.interiorColor.map((item) => (
-                      <span key={`interiorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`interiorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("interiorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("interiorColor", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.driveType.map((item) => (
-                      <span key={`driveType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`driveType-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("driveType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("driveType", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.transmission.map((item) => (
-                      <span key={`transmission-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`transmission-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("transmission", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("transmission", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
 
                     {appliedFilters.fuel_type.map((item) => (
-                      <span key={`fuel_type-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                      <span key={`fuel_type-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
                         {item}
-                        <button onClick={() => removeAppliedFilter("fuel_type", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                        <button onClick={() => removeAppliedFilter("fuel_type", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
                   </div>
@@ -2244,13 +2244,13 @@ export default function HomePage() {
             })()}
 
             {/* Filter, Sort, and Favorites Buttons Row */}
-            <div className="px-3 py-2">
+            <div className="px-4 py-2 max-w-full overflow-hidden">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {/* Filter Button with Count */}
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
+                    className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
                   >
                     <Sliders className="w-4 h-4" />
                     <span className="text-sm font-medium">Filter</span>
@@ -2287,7 +2287,7 @@ export default function HomePage() {
                   <div className="relative flex-shrink-0">
                     <button
                       onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                      className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+                      className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
                     >
                       <span className="text-sm font-medium">Sort</span>
                       <ChevronDown className="w-3 h-3" />
@@ -2321,18 +2321,22 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Favorites Button */}
-                <button
-                  onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium flex-shrink-0 ${
-                    viewMode === "favorites"
-                      ? 'bg-red-100 text-red-700'
-                      : 'border border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <Heart className={`w-4 h-4 ${viewMode === "favorites" ? 'fill-red-600 text-red-600' : 'text-gray-600'}`} />
-                  <span>Favorites</span>
-                </button>
+                {/* Favorites Toggle Switch */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-sm font-medium text-gray-700">Favorites</span>
+                  <button
+                    onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                      viewMode === "favorites" ? 'bg-red-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        viewMode === "favorites" ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
