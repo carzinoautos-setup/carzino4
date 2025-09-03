@@ -260,7 +260,6 @@ export default function HomePage() {
       });
 
     } catch (error) {
-      console.error("❌ WordPress debug failed:", error);
       setApiTestResult({
         ...apiTestResult,
         debugError: error.message
@@ -270,13 +269,11 @@ export default function HomePage() {
 
   // Test backend API directly to verify conditional filtering works
   const testBackendAPI = async () => {
-    console.log("🧪 Testing backend API conditional filtering...");
 
     try {
       const testResponse = await fetch('/api/test-backend');
       const testData = await testResponse.json();
 
-      console.log("🧪 Backend API Test Results:", testData);
       setApiTestResult({
         ...apiTestResult,
         backendTests: testData.tests,
