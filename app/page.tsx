@@ -1370,15 +1370,17 @@ export default function HomePage() {
                           e.stopPropagation();
                           setCurrentPage(1); // Reset to first page when filters change
                           if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              trim: [...prev.trim, trim.name]
-                            }));
+                            const newFilters = {
+                              ...appliedFilters,
+                              trim: [...appliedFilters.trim, trim.name]
+                            };
+                            updateFiltersAndURL(newFilters);
                           } else {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              trim: prev.trim.filter(t => t !== trim.name)
-                            }));
+                            const newFilters = {
+                              ...appliedFilters,
+                              trim: appliedFilters.trim.filter(t => t !== trim.name)
+                            };
+                            updateFiltersAndURL(newFilters);
                           }
                         }}
                       />
