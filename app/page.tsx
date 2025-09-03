@@ -1980,7 +1980,7 @@ export default function HomePage() {
                     </label>
                   ))
                 ) : (
-                  ["Dealer", "Private Seller", "Fleet"].map((sellerType) => (
+                  ["Dealer", "Private Seller"].map((sellerType) => (
                     <label key={sellerType} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
