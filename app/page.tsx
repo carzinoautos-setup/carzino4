@@ -2083,7 +2083,7 @@ export default function HomePage() {
                   placeholder="Search vehicles..."
                   className="carzino-search-input w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-md focus:outline-none focus:border-red-600 text-sm"
                 />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-600">
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-600 hover:text-red-700">
                   <Search className="w-4 h-4" />
                 </button>
               </div>
@@ -2246,84 +2246,47 @@ export default function HomePage() {
             {/* Filter, Sort, and Favorites Buttons Row */}
             <div className="px-4 py-2 max-w-full overflow-hidden">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {/* Filter Button with Count */}
-                  <button
-                    onClick={() => setMobileFiltersOpen(true)}
-                    className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
-                  >
-                    <Sliders className="w-4 h-4" />
-                    <span className="text-sm font-medium">Filter</span>
-                    {(() => {
-                      const totalFilters = appliedFilters.condition.length +
-                        appliedFilters.make.length +
-                        appliedFilters.model.length +
-                        appliedFilters.trim.length +
-                        appliedFilters.year.length +
-                        appliedFilters.vehicleType.length +
-                        appliedFilters.driveType.length +
-                        appliedFilters.transmission.length +
-                        appliedFilters.fuel_type.length +
-                        appliedFilters.exteriorColor.length +
-                        appliedFilters.interiorColor.length +
-                        appliedFilters.sellerType.length +
-                        appliedFilters.dealer.length +
-                        appliedFilters.city.length +
-                        appliedFilters.state.length +
-                        (appliedFilters.mileage ? 1 : 0) +
-                        (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
-                        (appliedFilters.yearMin || appliedFilters.yearMax ? 1 : 0) +
-                        (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0);
+                {/* Filter Button with Count - Left */}
+                <button
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
+                >
+                  <Sliders className="w-4 h-4" />
+                  <span className="text-sm font-medium">Filter</span>
+                  {(() => {
+                    const totalFilters = appliedFilters.condition.length +
+                      appliedFilters.make.length +
+                      appliedFilters.model.length +
+                      appliedFilters.trim.length +
+                      appliedFilters.year.length +
+                      appliedFilters.vehicleType.length +
+                      appliedFilters.driveType.length +
+                      appliedFilters.transmission.length +
+                      appliedFilters.fuel_type.length +
+                      appliedFilters.exteriorColor.length +
+                      appliedFilters.interiorColor.length +
+                      appliedFilters.sellerType.length +
+                      appliedFilters.dealer.length +
+                      appliedFilters.city.length +
+                      appliedFilters.state.length +
+                      (appliedFilters.mileage ? 1 : 0) +
+                      (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
+                      (appliedFilters.yearMin || appliedFilters.yearMax ? 1 : 0) +
+                      (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0);
 
-                      return totalFilters > 0 && (
-                        <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-1">
-                          {totalFilters}
-                        </span>
-                      );
-                    })()}
-                  </button>
+                    return totalFilters > 0 && (
+                      <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-1">
+                        {totalFilters}
+                      </span>
+                    );
+                  })()}
+                </button>
 
-                  {/* Sort Button */}
-                  <div className="relative flex-shrink-0">
-                    <button
-                      onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                      className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      <span className="text-sm font-medium">Sort</span>
-                      <ChevronDown className="w-3 h-3" />
-                    </button>
-                    {sortDropdownOpen && (
-                      <div className="absolute left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                        {[
-                          { value: "relevance", label: "Relevance" },
-                          { value: "price_asc", label: "Price: Low to High" },
-                          { value: "price_desc", label: "Price: High to Low" },
-                          { value: "mileage_asc", label: "Mileage: Low to High" },
-                          { value: "mileage_desc", label: "Mileage: High to Low" },
-                          { value: "year_asc", label: "Year: Oldest to Newest" },
-                          { value: "year_desc", label: "Year: Newest to Oldest" }
-                        ].map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSortBy(option.value);
-                              setSortDropdownOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                              sortBy === option.value ? 'bg-red-50 text-red-700' : ''
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Favorites Toggle Switch */}
+                {/* Favorites Toggle Switch - Center */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-sm font-medium text-gray-700">Favorites</span>
+                  <span className={`text-sm font-medium ${
+                    viewMode === "favorites" ? 'text-red-600' : 'text-gray-700'
+                  }`}>Favorites</span>
                   <button
                     onClick={() => setViewMode(viewMode === "favorites" ? "all" : "favorites")}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
@@ -2336,6 +2299,44 @@ export default function HomePage() {
                       }`}
                     />
                   </button>
+                </div>
+
+                {/* Sort Button with Icon - Right */}
+                <div className="relative flex-shrink-0">
+                  <button
+                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                    className="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span className="text-sm font-medium">Sort</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                  {sortDropdownOpen && (
+                    <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                      {[
+                        { value: "relevance", label: "Relevance" },
+                        { value: "price_asc", label: "Price: Low to High" },
+                        { value: "price_desc", label: "Price: High to Low" },
+                        { value: "mileage_asc", label: "Mileage: Low to High" },
+                        { value: "mileage_desc", label: "Mileage: High to Low" },
+                        { value: "year_asc", label: "Year: Oldest to Newest" },
+                        { value: "year_desc", label: "Year: Newest to Oldest" }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setSortDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                            sortBy === option.value ? 'bg-red-50 text-red-700' : ''
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
