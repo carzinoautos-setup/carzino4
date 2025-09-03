@@ -564,7 +564,9 @@ export default function HomePage() {
       paymentMax: "",
     };
 
-    setAppliedFilters(emptyFilters);
+    // Update filters and URL
+    updateFiltersAndURL(emptyFilters, true); // Use replace to not create history entry
+
     setPriceMin("");
     setPriceMax("");
     setYearMin("");
