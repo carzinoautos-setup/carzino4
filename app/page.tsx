@@ -659,14 +659,6 @@ export default function HomePage() {
   const availableStates = filterOptions.states || [];
   const availableCities = filterOptions.cities || [];
 
-  console.log("🔍 DEBUG: Filter options from API:", {
-    selectedMakes: appliedFilters.make,
-    apiModelsCount: availableModels.length,
-    apiTrimsCount: availableTrims.length,
-    apiYearsCount: availableYears.length,
-    sampleApiModels: availableModels.slice(0, 5).map(m => m.name),
-    filterOptionsTimestamp: Date.now()
-  });
   const displayedVehicles = getDisplayedVehicles();
   const favoritesCount = Object.keys(favorites).length;
 
