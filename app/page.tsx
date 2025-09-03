@@ -1422,10 +1422,11 @@ export default function HomePage() {
                   onChange={(e) => {
                     setCurrentPage(1);
                     setYearMax(e.target.value);
-                    setAppliedFilters(prev => ({
-                      ...prev,
+                    const newFilters = {
+                      ...appliedFilters,
                       yearMax: e.target.value
-                    }));
+                    };
+                    updateFiltersAndURL(newFilters);
                   }}
                   className="w-1/2 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none bg-white"
                 >
