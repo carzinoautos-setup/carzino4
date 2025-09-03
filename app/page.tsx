@@ -856,6 +856,21 @@ export default function HomePage() {
             width: 22px !important;
             height: 22px !important;
           }
+
+          .scrollbar-hide {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+          }
+
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;  /* Safari and Chrome */
+          }
+
+          /* Ensure sticky works properly */
+          .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+          }
         }
       `}</style>
 
