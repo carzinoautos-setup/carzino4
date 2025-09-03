@@ -2284,6 +2284,19 @@ export default function HomePage() {
                         <button onClick={() => removeAppliedFilter("fuel_type", item)} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
+
+                    {appliedFilters.dealer.map((item) => (
+                      <span key={`dealer-${item}`} className="inline-flex items-center gap-1 px-3 py-2 bg-gray-800 text-white rounded-full text-sm flex-shrink-0 h-8">
+                        {getDealerDisplayName(item)}
+                        <button onClick={() => {
+                          setCurrentPage(1);
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            dealer: prev.dealer.filter(d => d !== item)
+                          }));
+                        }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
+                      </span>
+                    ))}
                   </div>
                 </div>
               );
