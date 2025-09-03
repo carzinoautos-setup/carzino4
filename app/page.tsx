@@ -2106,7 +2106,7 @@ export default function HomePage() {
           </div>
 
           {/* Mobile Sticky Filter Bar */}
-          <div className="lg:hidden border-b border-gray-200 bg-white sticky top-0 z-50">
+          <div className="lg:hidden border-b border-gray-200 bg-white sticky top-16 z-40">
             {/* Clear All and Applied Filter Tags Row */}
             {(() => {
               const hasFilters = appliedFilters.condition.length > 0 ||
