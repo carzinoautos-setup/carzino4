@@ -702,9 +702,6 @@ export default function HomePage() {
                 <Search className="w-4 h-4" />
                 Vehicle Search
               </a>
-              <a href="/icon-demo" className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                Icon Demo
-              </a>
             </nav>
             <div className="text-sm text-gray-500">
               Your Original Design!
@@ -899,109 +896,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Debug Status - Remove in production */}
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-xs font-semibold text-yellow-800 mb-2">🔧 Conditional Filtering Test</div>
-              <div className="text-xs text-yellow-700 mb-2">
-                <strong>Expected behavior:</strong> Selecting Toyota should hide all Ford/Chevy models.
-                Selecting Toyota + Ford should show only Toyota and Ford models.
-              </div>
-              <div className="flex gap-2 mb-2">
-                <button
-                  onClick={testWordPressAPI}
-                  className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700"
-                >
-                  Test API Direct
-                </button>
-                <button
-                  onClick={clearWordPressCache}
-                  className="bg-orange-600 text-white px-3 py-1 rounded text-xs hover:bg-orange-700"
-                >
-                  Clear WP Cache
-                </button>
-                <button
-                  onClick={debugWordPressFiltering}
-                  className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700"
-                >
-                  Debug WP SQL
-                </button>
-                <button
-                  onClick={testBackendAPI}
-                  className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
-                >
-                  Verify Backend
-                </button>
-              </div>
-              {apiTestResult && (
-                <div className="text-xs text-yellow-700 mt-2 p-2 bg-white border rounded">
-                  <div><strong>Multi-select Filter Tests:</strong></div>
-                  <div>Single make (Toyota): {apiTestResult.singleMake?.totalModels || 0} models</div>
-                  <div>Multi-make (Toyota + Ford): {apiTestResult.multiMake?.totalModels || 0} models</div>
-                  <div className={apiTestResult.multiMake?.hasToyotaModels && apiTestResult.multiMake?.hasFordModels ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
-                    {apiTestResult.multiMake?.hasToyotaModels && apiTestResult.multiMake?.hasFordModels
-                      ? "✅ MULTI-SELECT WORKING: Shows both Toyota & Ford models"
-                      : "❌ MULTI-SELECT BROKEN: Not showing both makes properly"
-                    }
-                  </div>
-                  <div>Multi-model test: {apiTestResult.multiModel?.totalTrims || 0} trims</div>
-                  {apiTestResult.backendTests && (
-                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                      <div className="font-semibold text-green-800">🧪 Backend API Verification:</div>
-                      {apiTestResult.backendTests.map((test: any, index: number) => (
-                        <div key={index} className="mt-1">
-                          <div className="font-semibold">{test.name}:</div>
-                          <div>Models: {test.modelCount || 'N/A'}</div>
-                          {test.name === 'Toyota Only' && (
-                            <div className={test.isConditionalWorking ? "text-green-600" : "text-red-600"}>
-                              {test.isConditionalWorking ? "✅ Backend conditional filtering WORKING" : "❌ Backend conditional filtering BROKEN"}
-                              {test.hasFordModels && <div>- Still shows Ford models</div>}
-                              {test.hasChevyModels && <div>- Still shows Chevy models</div>}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {apiTestResult.backendTestError && (
-                    <div className="text-red-600 font-semibold">❌ Backend Test Error: {apiTestResult.backendTestError}</div>
-                  )}
-                  {apiTestResult.error && (
-                    <div className="text-red-600 font-semibold">❌ API Error: {apiTestResult.error}</div>
-                  )}
-                  {apiTestResult.debug && (
-                    <div className="mt-2 p-2 bg-purple-50 border border-purple-200 rounded text-xs">
-                      <div className="font-semibold text-purple-800">🔬 WordPress SQL Debug:</div>
-                      <div>All vehicles: {apiTestResult.debug.all_vehicles_count}</div>
-                      <div>Ford vehicles: {apiTestResult.debug.filtered_vehicles_count}</div>
-                      <div>All models: {apiTestResult.debug.all_models_count}</div>
-                      <div>Ford models: {apiTestResult.debug.filtered_models_count}</div>
-                      <div className={apiTestResult.debug.filtered_models_count > 0 && apiTestResult.debug.filtered_vehicles_count > 0 ? "text-green-600" : "text-red-600"}>
-                        {apiTestResult.debug.filtered_models_count > 0 ? "✅ SQL filtering working" : "❌ SQL filtering broken"}
-                      </div>
-                    </div>
-                  )}
-                  {apiTestResult.debugError && (
-                    <div className="text-red-600 font-semibold">❌ Debug Error: {apiTestResult.debugError}</div>
-                  )}
-                </div>
-              )}
-            </div>
 
-            {(appliedFilters.make.length > 0) && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="text-xs font-semibold text-blue-800 mb-1">🔍 Conditional Filtering Debug</div>
-                <div className="text-xs text-blue-700">
-                  Selected: {appliedFilters.make.join(', ')}<br/>
-                  Models shown: {filterOptions.models?.length || 0}<br/>
-                  Expected: Only {appliedFilters.make.join(' & ')} models
-                </div>
-                {filterOptions.models && filterOptions.models.length > 0 && (
-                  <div className="text-xs text-blue-600 mt-1">
-                    Sample models: {filterOptions.models.slice(0, 3).map(m => m.name).join(', ')}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Applied Filters */}
             {(appliedFilters.condition.length > 0 ||
