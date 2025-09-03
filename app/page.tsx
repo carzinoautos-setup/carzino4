@@ -1367,46 +1367,40 @@ export default function HomePage() {
               onToggle={() => toggleFilter("model")}
             >
               <div className="space-y-1">
-                {appliedFilters.make.length === 0 ? (
-                  <div className="text-sm text-gray-500 italic p-2 bg-gray-50 rounded">
-                    Select a make first to see models
-                  </div>
-                ) : (
-                  availableModels.map((model, index) => (
-                    <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={appliedFilters.model.includes(model.name)}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          setCurrentPage(1); // Reset to first page when filters change
-                          if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              model: [...prev.model, model.name]
-                              // Don't clear trims when adding additional models
-                              // Let the backend conditional filtering handle what's available
-                            }));
+                {availableModels.map((model, index) => (
+                  <label key={index} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={appliedFilters.model.includes(model.name)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setCurrentPage(1); // Reset to first page when filters change
+                        if (e.target.checked) {
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            model: [...prev.model, model.name]
+                            // Don't clear trims when adding additional models
+                            // Let the backend conditional filtering handle what's available
+                          }));
 
-                          } else {
-                            setAppliedFilters(prev => {
-                              const newModels = prev.model.filter(m => m !== model.name);
-                              return {
-                                ...prev,
-                                model: newModels,
-                                // Only clear trims if NO models are selected
-                                trim: newModels.length === 0 ? [] : prev.trim
-                              };
-                            });
-                          }
-                        }}
-                      />
-                      <span className="carzino-filter-option">{model.name}</span>
-                      <span className="carzino-filter-count ml-1">({model.count})</span>
-                    </label>
-                  ))
-                )}
+                        } else {
+                          setAppliedFilters(prev => {
+                            const newModels = prev.model.filter(m => m !== model.name);
+                            return {
+                              ...prev,
+                              model: newModels,
+                              // Only clear trims if NO models are selected
+                              trim: newModels.length === 0 ? [] : prev.trim
+                            };
+                          });
+                        }
+                      }}
+                    />
+                    <span className="carzino-filter-option">{model.name}</span>
+                    <span className="carzino-filter-count ml-1">({model.count})</span>
+                  </label>
+                ))}
               </div>
             </FilterSection>
 
