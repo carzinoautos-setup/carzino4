@@ -1138,7 +1138,12 @@ export default function HomePage() {
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
                       Price: ${appliedFilters.priceMin || "0"} - ${appliedFilters.priceMax || "Any"}
-                      <button onClick={() => { setAppliedFilters(prev => ({ ...prev, priceMin: "", priceMax: "" })); setPriceMin(""); setPriceMax(""); }} className="ml-1 text-white hover:text-gray-300">×</button>
+                      <button onClick={() => {
+                        const newFilters = { ...appliedFilters, priceMin: "", priceMax: "" };
+                        updateFiltersAndURL(newFilters);
+                        setPriceMin("");
+                        setPriceMax("");
+                      }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   )}
                   {(appliedFilters.yearMin || appliedFilters.yearMax) && (
