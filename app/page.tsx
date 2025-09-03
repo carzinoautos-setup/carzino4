@@ -1265,27 +1265,23 @@ export default function HomePage() {
                         e.stopPropagation();
                         setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
-                          setAppliedFilters(prev => {
-                            const newFilters = {
-                              ...prev,
-                              make: [...prev.make, make.name]
-                              // Don't clear models/trims when adding additional makes
-                              // Let the backend conditional filtering handle what's available
-                            };
-                            return newFilters;
-                          });
-
+                          const newFilters = {
+                            ...appliedFilters,
+                            make: [...appliedFilters.make, make.name]
+                            // Don't clear models/trims when adding additional makes
+                            // Let the backend conditional filtering handle what's available
+                          };
+                          updateFiltersAndURL(newFilters);
                         } else {
-                          setAppliedFilters(prev => {
-                            const newMakes = prev.make.filter(m => m !== make.name);
-                            return {
-                              ...prev,
-                              make: newMakes,
-                              // Only clear dependent filters if NO makes are selected
-                              model: newMakes.length === 0 ? [] : prev.model,
-                              trim: newMakes.length === 0 ? [] : prev.trim
-                            };
-                          });
+                          const newMakes = appliedFilters.make.filter(m => m !== make.name);
+                          const newFilters = {
+                            ...appliedFilters,
+                            make: newMakes,
+                            // Only clear dependent filters if NO makes are selected
+                            model: newMakes.length === 0 ? [] : appliedFilters.model,
+                            trim: newMakes.length === 0 ? [] : appliedFilters.trim
+                          };
+                          updateFiltersAndURL(newFilters);
                         }
                       }}
                     />
