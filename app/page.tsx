@@ -567,18 +567,36 @@ export default function HomePage() {
     // Update filters and URL
     updateFiltersAndURL(emptyFilters, true); // Use replace to not create history entry
 
+    // Clear all price and payment inputs
     setPriceMin("");
     setPriceMax("");
     setYearMin("");
     setYearMax("");
     setPaymentMin("");
     setPaymentMax("");
+
+    // Reset payment calculation defaults
     setTermLength("72");
     setInterestRate("8");
     setDownPayment("2000");
+
+    // Clear location filters
     setZipCode("");
     setRadius("10");
+
+    // Reset page and view mode
     setCurrentPage(1);
+    setViewMode("all");
+    setSortBy("relevance");
+
+    // Close all dropdowns and panels
+    setMobileFiltersOpen(false);
+    setSortDropdownOpen(false);
+
+    // Reset show more states for filter sections
+    setShowMoreMakes(false);
+    setShowMoreModels(false);
+    setShowMoreTrims(false);
 
     // Force refresh filter options with no filters applied
     // This ensures we get all available options back
