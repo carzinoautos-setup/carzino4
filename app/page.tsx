@@ -710,7 +710,10 @@ export default function HomePage() {
               </a>
             </nav>
             <div className="text-sm text-gray-500">
-              Your Original Design!
+              <div>Your Original Design!</div>
+              <div className="mt-1 text-blue-600 hover:text-blue-800">
+                <a href="/cars" className="underline">Try our new SEO-friendly search →</a>
+              </div>
             </div>
           </div>
         </div>
