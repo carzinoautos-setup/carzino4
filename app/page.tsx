@@ -1221,15 +1221,17 @@ export default function HomePage() {
                         checked={appliedFilters.condition.includes(condition.name)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              condition: [...prev.condition, condition.name]
-                            }));
+                            const newFilters = {
+                              ...appliedFilters,
+                              condition: [...appliedFilters.condition, condition.name]
+                            };
+                            updateFiltersAndURL(newFilters);
                           } else {
-                            setAppliedFilters(prev => ({
-                              ...prev,
-                              condition: prev.condition.filter(c => c !== condition.name)
-                            }));
+                            const newFilters = {
+                              ...appliedFilters,
+                              condition: appliedFilters.condition.filter(c => c !== condition.name)
+                            };
+                            updateFiltersAndURL(newFilters);
                           }
                         }}
                       />
