@@ -149,7 +149,7 @@ function via_get_vehicles($request) {
                 'name'          => get_the_title(),
                 'permalink'     => get_permalink($post_id),
                 'stock_status'  => get_post_meta($post_id, '_stock_status', true),
-                'featured_image'=> get_the_post_thumbnail_url($post_id, 'full'),
+                'featured_image'=> get_the_post_thumbnail_url($post_id, 'medium'),
                 'acf'           => $acf
             ];
         }
