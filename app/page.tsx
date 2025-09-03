@@ -2073,227 +2073,252 @@ export default function HomePage() {
 
         {/* Main Content */}
         <div className="flex-1 bg-white">
+          {/* Mobile Search Box - Non-sticky */}
+          <div className="lg:hidden border-b border-gray-200 bg-white">
+            <div className="px-3 py-3">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Vehicles for Sale</h2>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search vehicles..."
+                  className="carzino-search-input w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:border-red-600 text-sm"
+                />
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-600">
+                  <Search className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Mobile Sticky Filter Bar */}
           <div className="lg:hidden border-b border-gray-200 bg-white sticky top-0 z-10">
-            <div className="px-3 py-3">
-              <div className="flex items-center gap-2 overflow-x-auto">
-                {/* Clear All Button - First */}
-                {(() => {
-                  const hasFilters = appliedFilters.condition.length > 0 ||
-                    appliedFilters.make.length > 0 ||
-                    appliedFilters.model.length > 0 ||
-                    appliedFilters.trim.length > 0 ||
-                    appliedFilters.year.length > 0 ||
-                    appliedFilters.vehicleType.length > 0 ||
-                    appliedFilters.driveType.length > 0 ||
-                    appliedFilters.transmission.length > 0 ||
-                    appliedFilters.fuel_type.length > 0 ||
-                    appliedFilters.exteriorColor.length > 0 ||
-                    appliedFilters.interiorColor.length > 0 ||
-                    appliedFilters.sellerType.length > 0 ||
-                    appliedFilters.dealer.length > 0 ||
-                    appliedFilters.city.length > 0 ||
-                    appliedFilters.state.length > 0 ||
-                    appliedFilters.mileage ||
-                    appliedFilters.priceMin ||
-                    appliedFilters.priceMax ||
-                    appliedFilters.yearMin ||
-                    appliedFilters.yearMax ||
-                    appliedFilters.paymentMin ||
-                    appliedFilters.paymentMax;
+            {/* Clear All and Applied Filter Tags Row */}
+            {(() => {
+              const hasFilters = appliedFilters.condition.length > 0 ||
+                appliedFilters.make.length > 0 ||
+                appliedFilters.model.length > 0 ||
+                appliedFilters.trim.length > 0 ||
+                appliedFilters.year.length > 0 ||
+                appliedFilters.vehicleType.length > 0 ||
+                appliedFilters.driveType.length > 0 ||
+                appliedFilters.transmission.length > 0 ||
+                appliedFilters.fuel_type.length > 0 ||
+                appliedFilters.exteriorColor.length > 0 ||
+                appliedFilters.interiorColor.length > 0 ||
+                appliedFilters.sellerType.length > 0 ||
+                appliedFilters.dealer.length > 0 ||
+                appliedFilters.city.length > 0 ||
+                appliedFilters.state.length > 0 ||
+                appliedFilters.mileage ||
+                appliedFilters.priceMin ||
+                appliedFilters.priceMax ||
+                appliedFilters.yearMin ||
+                appliedFilters.yearMax ||
+                appliedFilters.paymentMin ||
+                appliedFilters.paymentMax;
 
-                  return hasFilters && (
+              return hasFilters && (
+                <div className="px-3 py-2 border-b border-gray-100">
+                  <div className="flex items-center gap-2 overflow-x-auto">
+                    {/* Clear All Button */}
                     <button
                       onClick={clearAllFilters}
                       className="bg-red-600 text-white px-3 py-1.5 rounded-full text-sm font-medium hover:bg-red-700 flex-shrink-0"
                     >
                       Clear All
                     </button>
-                  );
-                })()}
 
-                {/* Applied Filter Tags */}
-                {appliedFilters.condition.map((item) => (
-                  <span key={`condition-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => {
-                      setCurrentPage(1);
-                      setAppliedFilters(prev => ({
-                        ...prev,
-                        condition: prev.condition.filter(c => c !== item)
-                      }));
-                    }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.make.map((item) => (
-                  <span key={`make-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => {
-                      setCurrentPage(1);
-                      setAppliedFilters(prev => {
-                        const newMakes = prev.make.filter(m => m !== item);
-                        return {
-                          ...prev,
-                          make: newMakes,
-                          model: newMakes.length === 0 ? [] : prev.model,
-                          trim: newMakes.length === 0 ? [] : prev.trim
-                        };
-                      });
-                    }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.model.map((item) => (
-                  <span key={`model-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => {
-                      setCurrentPage(1);
-                      setAppliedFilters(prev => {
-                        const newModels = prev.model.filter(m => m !== item);
-                        return {
-                          ...prev,
-                          model: newModels,
-                          trim: newModels.length === 0 ? [] : prev.trim
-                        };
-                      });
-                    }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.trim.map((item) => (
-                  <span key={`trim-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => {
-                      setCurrentPage(1);
-                      setAppliedFilters(prev => ({
-                        ...prev,
-                        trim: prev.trim.filter(t => t !== item)
-                      }));
-                    }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.vehicleType.map((item) => (
-                  <span key={`vehicleType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("vehicleType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.sellerType.map((item) => (
-                  <span key={`sellerType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("sellerType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.exteriorColor.map((item) => (
-                  <span key={`exteriorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.interiorColor.map((item) => (
-                  <span key={`interiorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("interiorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.driveType.map((item) => (
-                  <span key={`driveType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("driveType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.transmission.map((item) => (
-                  <span key={`transmission-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("transmission", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {appliedFilters.fuel_type.map((item) => (
-                  <span key={`fuel_type-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
-                    {item}
-                    <button onClick={() => removeAppliedFilter("fuel_type", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
-                  </span>
-                ))}
-
-                {/* Filter Button with Count */}
-                <button
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
-                >
-                  <Sliders className="w-4 h-4" />
-                  <span className="text-sm font-medium">Filter</span>
-                  {(() => {
-                    const totalFilters = appliedFilters.condition.length +
-                      appliedFilters.make.length +
-                      appliedFilters.model.length +
-                      appliedFilters.trim.length +
-                      appliedFilters.year.length +
-                      appliedFilters.vehicleType.length +
-                      appliedFilters.driveType.length +
-                      appliedFilters.transmission.length +
-                      appliedFilters.fuel_type.length +
-                      appliedFilters.exteriorColor.length +
-                      appliedFilters.interiorColor.length +
-                      appliedFilters.sellerType.length +
-                      appliedFilters.dealer.length +
-                      appliedFilters.city.length +
-                      appliedFilters.state.length +
-                      (appliedFilters.mileage ? 1 : 0) +
-                      (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
-                      (appliedFilters.yearMin || appliedFilters.yearMax ? 1 : 0) +
-                      (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0);
-
-                    return totalFilters > 0 && (
-                      <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-1">
-                        {totalFilters}
+                    {/* Applied Filter Tags */}
+                    {appliedFilters.condition.map((item) => (
+                      <span key={`condition-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => {
+                          setCurrentPage(1);
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            condition: prev.condition.filter(c => c !== item)
+                          }));
+                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
                       </span>
-                    );
-                  })()}
-                </button>
+                    ))}
 
-                {/* Sort Button */}
-                <div className="relative flex-shrink-0">
+                    {appliedFilters.make.map((item) => (
+                      <span key={`make-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => {
+                          setCurrentPage(1);
+                          setAppliedFilters(prev => {
+                            const newMakes = prev.make.filter(m => m !== item);
+                            return {
+                              ...prev,
+                              make: newMakes,
+                              model: newMakes.length === 0 ? [] : prev.model,
+                              trim: newMakes.length === 0 ? [] : prev.trim
+                            };
+                          });
+                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.model.map((item) => (
+                      <span key={`model-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => {
+                          setCurrentPage(1);
+                          setAppliedFilters(prev => {
+                            const newModels = prev.model.filter(m => m !== item);
+                            return {
+                              ...prev,
+                              model: newModels,
+                              trim: newModels.length === 0 ? [] : prev.trim
+                            };
+                          });
+                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.trim.map((item) => (
+                      <span key={`trim-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => {
+                          setCurrentPage(1);
+                          setAppliedFilters(prev => ({
+                            ...prev,
+                            trim: prev.trim.filter(t => t !== item)
+                          }));
+                        }} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.vehicleType.map((item) => (
+                      <span key={`vehicleType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("vehicleType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.sellerType.map((item) => (
+                      <span key={`sellerType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("sellerType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.exteriorColor.map((item) => (
+                      <span key={`exteriorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("exteriorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.interiorColor.map((item) => (
+                      <span key={`interiorColor-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("interiorColor", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.driveType.map((item) => (
+                      <span key={`driveType-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("driveType", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.transmission.map((item) => (
+                      <span key={`transmission-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("transmission", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+
+                    {appliedFilters.fuel_type.map((item) => (
+                      <span key={`fuel_type-${item}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-800 text-white rounded-full text-sm flex-shrink-0">
+                        {item}
+                        <button onClick={() => removeAppliedFilter("fuel_type", item)} className="ml-1 text-white hover:text-gray-300 text-lg">×</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Filter, Sort, and Favorites Buttons Row */}
+            <div className="px-3 py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {/* Filter Button with Count */}
                   <button
-                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                    className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50 flex-shrink-0"
                   >
-                    <span className="text-sm font-medium">Sort</span>
-                    <ChevronDown className="w-3 h-3" />
+                    <Sliders className="w-4 h-4" />
+                    <span className="text-sm font-medium">Filter</span>
+                    {(() => {
+                      const totalFilters = appliedFilters.condition.length +
+                        appliedFilters.make.length +
+                        appliedFilters.model.length +
+                        appliedFilters.trim.length +
+                        appliedFilters.year.length +
+                        appliedFilters.vehicleType.length +
+                        appliedFilters.driveType.length +
+                        appliedFilters.transmission.length +
+                        appliedFilters.fuel_type.length +
+                        appliedFilters.exteriorColor.length +
+                        appliedFilters.interiorColor.length +
+                        appliedFilters.sellerType.length +
+                        appliedFilters.dealer.length +
+                        appliedFilters.city.length +
+                        appliedFilters.state.length +
+                        (appliedFilters.mileage ? 1 : 0) +
+                        (appliedFilters.priceMin || appliedFilters.priceMax ? 1 : 0) +
+                        (appliedFilters.yearMin || appliedFilters.yearMax ? 1 : 0) +
+                        (appliedFilters.paymentMin || appliedFilters.paymentMax ? 1 : 0);
+
+                      return totalFilters > 0 && (
+                        <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center ml-1">
+                          {totalFilters}
+                        </span>
+                      );
+                    })()}
                   </button>
-                  {sortDropdownOpen && (
-                    <div className="absolute left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-                      {[
-                        { value: "relevance", label: "Relevance" },
-                        { value: "price_asc", label: "Price: Low to High" },
-                        { value: "price_desc", label: "Price: High to Low" },
-                        { value: "mileage_asc", label: "Mileage: Low to High" },
-                        { value: "mileage_desc", label: "Mileage: High to Low" },
-                        { value: "year_asc", label: "Year: Oldest to Newest" },
-                        { value: "year_desc", label: "Year: Newest to Oldest" }
-                      ].map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => {
-                            setSortBy(option.value);
-                            setSortDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                            sortBy === option.value ? 'bg-red-50 text-red-700' : ''
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+
+                  {/* Sort Button */}
+                  <div className="relative flex-shrink-0">
+                    <button
+                      onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                      className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+                    >
+                      <span className="text-sm font-medium">Sort</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+                    {sortDropdownOpen && (
+                      <div className="absolute left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                        {[
+                          { value: "relevance", label: "Relevance" },
+                          { value: "price_asc", label: "Price: Low to High" },
+                          { value: "price_desc", label: "Price: High to Low" },
+                          { value: "mileage_asc", label: "Mileage: Low to High" },
+                          { value: "mileage_desc", label: "Mileage: High to Low" },
+                          { value: "year_asc", label: "Year: Oldest to Newest" },
+                          { value: "year_desc", label: "Year: Newest to Oldest" }
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => {
+                              setSortBy(option.value);
+                              setSortDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                              sortBy === option.value ? 'bg-red-50 text-red-700' : ''
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Favorites Button */}
