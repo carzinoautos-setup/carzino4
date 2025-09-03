@@ -1003,16 +1003,15 @@ export default function HomePage() {
                       {item}
                       <button onClick={() => {
                         setCurrentPage(1);
-                        setAppliedFilters(prev => {
-                          const newMakes = prev.make.filter(m => m !== item);
-                          return {
-                            ...prev,
-                            make: newMakes,
-                            // Only clear dependent filters if NO makes are selected
-                            model: newMakes.length === 0 ? [] : prev.model,
-                            trim: newMakes.length === 0 ? [] : prev.trim
-                          };
-                        });
+                        const newMakes = appliedFilters.make.filter(m => m !== item);
+                        const newFilters = {
+                          ...appliedFilters,
+                          make: newMakes,
+                          // Only clear dependent filters if NO makes are selected
+                          model: newMakes.length === 0 ? [] : appliedFilters.model,
+                          trim: newMakes.length === 0 ? [] : appliedFilters.trim
+                        };
+                        updateFiltersAndURL(newFilters);
                       }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   ))}
