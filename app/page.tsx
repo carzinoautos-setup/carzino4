@@ -1162,7 +1162,12 @@ export default function HomePage() {
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black text-white rounded-full text-xs">
                       <Check className="w-3 h-3 text-red-600" />
                       Payment: ${appliedFilters.paymentMin || "0"} - ${appliedFilters.paymentMax || "Any"}/mo
-                      <button onClick={() => { setAppliedFilters(prev => ({ ...prev, paymentMin: "", paymentMax: "" })); setPaymentMin(""); setPaymentMax(""); }} className="ml-1 text-white hover:text-gray-300">×</button>
+                      <button onClick={() => {
+                        const newFilters = { ...appliedFilters, paymentMin: "", paymentMax: "" };
+                        updateFiltersAndURL(newFilters);
+                        setPaymentMin("");
+                        setPaymentMax("");
+                      }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   )}
                 </div>
