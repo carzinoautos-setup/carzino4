@@ -1322,23 +1322,22 @@ export default function HomePage() {
                         e.stopPropagation();
                         setCurrentPage(1); // Reset to first page when filters change
                         if (e.target.checked) {
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            model: [...prev.model, model.name]
+                          const newFilters = {
+                            ...appliedFilters,
+                            model: [...appliedFilters.model, model.name]
                             // Don't clear trims when adding additional models
                             // Let the backend conditional filtering handle what's available
-                          }));
-
+                          };
+                          updateFiltersAndURL(newFilters);
                         } else {
-                          setAppliedFilters(prev => {
-                            const newModels = prev.model.filter(m => m !== model.name);
-                            return {
-                              ...prev,
-                              model: newModels,
-                              // Only clear trims if NO models are selected
-                              trim: newModels.length === 0 ? [] : prev.trim
-                            };
-                          });
+                          const newModels = appliedFilters.model.filter(m => m !== model.name);
+                          const newFilters = {
+                            ...appliedFilters,
+                            model: newModels,
+                            // Only clear trims if NO models are selected
+                            trim: newModels.length === 0 ? [] : appliedFilters.trim
+                          };
+                          updateFiltersAndURL(newFilters);
                         }
                       }}
                     />
