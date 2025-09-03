@@ -673,12 +673,13 @@ export default function HomePage() {
 
   const handleVehicleTypeToggle = (vehicleType: string) => {
     setCurrentPage(1);
-    setAppliedFilters((prev) => ({
-      ...prev,
-      vehicleType: prev.vehicleType.includes(vehicleType)
-        ? prev.vehicleType.filter((item) => item !== vehicleType)
-        : [...prev.vehicleType, vehicleType],
-    }));
+    const newFilters = {
+      ...appliedFilters,
+      vehicleType: appliedFilters.vehicleType.includes(vehicleType)
+        ? appliedFilters.vehicleType.filter((item) => item !== vehicleType)
+        : [...appliedFilters.vehicleType, vehicleType],
+    };
+    updateFiltersAndURL(newFilters);
   };
 
   const getSortDisplayLabel = (sortValue: string) => {
