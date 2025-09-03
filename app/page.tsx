@@ -2323,10 +2323,11 @@ export default function HomePage() {
                         {getDealerDisplayName(item)}
                         <button onClick={() => {
                           setCurrentPage(1);
-                          setAppliedFilters(prev => ({
-                            ...prev,
-                            dealer: prev.dealer.filter(d => d !== item)
-                          }));
+                          const newFilters = {
+                            ...appliedFilters,
+                            dealer: appliedFilters.dealer.filter(d => d !== item)
+                          };
+                          updateFiltersAndURL(newFilters);
                         }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
