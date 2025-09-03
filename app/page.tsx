@@ -2244,14 +2244,13 @@ export default function HomePage() {
                         {item}
                         <button onClick={() => {
                           setCurrentPage(1);
-                          setAppliedFilters(prev => {
-                            const newModels = prev.model.filter(m => m !== item);
-                            return {
-                              ...prev,
-                              model: newModels,
-                              trim: newModels.length === 0 ? [] : prev.trim
-                            };
-                          });
+                          const newModels = appliedFilters.model.filter(m => m !== item);
+                          const newFilters = {
+                            ...appliedFilters,
+                            model: newModels,
+                            trim: newModels.length === 0 ? [] : appliedFilters.trim
+                          };
+                          updateFiltersAndURL(newFilters);
                         }} className="ml-1 text-white hover:text-gray-300 text-sm font-bold">×</button>
                       </span>
                     ))}
