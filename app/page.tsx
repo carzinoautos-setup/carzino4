@@ -1119,8 +1119,8 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* Distance */}
-            <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3">
+            {/* Distance - Hidden on Mobile */}
+            <div className="mb-4 pb-4 border border-gray-200 rounded-lg p-3 hidden lg:block">
               <label className="carzino-location-label block mb-2">Distance</label>
               <div className="space-y-2">
                 <input
