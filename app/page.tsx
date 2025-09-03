@@ -371,7 +371,7 @@ export default function HomePage() {
             apiUrl.searchParams.set('min_mileage', '30000');
             apiUrl.searchParams.set('max_mileage', '60000');
             break;
-          case "60,000 – 100,000":
+          case "60,000 �� 100,000":
             apiUrl.searchParams.set('min_mileage', '60000');
             apiUrl.searchParams.set('max_mileage', '100000');
             break;
@@ -2074,7 +2074,7 @@ export default function HomePage() {
                     </label>
                   ))
                 ) : (
-                  ["WA", "CA", "OR", "TX", "FL", "NY"].map((state) => (
+                  [].map((state) => (
                     <label key={state} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
@@ -2130,7 +2130,7 @@ export default function HomePage() {
                     </label>
                   ))
                 ) : (
-                  ["Seattle", "Lakewood", "Tacoma", "Federal Way", "Bellevue", "Everett"].map((city) => (
+                  [].map((city) => (
                     <label key={city} className="flex items-center hover:bg-gray-50 p-1 rounded cursor-pointer">
                       <input
                         type="checkbox"
