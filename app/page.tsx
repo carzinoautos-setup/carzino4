@@ -281,7 +281,6 @@ export default function HomePage() {
       });
 
     } catch (error) {
-      console.error("❌ Backend API test failed:", error);
       setApiTestResult({
         ...apiTestResult,
         backendTestError: error.message
