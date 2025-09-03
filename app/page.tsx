@@ -685,6 +685,12 @@ export default function HomePage() {
     return sortOptions[sortValue as keyof typeof sortOptions] || sortValue;
   };
 
+  // Helper function to get dealer display name from account ID
+  const getDealerDisplayName = (accountIdOrName: string) => {
+    const dealer = filterOptions.dealers.find(d => d.accountId === accountIdOrName || d.name === accountIdOrName);
+    return dealer?.name || accountIdOrName;
+  };
+
   return (
     <div
       className="min-h-screen bg-white main-container"
