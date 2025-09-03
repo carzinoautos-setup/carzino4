@@ -225,7 +225,7 @@ function get_custom_vehicles(WP_REST_Request $request) {
                 'regular_price' => $product ? $product->get_regular_price() : '',
                 'sale_price' => $product ? $product->get_sale_price() : '',
                 'stock_status' => get_post_meta($post_id, '_stock_status', true),
-                'featured_image' => get_the_post_thumbnail_url($post_id, 'full'),
+                'featured_image' => get_the_post_thumbnail_url($post_id, 'medium'),
                 'images' => get_product_images($post_id), // Helper function below
                 'acf' => array(
                     // Vehicle specs
@@ -279,7 +279,7 @@ function get_custom_vehicles(WP_REST_Request $request) {
                     'payment' => floatval(get_post_meta($post_id, 'payment', true)),
                     
                     // Images
-                    'featured_image' => get_the_post_thumbnail_url($post_id, 'full')
+                    'featured_image' => get_the_post_thumbnail_url($post_id, 'medium')
                 )
             );
         }
