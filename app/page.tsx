@@ -1038,10 +1038,11 @@ export default function HomePage() {
                       {item}
                       <button onClick={() => {
                         setCurrentPage(1);
-                        setAppliedFilters(prev => ({
-                          ...prev,
-                          trim: prev.trim.filter(t => t !== item)
-                        }));
+                        const newFilters = {
+                          ...appliedFilters,
+                          trim: appliedFilters.trim.filter(t => t !== item)
+                        };
+                        updateFiltersAndURL(newFilters);
                       }} className="ml-1 text-white hover:text-gray-300">×</button>
                     </span>
                   ))}
