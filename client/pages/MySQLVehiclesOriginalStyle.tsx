@@ -284,9 +284,19 @@ function MySQLVehiclesOriginalStyleInner() {
       });
 
       const response = await fetch(apiUrl.toString());
-      const data = await response.json();
+      // Read body as text once to avoid "body stream already read" errors
+      const responseText = await response.text();
+      let data: any = null;
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseErr) {
+        console.error('Failed to parse API response JSON:', parseErr, responseText);
+        setError('Invalid API response');
+        setLoading(false);
+        return;
+      }
 
-      console.log("✅ API Response:", { success: data.success, vehiclesCount: data.data?.vehicles?.length });
+      console.log("✅ API Response:", { ok: response.ok, status: response.status, parsed: data });
 
       if (data.success) {
         setVehicles(data.data.vehicles || []);
